@@ -58,17 +58,6 @@ import Foundation
     /// - Throws:
     @objc func getNumberOfActiveOneTimePublicKeys(token: String) throws -> NSNumber
     
-    /// Checks list of one-time public keys ids and returns subset of that list with already used one-time public keys ids
-    ///
-    /// publicKeyId == SHA512(publicKey)[0..<8]
-    ///
-    /// - Parameters:
-    ///   - publicKeysIds: list of one-time public keys ids
-    ///   - token: auth token (JWT)
-    /// - Returns: list of already used one-time public keys ids
-    /// - Throws:
-    
-    
     /// Checks list of one-time keys ids and returns subset of that list with already used keys ids
     ///
     /// keyId == SHA512(publicKey)[0..<8]
