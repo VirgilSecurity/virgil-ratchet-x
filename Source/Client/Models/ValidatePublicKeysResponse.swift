@@ -8,7 +8,7 @@
 
 import Foundation
 
-@objc(VSRValidatePublicKeysResponse) public final class ValidatePublicKeysResponse: NSObject, Decodable {
-    @objc public let usedLongTermKeyId: Data?
-    @objc public let usedOneTimeKeysIds: [Data]
+public final class ValidatePublicKeysResponse: NSObject, Decodable {
+    public let usedLongTermKeyId: Data?
+    public let usedOneTimeKeysIds: [Data]
 }

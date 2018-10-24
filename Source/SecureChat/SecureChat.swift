@@ -40,53 +40,60 @@ import VSCRatchet
 import VirgilCryptoApiImpl
 
 @objc(VSRSecureChat) open class SecureChat: NSObject {
+    @objc public let accessTokenProvider: AccessTokenProvider
     @objc public let identityPrivateKey: VirgilPrivateKey
-    @objc public let client: RatchetClientProtocol
+    public let client: RatchetClientProtocol
     @objc public let crypto = VirgilCrypto()
+    @objc public let privateKeyProvider: PrivateKeyProvider
 
-    @objc public init(client: RatchetClientProtocol) {
+    public init(identityPrivateKey: VirgilPrivateKey, accessTokenProvider: AccessTokenProvider, client: RatchetClientProtocol, privateKeyProvider: PrivateKeyProvider) {
+        self.identityPrivateKey = identityPrivateKey
+        self.accessTokenProvider = accessTokenProvider
         self.client = client
-        
-        self.identityPrivateKey = try! self.crypto.generateKeyPair().privateKey
+        self.privateKeyProvider = privateKeyProvider
 
         super.init()
     }
     
-    @objc open func startNewSession(withRecipientWithCard recipientCard: Card) throws -> SecureSession {
-//        checkExistingSessionOnStart
+    @objc open func startNewSessionAsSender(receiverCard: Card) throws -> SecureSession {
+        let tokenContext = TokenContext(service: "ratchet", operation: "get")
+        let getTokenOperation = OperationUtils.makeGetTokenOperation(
+            tokenContext: tokenContext, accessTokenProvider: self.accessTokenProvider)
+        
+        // FIXME
+        let token = try getTokenOperation.startSync().getResult()
+        
+        // TODO: checkExistingSessionOnStart
 
-        let publicKeySet = try self.client.getPublicKeySet(forRecipientCardId: recipientCard.identifier)
+        let publicKeySet = try self.client.getPublicKeySet(forRecipientIdentity: receiverCard.identity, token: token.stringRepresentation())
         
-        let privateKeyData = self.crypto.exportPrivateKey(self.identityPrivateKey)
+        guard let identityPublicKey = receiverCard.publicKey as? VirgilPublicKey else {
+            throw NSError()
+        }
         
+        guard CUtils.extractRawPublicKey(self.crypto.exportPublicKey(identityPublicKey)) == publicKeySet.identityPublicKey else {
+            throw NSError()
+        }
         
-        return try SecureSession(identityPrivateKey: privateKeyData, publicKeySet: publicKeySet)
+        // FIXME
+        guard self.crypto.verifySignature(publicKeySet.longtermPublicKey.signature, of: publicKeySet.longtermPublicKey.publicKey, with: identityPublicKey) else {
+            throw NSError()
+        }
         
-//
-//        // Get recipient's credentials
-//        self.client.getRecipientCardsSet(forCardsIds: [recipientCard.identifier]) { cardsSets, error in
-//            guard error == nil else {
-//                completion(nil, SecureChat.makeError(withCode: .obtainingRecipientCardsSet, description: "Error obtaining recipient cards set. Underlying error: \(error!.localizedDescription)"))
-//                return
-//            }
-//
-//            guard let cardsSets = cardsSets, cardsSets.count > 0 else {
-//                completion(nil, SecureChat.makeError(withCode: .recipientSetEmpty, description: "Error obtaining recipient cards set. Empty set."))
-//                return
-//            }
-//
-//            // FIXME: Multiple sessions?
-//            let cardsSet = cardsSets[0]
-//
-//            do {
-//                let session = try self.startNewSession(withRecipientWithCard: recipientCard, recipientCardsSet: cardsSet, additionalData: additionalData)
-//                completion(session, nil)
-//                return
-//            }
-//            catch {
-//                completion(nil, error)
-//                return
-//            }
-//        }
+        if publicKeySet.onetimePublicKey == nil {
+            // TODO: Weak session warning
+        }
+        
+        let privateKeyData = CUtils.extractRawPrivateKey(self.crypto.exportPrivateKey(self.identityPrivateKey))
+        
+        return try SecureSession(senderIdentityPrivateKey: privateKeyData, receiverIdentityPublicKey: publicKeySet.identityPublicKey, receivedLongTermPublicKey: publicKeySet.longtermPublicKey.publicKey, receiverOneTimePublicKey: publicKeySet.onetimePublicKey)
+    }
+    
+    @objc public func startNewSessionAsReceiver(senderCard: Card, message: Data) throws -> SecureSession {
+        guard let senderIdentityPublicKey = senderCard.publicKey as? VirgilPublicKey else {
+            throw NSError()
+        }
+        
+        return try SecureSession(privateKeyProvider: self.privateKeyProvider, receiverIdentityPrivateKey: self.identityPrivateKey, senderIdentityPublicKey: CUtils.extractRawPublicKey(self.crypto.exportPublicKey(senderIdentityPublicKey)), message: message)
     }
 }

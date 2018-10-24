@@ -36,7 +36,7 @@
 
 import Foundation
 
-@objc(VSRRatchetClientProtocol) public protocol RatchetClientProtocol: class {
+public protocol RatchetClientProtocol: class {
     /// Uploads public keys
     ///
     /// Long-term public key signature should be verified.
@@ -49,14 +49,14 @@ import Foundation
     ///   - token: auth token (JWT)
     /// - Returns:
     /// - Throws:
-    @objc func uploadPublicKeys(identityCardId: String?, longtermPublicKey: SignedPublicKey?, onetimePublicKeys: [Data]?, token: String) throws
+    func uploadPublicKeys(identityCardId: String?, longtermPublicKey: SignedPublicKey?, onetimePublicKeys: [Data]?, token: String) throws
     
     /// Returns number of active one-time public keys (0..<=150)
     ///
     /// - Parameter token: auth token (JWT)
     /// - Returns: Number of active one-time public keys (0..<=150)
     /// - Throws:
-    @objc func getNumberOfActiveOneTimePublicKeys(token: String) throws -> NSNumber
+    func getNumberOfActiveOneTimePublicKeys(token: String) throws -> UInt
     
     /// Checks list of keys ids and returns subset of that list with already used keys ids
     ///
@@ -68,7 +68,7 @@ import Foundation
     ///   - token: auth token (JWT)
     /// - Returns: Object with used keys ids
     /// - Throws:
-    @objc func validatePublicKeys(longTermKeyId: Data, oneTimeKeysIds: [Data], token: String) throws -> ValidatePublicKeysResponse
+    func validatePublicKeys(longTermKeyId: Data, oneTimeKeysIds: [Data], token: String) throws -> ValidatePublicKeysResponse
     
     /// Returns public keys set for given identity.
     ///
@@ -79,5 +79,5 @@ import Foundation
     ///   - token: auth token (JWT)
     /// - Returns: Set of public keys
     /// - Throws:
-    @objc func getPublicKeySet(forRecipientIdentity identity: String, token: String) throws -> PublicKeySet
+    func getPublicKeySet(forRecipientIdentity identity: String, token: String) throws -> PublicKeySet
 }

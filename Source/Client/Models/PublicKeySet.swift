@@ -36,8 +36,14 @@
 
 import Foundation
 
-@objc(VSRPublicKeySet) public final class PublicKeySet: NSObject, Decodable {
-    @objc public let identityPublicKey: Data
-    @objc public let longtermPublicKey: SignedPublicKey
-    @objc public let onetimePublicKey: Data?
+public final class PublicKeySet: NSObject, Decodable {
+    public let identityPublicKey: Data
+    public let longtermPublicKey: SignedPublicKey
+    public let onetimePublicKey: Data?
+    
+    internal init(identityPublicKey: Data, longtermPublicKey: SignedPublicKey, onetimePublicKey: Data?) {
+        self.identityPublicKey = identityPublicKey
+        self.longtermPublicKey = longtermPublicKey
+        self.onetimePublicKey = onetimePublicKey
+    }
 }

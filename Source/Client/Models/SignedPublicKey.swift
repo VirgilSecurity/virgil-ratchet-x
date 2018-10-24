@@ -8,7 +8,12 @@
 
 import Foundation
 
-@objc(VSRSignedPublicKey) public final class SignedPublicKey: NSObject, Decodable {
-    @objc public let publicKey: Data
-    @objc public let signature: Data
+public final class SignedPublicKey: NSObject, Decodable {
+    public let publicKey: Data
+    public let signature: Data
+    
+    internal init(publicKey: Data, signature: Data) {
+        self.publicKey = publicKey
+        self.signature = signature
+    }
 }
