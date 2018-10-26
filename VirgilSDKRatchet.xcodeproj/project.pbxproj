@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		424FAA102177506100622A3B /* VirgilSDKRatchet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 424FAA062177506100622A3B /* VirgilSDKRatchet.framework */; };
-		424FAA152177506100622A3B /* VirgilSDKRatchetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424FAA142177506100622A3B /* VirgilSDKRatchetTests.swift */; };
 		424FAA172177506100622A3B /* VirgilSDKRatchet.h in Headers */ = {isa = PBXBuildFile; fileRef = 424FAA092177506100622A3B /* VirgilSDKRatchet.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		424FAA9C2177511200622A3B /* VSCFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 424FAA982177511100622A3B /* VSCFoundation.framework */; };
 		424FAA9D2177511200622A3B /* VSCCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 424FAA992177511100622A3B /* VSCCommon.framework */; };
@@ -47,6 +46,9 @@
 		429D79C52178B37B003B56F8 /* VSCCrypto.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 429D79A1217791A2003B56F8 /* VSCCrypto.framework */; };
 		429D79C82178B71F003B56F8 /* TestConfig.plist in Resources */ = {isa = PBXBuildFile; fileRef = 429D79C72178B71F003B56F8 /* TestConfig.plist */; };
 		429D79CA2178B7B2003B56F8 /* TestConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429D79C92178B7B2003B56F8 /* TestConfig.swift */; };
+		42AB658721810BED00AC4631 /* SessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB658621810BED00AC4631 /* SessionStorage.swift */; };
+		42AB659021810D6F00AC4631 /* Stubs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB658E21810D6C00AC4631 /* Stubs.swift */; };
+		42AB65A6218336F800AC4631 /* SecureSessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65A42183340A00AC4631 /* SecureSessionTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -94,7 +96,6 @@
 		424FAA092177506100622A3B /* VirgilSDKRatchet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VirgilSDKRatchet.h; sourceTree = "<group>"; };
 		424FAA0A2177506100622A3B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		424FAA0F2177506100622A3B /* VirgilSDKRatchetTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VirgilSDKRatchetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		424FAA142177506100622A3B /* VirgilSDKRatchetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirgilSDKRatchetTests.swift; sourceTree = "<group>"; };
 		424FAA982177511100622A3B /* VSCFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VSCFoundation.framework; path = Crypto/VSCFoundation.framework; sourceTree = "<group>"; };
 		424FAA992177511100622A3B /* VSCCommon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VSCCommon.framework; path = Crypto/VSCCommon.framework; sourceTree = "<group>"; };
 		424FAA9A2177511200622A3B /* VSCPythia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VSCPythia.framework; path = Crypto/VSCPythia.framework; sourceTree = "<group>"; };
@@ -114,6 +115,9 @@
 		429D79BC2178A1FA003B56F8 /* ValidatePublicKeysResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatePublicKeysResponse.swift; sourceTree = "<group>"; };
 		429D79C72178B71F003B56F8 /* TestConfig.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = TestConfig.plist; sourceTree = "<group>"; };
 		429D79C92178B7B2003B56F8 /* TestConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestConfig.swift; sourceTree = "<group>"; };
+		42AB658621810BED00AC4631 /* SessionStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStorage.swift; sourceTree = "<group>"; };
+		42AB658E21810D6C00AC4631 /* Stubs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stubs.swift; sourceTree = "<group>"; };
+		42AB65A42183340A00AC4631 /* SecureSessionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecureSessionTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -187,7 +191,8 @@
 			children = (
 				429D79C62178B71F003B56F8 /* Data */,
 				429D79C92178B7B2003B56F8 /* TestConfig.swift */,
-				424FAA142177506100622A3B /* VirgilSDKRatchetTests.swift */,
+				42AB658E21810D6C00AC4631 /* Stubs.swift */,
+				42AB65A42183340A00AC4631 /* SecureSessionTests.swift */,
 			);
 			name = Test;
 			path = Tests;
@@ -225,6 +230,7 @@
 				424FAAA92177520200622A3B /* SecureSession.swift */,
 				429D79B7217796DD003B56F8 /* CUtils.swift */,
 				426DB798217A2CE100A44FCA /* PrivateKeyProvider.swift */,
+				42AB658621810BED00AC4631 /* SessionStorage.swift */,
 			);
 			path = SecureChat;
 			sourceTree = "<group>";
@@ -371,6 +377,7 @@
 				424FAAAF2177520200622A3B /* SecureChat.swift in Sources */,
 				426DB799217A2CE100A44FCA /* PrivateKeyProvider.swift in Sources */,
 				424FAAB02177520200622A3B /* SecureSession.swift in Sources */,
+				42AB658721810BED00AC4631 /* SessionStorage.swift in Sources */,
 				429D79B8217796DD003B56F8 /* CUtils.swift in Sources */,
 				424FAAB22177520200622A3B /* RatchetClientProtocol.swift in Sources */,
 				424FAAB12177520200622A3B /* PublicKeySet.swift in Sources */,
@@ -382,8 +389,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				424FAA152177506100622A3B /* VirgilSDKRatchetTests.swift in Sources */,
+				42AB659021810D6F00AC4631 /* Stubs.swift in Sources */,
 				429D79CA2178B7B2003B56F8 /* TestConfig.swift in Sources */,
+				42AB65A6218336F800AC4631 /* SecureSessionTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -9,7 +9,7 @@
 import Foundation
 import VSCCommon
 
-class CUtils {
+internal class CUtils {
     internal static func extractRawPublicKey(_ key: Data) -> Data {
         return Data(key.subdata(in: key.count - 64..<key.count - 32).reversed())
     }

@@ -12,27 +12,6 @@ import VirgilCryptoApiImpl
 import VSCRatchet
 @testable import VirgilSDKRatchet
 
-class FakePrivateKeyProvider: PrivateKeyProvider {
-    let db: [Data: Data]
-    
-    init(db: [Data: Data]) {
-        self.db = db
-//        Dictionary(uniqueKeysWithValues: db.map({
-//            return (CUtils.extractRawKey($0), CUtils.extractRawKey($1))
-//        }))
-    }
-    
-    func getPrivateKey(withId id: Data) throws -> Data {
-        guard let val = self.db[id] else {
-            throw NSError()
-        }
-        
-        return val
-    }
-    
-    
-}
-
 class VirgilSDKRatchetTests: XCTestCase {
 
     override func setUp() {
@@ -89,33 +68,10 @@ class VirgilSDKRatchetTests: XCTestCase {
         let receiverCard = try! cardManager.publishCard(privateKey: receiverIdentityKeyPair.privateKey, publicKey: receiverIdentityKeyPair.publicKey).startSync().getResult()
         let senderCard = try! cardManager.publishCard(privateKey: senderIdentityKeyPair.privateKey, publicKey: senderIdentityKeyPair.publicKey).startSync().getResult()
         
-        class FakeClient: RatchetClientProtocol {
-            let publicKeySet: PublicKeySet
-            
-            init(publicKeySet: PublicKeySet) {
-                self.publicKeySet = publicKeySet
-            }
-            
-            func uploadPublicKeys(identityCardId: String?, longtermPublicKey: SignedPublicKey?, onetimePublicKeys: [Data]?, token: String) throws {
-                
-            }
-            
-            func getNumberOfActiveOneTimePublicKeys(token: String) throws -> UInt {
-                return 0
-            }
-            
-            func validatePublicKeys(longTermKeyId: Data, oneTimeKeysIds: [Data], token: String) throws -> ValidatePublicKeysResponse {
-                return try JSONDecoder().decode(ValidatePublicKeysResponse.self, from: Data())
-            }
-            
-            func getPublicKeySet(forRecipientIdentity identity: String, token: String) throws -> PublicKeySet {
-                return publicKeySet
-            }
-        }
-        
         let publicKeySet = PublicKeySet(identityPublicKey: receiverIdentityPublicKey, longtermPublicKey: SignedPublicKey(publicKey: receiverLongTermPublicKey, signature: try! crypto.generateSignature(of: receiverLongTermPublicKey, using: receiverIdentityKeyPair.privateKey)), onetimePublicKey: receiverOneTimePublicKey)
         
         let fakeClient = FakeClient(publicKeySet: publicKeySet)
+//        let fakeClient = FakeRamClient(cardManager: cardManager)
         let fakePrivateKeyProvider = FakePrivateKeyProvider(db: [
             receiverIdentityPublicKey: receiverIdentityPrivateKey,
             receiverLongTermPublicKey: receiverLongTermPrivateKey,
@@ -124,9 +80,9 @@ class VirgilSDKRatchetTests: XCTestCase {
         
         let senderSecureChat = SecureChat(identityPrivateKey: senderIdentityKeyPair.privateKey,
                                           accessTokenProvider: senderTokenProvider,
-                                          client: fakeClient, privateKeyProvider: fakePrivateKeyProvider)
+                                          client: fakeClient, privateKeyProvider: fakePrivateKeyProvider, sessionStorage: FakeRamSessionStorage())
         
-        let receiverSecureChat = SecureChat(identityPrivateKey: receiverIdentityKeyPair.privateKey, accessTokenProvider: receiverTokenProvider, client: fakeClient, privateKeyProvider: fakePrivateKeyProvider)
+        let receiverSecureChat = SecureChat(identityPrivateKey: receiverIdentityKeyPair.privateKey, accessTokenProvider: receiverTokenProvider, client: fakeClient, privateKeyProvider: fakePrivateKeyProvider, sessionStorage: FakeRamSessionStorage())
         
         return (senderCard, receiverCard, senderSecureChat, receiverSecureChat)
     }
@@ -136,7 +92,7 @@ class VirgilSDKRatchetTests: XCTestCase {
         
         let senderSession = try! senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard)
         
-        let plainText = "Test"
+        let plainText = UUID().uuidString
         let cipherText = try! senderSession.encrypt(message: plainText)
         
         let receiverSession = try! receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, message: cipherText)
@@ -158,6 +114,53 @@ class VirgilSDKRatchetTests: XCTestCase {
             else {
                 sender = receiverSession
                 receiver = senderSession
+            }
+            
+            let plainText = UUID().uuidString
+            
+            let encryptedData = try! sender.encrypt(message: plainText)
+            
+            let message = vscr_ratchet_message_deserialize(CUtils.bindForRead(data: encryptedData), nil)!
+            
+            let decryptedMessage = try! receiver.decrypt(message: message)
+            
+            vscr_ratchet_message_delete(message)
+            
+            XCTAssert(decryptedMessage == plainText)
+        }
+    }
+    
+    func test2() {
+        let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = self.initChat()
+        
+        let senderSession = try! senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard)
+        
+        XCTAssert(senderSecureChat.existingSession(withParticpantIdentity: receiverCard.identity) != nil)
+        
+        let plainText = UUID().uuidString
+        let cipherText = try! senderSession.encrypt(message: plainText)
+        
+        let receiverSession = try! receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, message: cipherText)
+        
+        XCTAssert(receiverSecureChat.existingSession(withParticpantIdentity: senderCard.identity) != nil)
+        
+        let ratchetMessage = vscr_ratchet_message_deserialize(CUtils.bindForRead(data: cipherText), nil)!
+        
+        let decryptedMessage = try! receiverSession.decrypt(message: ratchetMessage)
+        
+        XCTAssert(decryptedMessage == plainText)
+        
+        for _ in 0..<100 {
+            let sender: SecureSession
+            let receiver: SecureSession
+            
+            if Bool.random() {
+                sender = senderSecureChat.existingSession(withParticpantIdentity: receiverCard.identity)!
+                receiver = receiverSecureChat.existingSession(withParticpantIdentity: senderCard.identity)!
+            }
+            else {
+                sender = receiverSecureChat.existingSession(withParticpantIdentity: senderCard.identity)!
+                receiver = senderSecureChat.existingSession(withParticpantIdentity: receiverCard.identity)!
             }
             
             let plainText = UUID().uuidString

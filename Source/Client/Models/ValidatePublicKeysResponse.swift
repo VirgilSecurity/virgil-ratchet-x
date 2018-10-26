@@ -11,4 +11,11 @@ import Foundation
 public final class ValidatePublicKeysResponse: NSObject, Decodable {
     public let usedLongTermKeyId: Data?
     public let usedOneTimeKeysIds: [Data]
+    
+    internal init(usedLongTermKeyId: Data?, usedOneTimeKeysIds: [Data]) {
+        self.usedLongTermKeyId = usedLongTermKeyId
+        self.usedOneTimeKeysIds = usedOneTimeKeysIds
+        
+        super.init()
+    }
 }

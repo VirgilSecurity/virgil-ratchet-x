@@ -39,8 +39,11 @@ import VSCRatchet
 import VirgilCryptoApiImpl
 
 @objc(VSRSecureSession) public final class SecureSession: NSObject {
-    private let crypto = VirgilCrypto()
+    @objc public let crypto = VirgilCrypto()
+    @objc public let sessionStorage: SessionStorage
+    
     private let ratchetSession: OpaquePointer
+    @objc public let participantIdentity: String
     
     private static func createSession() throws -> OpaquePointer {
         let kdfInfo = vscr_ratchet_kdf_info_new()!
@@ -73,7 +76,10 @@ import VirgilCryptoApiImpl
     
     // FIXME
     // As receiver
-    internal init(privateKeyProvider: PrivateKeyProvider, receiverIdentityPrivateKey: VirgilPrivateKey, senderIdentityPublicKey: Data, message: Data) throws {
+    internal init(privateKeyProvider: PrivateKeyProvider, sessionStorage: SessionStorage, participantIdentity: String, receiverIdentityPrivateKey: VirgilPrivateKey, senderIdentityPublicKey: Data, message: Data) throws {
+        self.sessionStorage = sessionStorage
+        self.participantIdentity = participantIdentity
+        
         self.ratchetSession = try SecureSession.createSession()
         
         var status: vscr_error_t = vscr_SUCCESS
@@ -136,7 +142,10 @@ import VirgilCryptoApiImpl
     }
     
     // As sender
-    internal init(senderIdentityPrivateKey: Data, receiverIdentityPublicKey: Data, receivedLongTermPublicKey: Data, receiverOneTimePublicKey: Data?) throws {
+    internal init(sessionStorage: SessionStorage, participantIdentity: String, senderIdentityPrivateKey: Data, receiverIdentityPublicKey: Data, receivedLongTermPublicKey: Data, receiverOneTimePublicKey: Data?) throws {
+        self.sessionStorage = sessionStorage
+        self.participantIdentity = participantIdentity
+        
         self.ratchetSession = try SecureSession.createSession()
         
         let senderIdentityPrivateKeyBuf = vsc_buffer_new_with_capacity(32)!
@@ -194,6 +203,8 @@ import VirgilCryptoApiImpl
             throw NSError()
         }
         
+        try self.sessionStorage.storeSession(self)
+        
         return cipherText
     }
     
@@ -211,6 +222,8 @@ import VirgilCryptoApiImpl
         guard status == vscr_SUCCESS else {
             throw NSError()
         }
+        
+        try self.sessionStorage.storeSession(self)
         
         // FIXME
         return String(data: buffer, encoding: .utf8)!

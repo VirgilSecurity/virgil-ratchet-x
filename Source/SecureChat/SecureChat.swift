@@ -45,14 +45,25 @@ import VirgilCryptoApiImpl
     public let client: RatchetClientProtocol
     @objc public let crypto = VirgilCrypto()
     @objc public let privateKeyProvider: PrivateKeyProvider
+    @objc public let sessionStorage: SessionStorage
 
-    public init(identityPrivateKey: VirgilPrivateKey, accessTokenProvider: AccessTokenProvider, client: RatchetClientProtocol, privateKeyProvider: PrivateKeyProvider) {
+    public init(identityPrivateKey: VirgilPrivateKey, accessTokenProvider: AccessTokenProvider, client: RatchetClientProtocol, privateKeyProvider: PrivateKeyProvider, sessionStorage: SessionStorage) {
         self.identityPrivateKey = identityPrivateKey
         self.accessTokenProvider = accessTokenProvider
         self.client = client
         self.privateKeyProvider = privateKeyProvider
+        self.sessionStorage = sessionStorage
 
         super.init()
+    }
+    
+    @objc open func existingSession(withParticpantIdentity particpantIdentity: String) -> SecureSession? {
+        return self.sessionStorage.retrieveSession(participantIdentity: particpantIdentity)
+    }
+    
+    @objc func deleteSession(withParticpantIdentity particpantIdentity: String) throws {
+        // FIXME
+        throw NSError()
     }
     
     @objc open func startNewSessionAsSender(receiverCard: Card) throws -> SecureSession {
@@ -60,11 +71,14 @@ import VirgilCryptoApiImpl
         let getTokenOperation = OperationUtils.makeGetTokenOperation(
             tokenContext: tokenContext, accessTokenProvider: self.accessTokenProvider)
         
-        // FIXME
+        // FIXME: run async
         let token = try getTokenOperation.startSync().getResult()
         
-        // TODO: checkExistingSessionOnStart
-
+        guard self.existingSession(withParticpantIdentity: receiverCard.identity) == nil else {
+            throw NSError()
+        }
+        
+        // FIXME: run async
         let publicKeySet = try self.client.getPublicKeySet(forRecipientIdentity: receiverCard.identity, token: token.stringRepresentation())
         
         guard let identityPublicKey = receiverCard.publicKey as? VirgilPublicKey else {
@@ -86,7 +100,11 @@ import VirgilCryptoApiImpl
         
         let privateKeyData = CUtils.extractRawPrivateKey(self.crypto.exportPrivateKey(self.identityPrivateKey))
         
-        return try SecureSession(senderIdentityPrivateKey: privateKeyData, receiverIdentityPublicKey: publicKeySet.identityPublicKey, receivedLongTermPublicKey: publicKeySet.longtermPublicKey.publicKey, receiverOneTimePublicKey: publicKeySet.onetimePublicKey)
+        let session = try SecureSession(sessionStorage: self.sessionStorage, participantIdentity: receiverCard.identity, senderIdentityPrivateKey: privateKeyData, receiverIdentityPublicKey: publicKeySet.identityPublicKey, receivedLongTermPublicKey: publicKeySet.longtermPublicKey.publicKey, receiverOneTimePublicKey: publicKeySet.onetimePublicKey)
+        
+        try self.sessionStorage.storeSession(session)
+        
+        return session
     }
     
     @objc public func startNewSessionAsReceiver(senderCard: Card, message: Data) throws -> SecureSession {
@@ -94,6 +112,10 @@ import VirgilCryptoApiImpl
             throw NSError()
         }
         
-        return try SecureSession(privateKeyProvider: self.privateKeyProvider, receiverIdentityPrivateKey: self.identityPrivateKey, senderIdentityPublicKey: CUtils.extractRawPublicKey(self.crypto.exportPublicKey(senderIdentityPublicKey)), message: message)
+        let session = try SecureSession(privateKeyProvider: self.privateKeyProvider, sessionStorage: self.sessionStorage, participantIdentity: senderCard.identity, receiverIdentityPrivateKey: self.identityPrivateKey, senderIdentityPublicKey: CUtils.extractRawPublicKey(self.crypto.exportPublicKey(senderIdentityPublicKey)), message: message)
+        
+        try self.sessionStorage.storeSession(session)
+        
+        return session
     }
 }
