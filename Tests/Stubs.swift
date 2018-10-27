@@ -29,19 +29,87 @@ class FakeRamSessionStorage: SessionStorage {
     }
 }
 
-class FakePrivateKeyProvider: PrivateKeyProvider {
-    let db: [Data: Data]
+class FakeLongTermKeysStorage: LongTermKeysStorage {
+    var db: [Data: LongTermKey] = [:]
     
-    init(db: [Data: Data]) {
+    init(db: [Data: LongTermKey]) {
         self.db = db
     }
+
+    func storeKey(_ key: Data, withId id: Data) throws -> LongTermKey {
+        let longTermKey = LongTermKey(identifier: id, key: key, creationDate: Date(), outdatedFrom: nil)
+        self.db[id] = longTermKey
+        return longTermKey
+    }
     
-    func getPrivateKey(withId id: Data) throws -> Data {
-        guard let val = self.db[id] else {
+    func retrieveKey(withId id: Data) throws -> LongTermKey {
+        guard let key = self.db[id] else {
             throw NSError()
         }
         
-        return val
+        return key
+    }
+    
+    func deleteKey(withId id: Data) throws {
+        guard self.db.removeValue(forKey: id) != nil else {
+            throw NSError()
+        }
+    }
+    
+    func retrieveAllKeys() throws -> [LongTermKey] {
+        return [LongTermKey](self.db.values)
+    }
+    
+    func markKeyOutdated(startingFrom date: Date, keyId: Data) throws {
+        guard let key = self.db[keyId] else {
+            throw NSError()
+        }
+        
+        self.db[keyId] = LongTermKey(identifier: keyId, key: key.key, creationDate: key.creationDate, outdatedFrom: date)
+    }
+}
+
+class FakeOneTimeKeysStorage: OneTimeKeysStorage {
+    var db: [Data: OneTimeKey] = [:]
+    
+    init(db: [Data: OneTimeKey]) {
+        self.db = db
+    }
+    
+    func startInteraction() throws { }
+    
+    func stopInteraction() throws { }
+    
+    func storeKey(_ key: Data, withId id: Data) throws -> OneTimeKey {
+        let oneTimeKey = OneTimeKey(identifier: id, key: key, orphanedFrom: nil)
+        self.db[id] = oneTimeKey
+        return oneTimeKey
+    }
+    
+    func retrieveKey(withId id: Data) throws -> OneTimeKey {
+        guard let key = self.db[id] else {
+            throw NSError()
+        }
+        
+        return key
+    }
+    
+    func deleteKey(withId id: Data) throws {
+        guard self.db.removeValue(forKey: id) != nil else {
+            throw NSError()
+        }
+    }
+    
+    func retrieveAllKeys() throws -> [OneTimeKey] {
+        return [OneTimeKey](self.db.values)
+    }
+    
+    func markKeyOrphaned(startingFrom date: Date, keyId: Data) throws {
+        guard let key = self.db[keyId] else {
+            throw NSError()
+        }
+        
+        self.db[keyId] = OneTimeKey(identifier: keyId, key: key.key, orphanedFrom: date)
     }
 }
 
@@ -52,7 +120,7 @@ class FakeClient: RatchetClientProtocol {
         self.publicKeySet = publicKeySet
     }
     
-    func uploadPublicKeys(identityCardId: String?, longtermPublicKey: SignedPublicKey?, onetimePublicKeys: [Data]?, token: String) throws {
+    func uploadPublicKeys(identityCardId: String?, longTermPublicKey: SignedPublicKey?, oneTimePublicKeys: [Data], token: String) throws {
         
     }
     
@@ -60,7 +128,7 @@ class FakeClient: RatchetClientProtocol {
         return 0
     }
     
-    func validatePublicKeys(longTermKeyId: Data, oneTimeKeysIds: [Data], token: String) throws -> ValidatePublicKeysResponse {
+    func validatePublicKeys(longTermKeyId: Data?, oneTimeKeysIds: [Data], token: String) throws -> ValidatePublicKeysResponse {
         return try JSONDecoder().decode(ValidatePublicKeysResponse.self, from: Data())
     }
     
@@ -72,9 +140,9 @@ class FakeClient: RatchetClientProtocol {
 class FakeRamClient: RatchetClientProtocol {
     struct UserStore {
         var identityPublicKey: (VirgilPublicKey, Data)?
-        var longtermPublicKey: SignedPublicKey?
+        var longTermPublicKey: SignedPublicKey?
         var usedLongtermPublicKeys: Set<SignedPublicKey> = []
-        var onetimePublicKeys: Set<Data> = []
+        var oneTimePublicKeys: Set<Data> = []
         var usedOnetimePublicKeys: Set<Data> = []
     }
     
@@ -86,7 +154,7 @@ class FakeRamClient: RatchetClientProtocol {
         self.cardManager = cardManager
     }
     
-    func uploadPublicKeys(identityCardId: String?, longtermPublicKey: SignedPublicKey?, onetimePublicKeys: [Data]?, token: String) throws {
+    func uploadPublicKeys(identityCardId: String?, longTermPublicKey: SignedPublicKey?, oneTimePublicKeys: [Data], token: String) throws {
         guard let jwt = try? Jwt(stringRepresentation: token) else {
             throw NSError()
         }
@@ -107,31 +175,31 @@ class FakeRamClient: RatchetClientProtocol {
             publicKey = existingIdentityPublicKey.0
         }
         
-        if let longtermPublicKey = longtermPublicKey {
-            guard crypto.verifySignature(longtermPublicKey.signature, of: longtermPublicKey.publicKey, with: publicKey) else {
+        if let longTermPublicKey = longTermPublicKey {
+            guard crypto.verifySignature(longTermPublicKey.signature, of: longTermPublicKey.publicKey, with: publicKey) else {
                 throw NSError()
             }
 
-            if let usedLongTermPublicKey = userStore.longtermPublicKey {
+            if let usedLongTermPublicKey = userStore.longTermPublicKey {
                 userStore.usedLongtermPublicKeys.insert(usedLongTermPublicKey)
             }
             
-            userStore.longtermPublicKey = longtermPublicKey
+            userStore.longTermPublicKey = longTermPublicKey
         }
         else {
-            guard userStore.longtermPublicKey != nil else {
+            guard userStore.longTermPublicKey != nil else {
                 throw NSError()
             }
         }
         
-        if let onetimePublicKeys = onetimePublicKeys {
-            let newKeysSet = Set<Data>(onetimePublicKeys)
+        if !oneTimePublicKeys.isEmpty {
+            let newKeysSet = Set<Data>(oneTimePublicKeys)
             
-            guard userStore.onetimePublicKeys.intersection(newKeysSet).isEmpty else {
+            guard userStore.oneTimePublicKeys.intersection(newKeysSet).isEmpty else {
                 throw NSError()
             }
             
-            userStore.onetimePublicKeys.formUnion(newKeysSet)
+            userStore.oneTimePublicKeys.formUnion(newKeysSet)
         }
         
         self.users[jwt.identity()] = userStore
@@ -144,10 +212,10 @@ class FakeRamClient: RatchetClientProtocol {
         
         let userStore = self.users[jwt.identity()] ?? UserStore()
         
-        return userStore.onetimePublicKeys.count
+        return userStore.oneTimePublicKeys.count
     }
     
-    func validatePublicKeys(longTermKeyId: Data, oneTimeKeysIds: [Data], token: String) throws -> ValidatePublicKeysResponse {
+    func validatePublicKeys(longTermKeyId: Data?, oneTimeKeysIds: [Data], token: String) throws -> ValidatePublicKeysResponse {
         guard let jwt = try? Jwt(stringRepresentation: token) else {
             throw NSError()
         }
@@ -156,8 +224,8 @@ class FakeRamClient: RatchetClientProtocol {
         
         let usedLongTermKeyId: Data?
         
-        if let longtermPublicKey = userStore.longtermPublicKey?.publicKey {
-            let hash = self.crypto.computeHash(for: longtermPublicKey, using: .SHA512).subdata(in: 0..<8)
+        if let storedLongTermPublicKey = userStore.longTermPublicKey?.publicKey, let longTermKeyId = longTermKeyId {
+            let hash = self.crypto.computeHash(for: storedLongTermPublicKey, using: .SHA512).subdata(in: 0..<8)
             
             usedLongTermKeyId = hash == longTermKeyId ? nil : longTermKeyId
         }
@@ -177,24 +245,32 @@ class FakeRamClient: RatchetClientProtocol {
             throw NSError()
         }
         
-        var userStore = self.users[jwt.identity()] ?? UserStore()
+        var userStore = self.users[identity] ?? UserStore()
         
         guard let identityPublicKey = userStore.identityPublicKey?.1,
-            let longTermPublicKey = userStore.longtermPublicKey else {
+            let longTermPublicKey = userStore.longTermPublicKey else {
                 throw NSError()
         }
         
         let oneTimePublicKey: Data?
-        if let randomOneTimePublicKey = userStore.onetimePublicKeys.randomElement() {
+        if let randomOneTimePublicKey = userStore.oneTimePublicKeys.randomElement() {
             oneTimePublicKey = randomOneTimePublicKey
-            userStore.onetimePublicKeys.remove(randomOneTimePublicKey)
+            userStore.oneTimePublicKeys.remove(randomOneTimePublicKey)
             
-            self.users[jwt.identity()] = userStore
+            self.users[identity] = userStore
         }
         else {
             oneTimePublicKey = nil
         }
         
-        return PublicKeySet(identityPublicKey: identityPublicKey, longtermPublicKey: longTermPublicKey, onetimePublicKey: oneTimePublicKey)
+        return PublicKeySet(identityPublicKey: identityPublicKey, longTermPublicKey: longTermPublicKey, oneTimePublicKey: oneTimePublicKey)
+    }
+}
+
+class FakeKeysRotator: KeysRotatorProtocol {
+    func rotateKeysOperation() -> GenericOperation<Void> {
+        return CallbackOperation { _, completion in
+            completion(Void(), nil)
+        }
     }
 }

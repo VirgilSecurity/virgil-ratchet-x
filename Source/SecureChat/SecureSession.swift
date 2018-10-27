@@ -76,7 +76,7 @@ import VirgilCryptoApiImpl
     
     // FIXME
     // As receiver
-    internal init(privateKeyProvider: PrivateKeyProvider, sessionStorage: SessionStorage, participantIdentity: String, receiverIdentityPrivateKey: VirgilPrivateKey, senderIdentityPublicKey: Data, message: Data) throws {
+    internal init(longTermKeysStorage: LongTermKeysStorage, oneTimeKeysStorage: OneTimeKeysStorage, sessionStorage: SessionStorage, participantIdentity: String, receiverIdentityPrivateKey: VirgilPrivateKey, senderIdentityPublicKey: Data, message: Data) throws {
         self.sessionStorage = sessionStorage
         self.participantIdentity = participantIdentity
         
@@ -112,16 +112,16 @@ import VirgilCryptoApiImpl
         // CHECK one time is zero
         let receiverOneTimePublicKey = Data(bytesNoCopy: UnsafeMutableRawPointer(mutating: vsc_buffer_bytes(prekeyMessage.pointee.receiver_one_time_key)!), count: vsc_buffer_len(prekeyMessage.pointee.receiver_one_time_key), deallocator: Data.Deallocator.none)
         
-        let receiverLongTermPrivateKey = try privateKeyProvider.getPrivateKey(withId: receiverLongTermPublicKey)
-        let receiverOneTimePrivateKey = try privateKeyProvider.getPrivateKey(withId: receiverOneTimePublicKey)
+        let receiverLongTermPrivateKey = try longTermKeysStorage.retrieveKey(withId: CUtils.computeKeyId(publicKey: receiverLongTermPublicKey))
+        let receiverOneTimePrivateKey = try oneTimeKeysStorage.retrieveKey(withId: CUtils.computeKeyId(publicKey: receiverOneTimePublicKey))
         
         let receiverIdentityPrivateKeyBuf = vsc_buffer_new_with_capacity(32)!
         let receiverLongTermPrivateKeyBuf = vsc_buffer_new_with_capacity(32)!
         let receiverOneTimePrivateKeyBuf = vsc_buffer_new_with_capacity(32)!
         
         try CUtils.copy(data: CUtils.extractRawPrivateKey(self.crypto.exportPrivateKey(receiverIdentityPrivateKey)), buffer: receiverIdentityPrivateKeyBuf)
-        try CUtils.copy(data: receiverLongTermPrivateKey, buffer: receiverLongTermPrivateKeyBuf)
-        try CUtils.copy(data: receiverOneTimePrivateKey, buffer: receiverOneTimePrivateKeyBuf)
+        try CUtils.copy(data: receiverLongTermPrivateKey.key, buffer: receiverLongTermPrivateKeyBuf)
+        try CUtils.copy(data: receiverOneTimePrivateKey.key, buffer: receiverOneTimePrivateKeyBuf)
         
         status = vscr_ratchet_session_respond(self.ratchetSession, senderIdentityPublicKeyBuf, prekeyMessage.pointee.sender_ephemeral_key, regularMessage.pointee.public_key, receiverIdentityPrivateKeyBuf, receiverLongTermPrivateKeyBuf, receiverOneTimePrivateKeyBuf)
         
@@ -137,6 +137,8 @@ import VirgilCryptoApiImpl
         guard status == vscr_SUCCESS else {
             throw NSError()
         }
+        
+        // TODO: Try to decrypt and remove keys
         
         super.init()
     }

@@ -7,9 +7,14 @@
 //
 
 import Foundation
+import VirgilCryptoApiImpl
 import VSCCommon
 
 internal class CUtils {
+    internal static func computeKeyId(publicKey: Data) -> Data {
+        return VirgilCrypto().computeHash(for: publicKey, using: .SHA512).subdata(in: 0..<8)
+    }
+    
     internal static func extractRawPublicKey(_ key: Data) -> Data {
         return Data(key.subdata(in: key.count - 64..<key.count - 32).reversed())
     }

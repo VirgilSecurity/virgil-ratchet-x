@@ -34,16 +34,50 @@
 // Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 //
 
+
 import Foundation
 
-public final class PublicKeySet: NSObject, Decodable {
-    public let identityPublicKey: Data
-    public let longTermPublicKey: SignedPublicKey
-    public let oneTimePublicKey: Data?
+// TODO: Add docs and make public
+internal class Mutex {
+    private var mutex = pthread_mutex_t()
     
-    internal init(identityPublicKey: Data, longTermPublicKey: SignedPublicKey, oneTimePublicKey: Data?) {
-        self.identityPublicKey = identityPublicKey
-        self.longTermPublicKey = longTermPublicKey
-        self.oneTimePublicKey = oneTimePublicKey
+    internal init() {
+        pthread_mutex_init(&self.mutex, nil)
+    }
+    
+    deinit {
+        pthread_mutex_destroy(&self.mutex)
+    }
+    
+    internal func trylock() -> Bool {
+        return pthread_mutex_trylock(&self.mutex) == 0
+    }
+    
+    internal func lock() {
+        pthread_mutex_lock(&self.mutex)
+    }
+    
+    internal func unlock() {
+        pthread_mutex_unlock(&self.mutex)
+    }
+    
+    internal func lock(closure: ()->()) {
+        self.lock()
+        
+        closure()
+        
+        defer {
+            self.unlock()
+        }
+    }
+    
+    internal func lock(closure: () throws -> ()) throws {
+        self.lock()
+        
+        try closure()
+        
+        defer {
+            self.unlock()
+        }
     }
 }

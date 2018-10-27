@@ -44,12 +44,12 @@ public protocol RatchetClientProtocol: class {
     ///
     /// - Parameters:
     ///   - identityCardId: Identity cardId that should be available on Card service
-    ///   - longtermPublicKey: long-term public key + its signature created using identity private key
-    ///   - onetimePublicKeys: one-time public keys (up to 150 keys in the cloud)
+    ///   - longTermPublicKey: long-term public key + its signature created using identity private key
+    ///   - oneTimePublicKeys: one-time public keys (up to 150 keys in the cloud)
     ///   - token: auth token (JWT)
     /// - Returns:
     /// - Throws:
-    func uploadPublicKeys(identityCardId: String?, longtermPublicKey: SignedPublicKey?, onetimePublicKeys: [Data]?, token: String) throws
+    func uploadPublicKeys(identityCardId: String?, longTermPublicKey: SignedPublicKey?, oneTimePublicKeys: [Data], token: String) throws
     
     /// Returns number of active one-time public keys (0..<=150)
     ///
@@ -68,7 +68,7 @@ public protocol RatchetClientProtocol: class {
     ///   - token: auth token (JWT)
     /// - Returns: Object with used keys ids
     /// - Throws:
-    func validatePublicKeys(longTermKeyId: Data, oneTimeKeysIds: [Data], token: String) throws -> ValidatePublicKeysResponse
+    func validatePublicKeys(longTermKeyId: Data?, oneTimeKeysIds: [Data], token: String) throws -> ValidatePublicKeysResponse
     
     /// Returns public keys set for given identity.
     ///

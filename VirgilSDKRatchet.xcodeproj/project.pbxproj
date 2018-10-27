@@ -15,9 +15,6 @@
 		424FAA9F2177511200622A3B /* VSCRatchet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 424FAA9B2177511200622A3B /* VSCRatchet.framework */; };
 		424FAAAF2177520200622A3B /* SecureChat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424FAAA82177520200622A3B /* SecureChat.swift */; };
 		424FAAB02177520200622A3B /* SecureSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424FAAA92177520200622A3B /* SecureSession.swift */; };
-		424FAAB12177520200622A3B /* PublicKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424FAAAC2177520200622A3B /* PublicKeySet.swift */; };
-		424FAAB22177520200622A3B /* RatchetClientProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424FAAAD2177520200622A3B /* RatchetClientProtocol.swift */; };
-		426DB799217A2CE100A44FCA /* PrivateKeyProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 426DB798217A2CE100A44FCA /* PrivateKeyProvider.swift */; };
 		4277644C217E0536005BE167 /* VSCCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 424FAA992177511100622A3B /* VSCCommon.framework */; };
 		4277644D217E0541005BE167 /* VSCFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 424FAA982177511100622A3B /* VSCFoundation.framework */; };
 		4277644E217E0541005BE167 /* VSCPythia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 424FAA9A2177511200622A3B /* VSCPythia.framework */; };
@@ -36,9 +33,6 @@
 		429D79B421779292003B56F8 /* VSCFoundation.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 424FAA982177511100622A3B /* VSCFoundation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		429D79B521779292003B56F8 /* VSCPythia.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 424FAA9A2177511200622A3B /* VSCPythia.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		429D79B621779292003B56F8 /* VSCRatchet.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 424FAA9B2177511200622A3B /* VSCRatchet.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		429D79B8217796DD003B56F8 /* CUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429D79B7217796DD003B56F8 /* CUtils.swift */; };
-		429D79BB217898E0003B56F8 /* SignedPublicKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429D79BA217898E0003B56F8 /* SignedPublicKey.swift */; };
-		429D79BD2178A1FA003B56F8 /* ValidatePublicKeysResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429D79BC2178A1FA003B56F8 /* ValidatePublicKeysResponse.swift */; };
 		429D79C12178B37B003B56F8 /* VirgilCrypto.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 429D799F217791A2003B56F8 /* VirgilCrypto.framework */; };
 		429D79C22178B37B003B56F8 /* VirgilCryptoAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 429D799E217791A2003B56F8 /* VirgilCryptoAPI.framework */; };
 		429D79C32178B37B003B56F8 /* VirgilCryptoApiImpl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 429D79A2217791A2003B56F8 /* VirgilCryptoApiImpl.framework */; };
@@ -46,9 +40,19 @@
 		429D79C52178B37B003B56F8 /* VSCCrypto.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 429D79A1217791A2003B56F8 /* VSCCrypto.framework */; };
 		429D79C82178B71F003B56F8 /* TestConfig.plist in Resources */ = {isa = PBXBuildFile; fileRef = 429D79C72178B71F003B56F8 /* TestConfig.plist */; };
 		429D79CA2178B7B2003B56F8 /* TestConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429D79C92178B7B2003B56F8 /* TestConfig.swift */; };
-		42AB658721810BED00AC4631 /* SessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB658621810BED00AC4631 /* SessionStorage.swift */; };
 		42AB659021810D6F00AC4631 /* Stubs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB658E21810D6C00AC4631 /* Stubs.swift */; };
 		42AB65A6218336F800AC4631 /* SecureSessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65A42183340A00AC4631 /* SecureSessionTests.swift */; };
+		42AB65AD21834F0A00AC4631 /* KeysRotator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65AC21834F0A00AC4631 /* KeysRotator.swift */; };
+		42AB65BB218350F700AC4631 /* PublicKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65B7218350F700AC4631 /* PublicKeySet.swift */; };
+		42AB65BC218350F700AC4631 /* ValidatePublicKeysResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65B8218350F700AC4631 /* ValidatePublicKeysResponse.swift */; };
+		42AB65BD218350F700AC4631 /* SignedPublicKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65B9218350F700AC4631 /* SignedPublicKey.swift */; };
+		42AB65BE218350F700AC4631 /* RatchetClientProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65BA218350F700AC4631 /* RatchetClientProtocol.swift */; };
+		42AB65C42183510000AC4631 /* Mutex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65C12183510000AC4631 /* Mutex.swift */; };
+		42AB65E22184F31F00AC4631 /* LongTermKeysStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65DB2184F31E00AC4631 /* LongTermKeysStorage.swift */; };
+		42AB65E32184F31F00AC4631 /* OneTimeKeysStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65DC2184F31E00AC4631 /* OneTimeKeysStorage.swift */; };
+		42AB65E52184F31F00AC4631 /* SessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65DF2184F31F00AC4631 /* SessionStorage.swift */; };
+		42AB65E72184F34A00AC4631 /* CUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65E62184F34A00AC4631 /* CUtils.swift */; };
+		42AB65EA2185097800AC4631 /* IntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65E82185095700AC4631 /* IntegrationTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -102,22 +106,26 @@
 		424FAA9B2177511200622A3B /* VSCRatchet.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VSCRatchet.framework; path = Crypto/VSCRatchet.framework; sourceTree = "<group>"; };
 		424FAAA82177520200622A3B /* SecureChat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecureChat.swift; sourceTree = "<group>"; };
 		424FAAA92177520200622A3B /* SecureSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecureSession.swift; sourceTree = "<group>"; };
-		424FAAAC2177520200622A3B /* PublicKeySet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublicKeySet.swift; sourceTree = "<group>"; };
-		424FAAAD2177520200622A3B /* RatchetClientProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RatchetClientProtocol.swift; sourceTree = "<group>"; };
-		426DB798217A2CE100A44FCA /* PrivateKeyProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivateKeyProvider.swift; sourceTree = "<group>"; };
 		429D799E217791A2003B56F8 /* VirgilCryptoAPI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilCryptoAPI.framework; path = Carthage/Build/iOS/VirgilCryptoAPI.framework; sourceTree = "<group>"; };
 		429D799F217791A2003B56F8 /* VirgilCrypto.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilCrypto.framework; path = Carthage/Build/iOS/VirgilCrypto.framework; sourceTree = "<group>"; };
 		429D79A0217791A2003B56F8 /* VirgilSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilSDK.framework; path = Carthage/Build/iOS/VirgilSDK.framework; sourceTree = "<group>"; };
 		429D79A1217791A2003B56F8 /* VSCCrypto.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VSCCrypto.framework; path = Carthage/Build/iOS/VSCCrypto.framework; sourceTree = "<group>"; };
 		429D79A2217791A2003B56F8 /* VirgilCryptoApiImpl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilCryptoApiImpl.framework; path = Carthage/Build/iOS/VirgilCryptoApiImpl.framework; sourceTree = "<group>"; };
-		429D79B7217796DD003B56F8 /* CUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CUtils.swift; sourceTree = "<group>"; };
-		429D79BA217898E0003B56F8 /* SignedPublicKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignedPublicKey.swift; sourceTree = "<group>"; };
-		429D79BC2178A1FA003B56F8 /* ValidatePublicKeysResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatePublicKeysResponse.swift; sourceTree = "<group>"; };
 		429D79C72178B71F003B56F8 /* TestConfig.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = TestConfig.plist; sourceTree = "<group>"; };
 		429D79C92178B7B2003B56F8 /* TestConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestConfig.swift; sourceTree = "<group>"; };
-		42AB658621810BED00AC4631 /* SessionStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStorage.swift; sourceTree = "<group>"; };
 		42AB658E21810D6C00AC4631 /* Stubs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stubs.swift; sourceTree = "<group>"; };
 		42AB65A42183340A00AC4631 /* SecureSessionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecureSessionTests.swift; sourceTree = "<group>"; };
+		42AB65AC21834F0A00AC4631 /* KeysRotator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeysRotator.swift; sourceTree = "<group>"; };
+		42AB65B7218350F700AC4631 /* PublicKeySet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublicKeySet.swift; sourceTree = "<group>"; };
+		42AB65B8218350F700AC4631 /* ValidatePublicKeysResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidatePublicKeysResponse.swift; sourceTree = "<group>"; };
+		42AB65B9218350F700AC4631 /* SignedPublicKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignedPublicKey.swift; sourceTree = "<group>"; };
+		42AB65BA218350F700AC4631 /* RatchetClientProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RatchetClientProtocol.swift; sourceTree = "<group>"; };
+		42AB65C12183510000AC4631 /* Mutex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Mutex.swift; sourceTree = "<group>"; };
+		42AB65DB2184F31E00AC4631 /* LongTermKeysStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LongTermKeysStorage.swift; sourceTree = "<group>"; };
+		42AB65DC2184F31E00AC4631 /* OneTimeKeysStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OneTimeKeysStorage.swift; sourceTree = "<group>"; };
+		42AB65DF2184F31F00AC4631 /* SessionStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionStorage.swift; sourceTree = "<group>"; };
+		42AB65E62184F34A00AC4631 /* CUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CUtils.swift; sourceTree = "<group>"; };
+		42AB65E82185095700AC4631 /* IntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrationTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -193,6 +201,7 @@
 				429D79C92178B7B2003B56F8 /* TestConfig.swift */,
 				42AB658E21810D6C00AC4631 /* Stubs.swift */,
 				42AB65A42183340A00AC4631 /* SecureSessionTests.swift */,
+				42AB65E82185095700AC4631 /* IntegrationTests.swift */,
 			);
 			name = Test;
 			path = Tests;
@@ -217,8 +226,11 @@
 		424FAAA52177520200622A3B /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				42AB65DA2184F31E00AC4631 /* KeyStorage */,
+				42AB65DE2184F31F00AC4631 /* SessionStorage */,
+				42AB65B5218350F700AC4631 /* Client */,
 				424FAAA72177520200622A3B /* SecureChat */,
-				424FAAAA2177520200622A3B /* Client */,
+				42AB65BF2183510000AC4631 /* Utils */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -226,32 +238,11 @@
 		424FAAA72177520200622A3B /* SecureChat */ = {
 			isa = PBXGroup;
 			children = (
+				42AB65AB21834EA100AC4631 /* KeysRotation */,
 				424FAAA82177520200622A3B /* SecureChat.swift */,
 				424FAAA92177520200622A3B /* SecureSession.swift */,
-				429D79B7217796DD003B56F8 /* CUtils.swift */,
-				426DB798217A2CE100A44FCA /* PrivateKeyProvider.swift */,
-				42AB658621810BED00AC4631 /* SessionStorage.swift */,
 			);
 			path = SecureChat;
-			sourceTree = "<group>";
-		};
-		424FAAAA2177520200622A3B /* Client */ = {
-			isa = PBXGroup;
-			children = (
-				424FAAAB2177520200622A3B /* Models */,
-				424FAAAD2177520200622A3B /* RatchetClientProtocol.swift */,
-			);
-			path = Client;
-			sourceTree = "<group>";
-		};
-		424FAAAB2177520200622A3B /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				424FAAAC2177520200622A3B /* PublicKeySet.swift */,
-				429D79BA217898E0003B56F8 /* SignedPublicKey.swift */,
-				429D79BC2178A1FA003B56F8 /* ValidatePublicKeysResponse.swift */,
-			);
-			path = Models;
 			sourceTree = "<group>";
 		};
 		429D79C62178B71F003B56F8 /* Data */ = {
@@ -260,6 +251,59 @@
 				429D79C72178B71F003B56F8 /* TestConfig.plist */,
 			);
 			path = Data;
+			sourceTree = "<group>";
+		};
+		42AB65AB21834EA100AC4631 /* KeysRotation */ = {
+			isa = PBXGroup;
+			children = (
+				42AB65AC21834F0A00AC4631 /* KeysRotator.swift */,
+			);
+			path = KeysRotation;
+			sourceTree = "<group>";
+		};
+		42AB65B5218350F700AC4631 /* Client */ = {
+			isa = PBXGroup;
+			children = (
+				42AB65B6218350F700AC4631 /* Models */,
+				42AB65BA218350F700AC4631 /* RatchetClientProtocol.swift */,
+			);
+			path = Client;
+			sourceTree = "<group>";
+		};
+		42AB65B6218350F700AC4631 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				42AB65B7218350F700AC4631 /* PublicKeySet.swift */,
+				42AB65B8218350F700AC4631 /* ValidatePublicKeysResponse.swift */,
+				42AB65B9218350F700AC4631 /* SignedPublicKey.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		42AB65BF2183510000AC4631 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				42AB65E62184F34A00AC4631 /* CUtils.swift */,
+				42AB65C12183510000AC4631 /* Mutex.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		42AB65DA2184F31E00AC4631 /* KeyStorage */ = {
+			isa = PBXGroup;
+			children = (
+				42AB65DB2184F31E00AC4631 /* LongTermKeysStorage.swift */,
+				42AB65DC2184F31E00AC4631 /* OneTimeKeysStorage.swift */,
+			);
+			path = KeyStorage;
+			sourceTree = "<group>";
+		};
+		42AB65DE2184F31F00AC4631 /* SessionStorage */ = {
+			isa = PBXGroup;
+			children = (
+				42AB65DF2184F31F00AC4631 /* SessionStorage.swift */,
+			);
+			path = SessionStorage;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -373,15 +417,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				429D79BB217898E0003B56F8 /* SignedPublicKey.swift in Sources */,
+				42AB65BD218350F700AC4631 /* SignedPublicKey.swift in Sources */,
+				42AB65AD21834F0A00AC4631 /* KeysRotator.swift in Sources */,
+				42AB65E22184F31F00AC4631 /* LongTermKeysStorage.swift in Sources */,
+				42AB65BB218350F700AC4631 /* PublicKeySet.swift in Sources */,
 				424FAAAF2177520200622A3B /* SecureChat.swift in Sources */,
-				426DB799217A2CE100A44FCA /* PrivateKeyProvider.swift in Sources */,
+				42AB65C42183510000AC4631 /* Mutex.swift in Sources */,
+				42AB65E52184F31F00AC4631 /* SessionStorage.swift in Sources */,
 				424FAAB02177520200622A3B /* SecureSession.swift in Sources */,
-				42AB658721810BED00AC4631 /* SessionStorage.swift in Sources */,
-				429D79B8217796DD003B56F8 /* CUtils.swift in Sources */,
-				424FAAB22177520200622A3B /* RatchetClientProtocol.swift in Sources */,
-				424FAAB12177520200622A3B /* PublicKeySet.swift in Sources */,
-				429D79BD2178A1FA003B56F8 /* ValidatePublicKeysResponse.swift in Sources */,
+				42AB65E72184F34A00AC4631 /* CUtils.swift in Sources */,
+				42AB65E32184F31F00AC4631 /* OneTimeKeysStorage.swift in Sources */,
+				42AB65BE218350F700AC4631 /* RatchetClientProtocol.swift in Sources */,
+				42AB65BC218350F700AC4631 /* ValidatePublicKeysResponse.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -389,6 +436,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				42AB65EA2185097800AC4631 /* IntegrationTests.swift in Sources */,
 				42AB659021810D6F00AC4631 /* Stubs.swift in Sources */,
 				429D79CA2178B7B2003B56F8 /* TestConfig.swift in Sources */,
 				42AB65A6218336F800AC4631 /* SecureSessionTests.swift in Sources */,
