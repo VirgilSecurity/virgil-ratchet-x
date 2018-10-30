@@ -88,6 +88,7 @@ class KeysRotator {
             
             let completionWrapper: (Void?, Error?) -> () = {
                 self.mutex.unlock()
+                self.oneTimeKeysStorage.stopInteraction()
                 Log.debug("Completed keys' rotation")
                 
                 completion($0, $1)
@@ -99,16 +100,16 @@ class KeysRotator {
                 let now = Date()
                 
                 // TODO: Parallelize
-                
-                try self.oneTimeKeysStorage.startInteraction()
-                
+                self.oneTimeKeysStorage.startInteraction()
                 let oneTimeKeys = try self.oneTimeKeysStorage.retrieveAllKeys()
                 var oneTimeKeysIds = [Data]()
                 oneTimeKeysIds.reserveCapacity(oneTimeKeys.count)
                 for oneTimeKey in oneTimeKeys {
-                    if let orphanedFrom = oneTimeKey.orphanedFrom, orphanedFrom + self.orphanedOneTimeKeyTtl < now {
-                        Log.debug("Removing orphaned one-time key \(oneTimeKey.identifier.hexEncodedString())")
-                        try self.oneTimeKeysStorage.deleteKey(withId: oneTimeKey.identifier)
+                    if let orphanedFrom = oneTimeKey.orphanedFrom {
+                        if orphanedFrom + self.orphanedOneTimeKeyTtl < now {
+                            Log.debug("Removing orphaned one-time key \(oneTimeKey.identifier.hexEncodedString())")
+                            try self.oneTimeKeysStorage.deleteKey(withId: oneTimeKey.identifier)
+                        }
                     }
                     else {
                         oneTimeKeysIds.append(oneTimeKey.identifier)
@@ -141,7 +142,7 @@ class KeysRotator {
                 }
                 
                 Log.debug("Validating local keys")
-                let validateResponse = try self.client.validatePublicKeys(longTermKeyId: lastLongTermKey?.identifier, oneTimeKeysIds: oneTimeKeys.map { $0.identifier }, token: token.stringRepresentation())
+                let validateResponse = try self.client.validatePublicKeys(longTermKeyId: lastLongTermKey?.identifier, oneTimeKeysIds: oneTimeKeysIds, token: token.stringRepresentation())
                 
                 for usedOneTimeKeyId in validateResponse.usedOneTimeKeysIds {
                     Log.debug("Marking one-time key as orhpaned \(usedOneTimeKeyId.hexEncodedString())")
@@ -169,7 +170,7 @@ class KeysRotator {
                     longTermSignedPublicKey = nil
                 }
                 
-                let numberOfOneTimeKeysToGenerate = max(self.desiredNumberOfOneTimeKeys - (oneTimeKeys.count - validateResponse.usedOneTimeKeysIds.count), 0)
+                let numberOfOneTimeKeysToGenerate = max(self.desiredNumberOfOneTimeKeys - (oneTimeKeysIds.count - validateResponse.usedOneTimeKeysIds.count), 0)
                 
                 Log.debug("Generating \(numberOfOneTimeKeysToGenerate) one-time keys")
                 let oneTimePublicKeys: [Data]
@@ -195,9 +196,6 @@ class KeysRotator {
                 
                 Log.debug("Uploading keys")
                 try self.client.uploadPublicKeys(identityCardId: self.identityCardId, longTermPublicKey: longTermSignedPublicKey, oneTimePublicKeys: oneTimePublicKeys, token: token.stringRepresentation())
-                
-                // FIXME
-                try self.oneTimeKeysStorage.stopInteraction()
                 
                 completionWrapper(Void(), nil)
             }
