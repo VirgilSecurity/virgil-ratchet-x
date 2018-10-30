@@ -76,9 +76,9 @@ class FakeOneTimeKeysStorage: OneTimeKeysStorage {
         self.db = db
     }
     
-    func startInteraction() throws { }
+    func startInteraction() { }
     
-    func stopInteraction() throws { }
+    func stopInteraction() { }
     
     func storeKey(_ key: Data, withId id: Data) throws -> OneTimeKey {
         let oneTimeKey = OneTimeKey(identifier: id, key: key, orphanedFrom: nil)

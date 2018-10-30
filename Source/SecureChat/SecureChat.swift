@@ -43,7 +43,7 @@ import VirgilCryptoApiImpl
     @objc public let accessTokenProvider: AccessTokenProvider
     @objc public let identityPrivateKey: VirgilPrivateKey
     public let client: RatchetClientProtocol
-    @objc public let crypto = VirgilCrypto()
+    @objc public let crypto = VirgilCrypto(defaultKeyType: .EC_CURVE25519, useSHA256Fingerprints: false)
     @objc public let longTermKeysStorage: LongTermKeysStorage
     @objc public let oneTimeKeysStorage: OneTimeKeysStorage
     @objc public let sessionStorage: SessionStorage
@@ -132,30 +132,99 @@ import VirgilCryptoApiImpl
         }
         
         if publicKeySet.oneTimePublicKey == nil {
-            // TODO: Weak session warning
+            Log.error("Creating weak session with \(receiverCard.identity)")
         }
         
         let privateKeyData = CUtils.extractRawPrivateKey(self.crypto.exportPrivateKey(self.identityPrivateKey))
         
-        let session = try SecureSession(sessionStorage: self.sessionStorage, participantIdentity: receiverCard.identity, senderIdentityPrivateKey: privateKeyData, receiverIdentityPublicKey: publicKeySet.identityPublicKey, receivedLongTermPublicKey: publicKeySet.longTermPublicKey.publicKey, receiverOneTimePublicKey: publicKeySet.oneTimePublicKey)
+        let session = try SecureSession(sessionStorage: self.sessionStorage,
+                                        participantIdentity: receiverCard.identity,
+                                        senderIdentityPrivateKey: privateKeyData,
+                                        receiverIdentityPublicKey: publicKeySet.identityPublicKey,
+                                        receiverLongTermPublicKey: publicKeySet.longTermPublicKey.publicKey,
+                                        receiverOneTimePublicKey: publicKeySet.oneTimePublicKey)
         
         try self.sessionStorage.storeSession(session)
         
         return session
     }
     
-    @objc public func startNewSessionAsReceiver(senderCard: Card, message: Data) throws -> SecureSession {
+    private let queue = DispatchQueue(label: "VSRSecureChat", qos: .background)
+    private func replaceOneTimeKey(withId receiverOneTimeKeyId: Data) {
+        Log.debug("Adding one time key")
+
+        self.queue.async {
+            do {
+                let keyPair = try self.crypto.generateKeyPair()
+                
+                let oneTimePrivateKey = CUtils.extractRawPrivateKey(self.crypto.exportPrivateKey(keyPair.privateKey))
+                let oneTimePublicKey = CUtils.extractRawPublicKey(self.crypto.exportPublicKey(keyPair.publicKey))
+                let keyId = CUtils.computeKeyId(publicKey: oneTimePublicKey)
+                
+                try self.oneTimeKeysStorage.deleteKey(withId: receiverOneTimeKeyId)
+                _ = try self.oneTimeKeysStorage.storeKey(oneTimePrivateKey, withId: keyId)
+                
+                let token = try OperationUtils.makeGetTokenOperation(tokenContext: TokenContext(service: "ratchet", operation: "post"), accessTokenProvider: self.accessTokenProvider).startSync().getResult()
+                
+                try self.client.uploadPublicKeys(identityCardId: nil, longTermPublicKey: nil, oneTimePublicKeys: [oneTimePublicKey], token: token.stringRepresentation())
+                
+                try self.client.uploadPublicKeys(identityCardId: nil, longTermPublicKey: nil, oneTimePublicKeys: [oneTimePublicKey], token: token.stringRepresentation())
+                
+                Log.debug("Added one-time key successfully")
+            }
+            catch {
+                Log.error("Error adding one-time key")
+            }
+        }
+    }
+    
+    @objc public func startNewSessionAsReceiver(senderCard: Card, ratchetMessage: UnsafePointer<vscr_ratchet_message_t>) throws -> SecureSession {
         guard let senderIdentityPublicKey = senderCard.publicKey as? VirgilPublicKey else {
             throw NSError()
         }
         
-        let session = try SecureSession(longTermKeysStorage: self.longTermKeysStorage,
-                                        oneTimeKeysStorage: self.oneTimeKeysStorage,
-                                        sessionStorage: self.sessionStorage,
+        guard ratchetMessage.pointee.type == vscr_ratchet_message_TYPE_PREKEY else {
+            throw NSError()
+        }
+        
+        // FIXME
+        guard let prekeyMessage = vscr_ratchet_prekey_message_deserialize(vsc_buffer_data(ratchetMessage.pointee.message), nil) else {
+            throw NSError()
+        }
+        
+        // FIXME
+        guard let regularMessage = vscr_ratchet_regular_message_deserialize(vsc_buffer_data(prekeyMessage.pointee.message), nil) else {
+            throw NSError()
+        }
+        
+        let receiverLongTermPublicKey = Data(bytesNoCopy: UnsafeMutableRawPointer(mutating: vsc_buffer_bytes(prekeyMessage.pointee.receiver_long_term_key)!), count: vsc_buffer_len(prekeyMessage.pointee.receiver_long_term_key), deallocator: Data.Deallocator.none)
+        
+        // CHECK one time is zero
+        let receiverOneTimePublicKey = Data(bytesNoCopy: UnsafeMutableRawPointer(mutating: vsc_buffer_bytes(prekeyMessage.pointee.receiver_one_time_key)!), count: vsc_buffer_len(prekeyMessage.pointee.receiver_one_time_key), deallocator: Data.Deallocator.none)
+        
+        let receiverLongTermPrivateKey = try self.longTermKeysStorage.retrieveKey(withId: CUtils.computeKeyId(publicKey: receiverLongTermPublicKey))
+        let receiverOneTimeKeyId = CUtils.computeKeyId(publicKey: receiverOneTimePublicKey)
+        
+        self.oneTimeKeysStorage.startInteraction()
+        let receiverOneTimePrivateKey = try self.oneTimeKeysStorage.retrieveKey(withId: receiverOneTimeKeyId)
+        
+        let session = try SecureSession(sessionStorage: self.sessionStorage,
                                         participantIdentity: senderCard.identity,
                                         receiverIdentityPrivateKey: self.identityPrivateKey,
+                                        receiverLongTermPrivateKey: receiverLongTermPrivateKey,
+                                        receiverOneTimePrivateKey: receiverOneTimePrivateKey,
                                         senderIdentityPublicKey: CUtils.extractRawPublicKey(self.crypto.exportPublicKey(senderIdentityPublicKey)),
-                                        message: message)
+                                        senderEphemeralPublicKey: prekeyMessage.pointee.sender_ephemeral_key,
+                                        ratchetPublicKey: regularMessage.pointee.public_key,
+                                        cipherText: vsc_buffer_data(regularMessage.pointee.cipher_text))
+
+        self.replaceOneTimeKey(withId: receiverOneTimeKeyId)
+        
+        defer {
+            self.oneTimeKeysStorage.stopInteraction()
+            vscr_ratchet_regular_message_delete(regularMessage)
+            vscr_ratchet_prekey_message_delete(prekeyMessage)
+        }
         
         try self.sessionStorage.storeSession(session)
         

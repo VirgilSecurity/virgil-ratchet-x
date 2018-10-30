@@ -76,7 +76,15 @@ import VirgilCryptoApiImpl
     
     // FIXME
     // As receiver
-    internal init(longTermKeysStorage: LongTermKeysStorage, oneTimeKeysStorage: OneTimeKeysStorage, sessionStorage: SessionStorage, participantIdentity: String, receiverIdentityPrivateKey: VirgilPrivateKey, senderIdentityPublicKey: Data, message: Data) throws {
+    internal init(sessionStorage: SessionStorage,
+                  participantIdentity: String,
+                  receiverIdentityPrivateKey: VirgilPrivateKey,
+                  receiverLongTermPrivateKey: LongTermKey,
+                  receiverOneTimePrivateKey: OneTimeKey,
+                  senderIdentityPublicKey: Data,
+                  senderEphemeralPublicKey: OpaquePointer, //FIXME
+                  ratchetPublicKey: OpaquePointer, //FIXME
+                  cipherText: vsc_data_t) throws {
         self.sessionStorage = sessionStorage
         self.participantIdentity = participantIdentity
         
@@ -84,36 +92,9 @@ import VirgilCryptoApiImpl
         
         var status: vscr_error_t = vscr_SUCCESS
         
-        // FIXME
-        guard let ratchetMessage = vscr_ratchet_message_deserialize(CUtils.bindForRead(data: message), nil) else {
-            throw NSError()
-        }
-        
-        guard ratchetMessage.pointee.type == vscr_ratchet_message_TYPE_PREKEY else {
-            throw NSError()
-        }
-        
-        // FIXME
-        guard let prekeyMessage = vscr_ratchet_prekey_message_deserialize(vsc_buffer_data(ratchetMessage.pointee.message), nil) else {
-            throw NSError()
-        }
-        
-        // FIXME
-        guard let regularMessage = vscr_ratchet_regular_message_deserialize(vsc_buffer_data(prekeyMessage.pointee.message), nil) else {
-            throw NSError()
-        }
-        
         let senderIdentityPublicKeyBuf = vsc_buffer_new_with_capacity(32)!
         
         try CUtils.copy(data: senderIdentityPublicKey, buffer: senderIdentityPublicKeyBuf)
-        
-        let receiverLongTermPublicKey = Data(bytesNoCopy: UnsafeMutableRawPointer(mutating: vsc_buffer_bytes(prekeyMessage.pointee.receiver_long_term_key)!), count: vsc_buffer_len(prekeyMessage.pointee.receiver_long_term_key), deallocator: Data.Deallocator.none)
-        
-        // CHECK one time is zero
-        let receiverOneTimePublicKey = Data(bytesNoCopy: UnsafeMutableRawPointer(mutating: vsc_buffer_bytes(prekeyMessage.pointee.receiver_one_time_key)!), count: vsc_buffer_len(prekeyMessage.pointee.receiver_one_time_key), deallocator: Data.Deallocator.none)
-        
-        let receiverLongTermPrivateKey = try longTermKeysStorage.retrieveKey(withId: CUtils.computeKeyId(publicKey: receiverLongTermPublicKey))
-        let receiverOneTimePrivateKey = try oneTimeKeysStorage.retrieveKey(withId: CUtils.computeKeyId(publicKey: receiverOneTimePublicKey))
         
         let receiverIdentityPrivateKeyBuf = vsc_buffer_new_with_capacity(32)!
         let receiverLongTermPrivateKeyBuf = vsc_buffer_new_with_capacity(32)!
@@ -123,16 +104,13 @@ import VirgilCryptoApiImpl
         try CUtils.copy(data: receiverLongTermPrivateKey.key, buffer: receiverLongTermPrivateKeyBuf)
         try CUtils.copy(data: receiverOneTimePrivateKey.key, buffer: receiverOneTimePrivateKeyBuf)
         
-        status = vscr_ratchet_session_respond(self.ratchetSession, senderIdentityPublicKeyBuf, prekeyMessage.pointee.sender_ephemeral_key, regularMessage.pointee.public_key, receiverIdentityPrivateKeyBuf, receiverLongTermPrivateKeyBuf, receiverOneTimePrivateKeyBuf)
+        status = vscr_ratchet_session_respond(self.ratchetSession, senderIdentityPublicKeyBuf, senderEphemeralPublicKey, ratchetPublicKey, receiverIdentityPrivateKeyBuf, receiverLongTermPrivateKeyBuf, receiverOneTimePrivateKeyBuf, cipherText)
         
         vsc_buffer_delete(senderIdentityPublicKeyBuf)
         
         vsc_buffer_delete(receiverIdentityPrivateKeyBuf)
         vsc_buffer_delete(receiverLongTermPrivateKeyBuf)
         vsc_buffer_delete(receiverOneTimePrivateKeyBuf)
-        
-        vscr_ratchet_regular_message_delete(regularMessage)
-        vscr_ratchet_prekey_message_delete(prekeyMessage)
         
         guard status == vscr_SUCCESS else {
             throw NSError()
@@ -144,21 +122,22 @@ import VirgilCryptoApiImpl
     }
     
     // As sender
-    internal init(sessionStorage: SessionStorage, participantIdentity: String, senderIdentityPrivateKey: Data, receiverIdentityPublicKey: Data, receivedLongTermPublicKey: Data, receiverOneTimePublicKey: Data?) throws {
+    internal init(sessionStorage: SessionStorage,
+                  participantIdentity: String,
+                  senderIdentityPrivateKey: Data,
+                  receiverIdentityPublicKey: Data,
+                  receiverLongTermPublicKey: Data,
+                  receiverOneTimePublicKey: Data?) throws {
         self.sessionStorage = sessionStorage
         self.participantIdentity = participantIdentity
         
         self.ratchetSession = try SecureSession.createSession()
         
-        let senderIdentityPrivateKeyBuf = vsc_buffer_new_with_capacity(32)!
-        let receiverIdentityPublicKeyBuf = vsc_buffer_new_with_capacity(32)!
-        let receivedLongTermPublicKeyBuf = vsc_buffer_new_with_capacity(32)!
+        let receiverLongTermPublicKeyBuf = vsc_buffer_new_with_capacity(32)!
         let receiverOneTimePublicKeyBuf: OpaquePointer?
         
         // FIXME
-        try CUtils.copy(data: senderIdentityPrivateKey, buffer: senderIdentityPrivateKeyBuf)
-        try CUtils.copy(data: receiverIdentityPublicKey, buffer: receiverIdentityPublicKeyBuf)
-        try CUtils.copy(data: receivedLongTermPublicKey, buffer: receivedLongTermPublicKeyBuf)
+        try CUtils.copy(data: receiverLongTermPublicKey, buffer: receiverLongTermPublicKeyBuf)
         
         if let receiverOneTimePublicKey = receiverOneTimePublicKey {
             receiverOneTimePublicKeyBuf = vsc_buffer_new_with_capacity(32)!
@@ -168,11 +147,9 @@ import VirgilCryptoApiImpl
             receiverOneTimePublicKeyBuf = nil
         }
         
-        let status = vscr_ratchet_session_initiate(self.ratchetSession, senderIdentityPrivateKeyBuf, receiverIdentityPublicKeyBuf, receivedLongTermPublicKeyBuf, receiverOneTimePublicKeyBuf)
+        let status = vscr_ratchet_session_initiate(self.ratchetSession, CUtils.bindForRead(data: senderIdentityPrivateKey), CUtils.bindForRead(data: receiverIdentityPublicKey), receiverLongTermPublicKeyBuf, receiverOneTimePublicKeyBuf)
         
-        vsc_buffer_delete(senderIdentityPrivateKeyBuf);
-        vsc_buffer_delete(receiverIdentityPublicKeyBuf);
-        vsc_buffer_delete(receivedLongTermPublicKeyBuf);
+        vsc_buffer_delete(receiverLongTermPublicKeyBuf);
         vsc_buffer_delete(receiverOneTimePublicKeyBuf);
         
         guard status == vscr_SUCCESS else {
