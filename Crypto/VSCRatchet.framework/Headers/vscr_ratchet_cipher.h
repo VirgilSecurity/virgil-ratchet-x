@@ -105,6 +105,12 @@ struct vscr_ratchet_cipher_t {
 };
 
 //
+//  Return size of 'vscr_ratchet_cipher_t'.
+//
+VSCR_PUBLIC size_t
+vscr_ratchet_cipher_ctx_size(void);
+
+//
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
@@ -121,6 +127,9 @@ vscr_ratchet_cipher_cleanup(vscr_ratchet_cipher_t *ratchet_cipher_ctx);
 //
 VSCR_PUBLIC vscr_ratchet_cipher_t *
 vscr_ratchet_cipher_new(void);
+
+VSCR_PUBLIC vscr_ratchet_cipher_t *
+vscr_ratchet_cipher_new_with_members(vsc_data_t kdf_info);
 
 //
 //  Release all inner resources and deallocate context if needed.
