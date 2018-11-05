@@ -1,5 +1,10 @@
-//
-// Copyright (C) 2015-2018 Virgil Security Inc.
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>FILEHEADER</key>
+	<string>
+// Copyright (C) 2015-___YEAR___ Virgil Security Inc.
 //
 // All rights reserved.
 //
@@ -19,7 +24,7 @@
 //     contributors may be used to endorse or promote products derived from
 //     this software without specific prior written permission.
 //
-// THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+// THIS SOFTWARE IS PROVIDED BY THE AUTHOR &apos;&apos;AS IS&apos;&apos; AND ANY EXPRESS OR
 // IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 // WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
 // DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
@@ -31,19 +36,7 @@
 // IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-// Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
-//
-
-import Foundation
-
-public final class ValidatePublicKeysResponse: NSObject, Decodable {
-    public let usedLongTermKeyId: Data?
-    public let usedOneTimeKeysIds: [Data]
-    
-    internal init(usedLongTermKeyId: Data?, usedOneTimeKeysIds: [Data]) {
-        self.usedLongTermKeyId = usedLongTermKeyId
-        self.usedOneTimeKeysIds = usedOneTimeKeysIds
-        
-        super.init()
-    }
-}
+// Lead Maintainer: Virgil Security Inc. &lt;support@virgilsecurity.com&gt;
+//</string>
+</dict>
+</plist>
