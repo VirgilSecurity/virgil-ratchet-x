@@ -7,6 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		421B43CD2190650500D4F496 /* KeychainLongTermKeyStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421B43CC2190650500D4F496 /* KeychainLongTermKeyStorage.swift */; };
+		421B43D62190A82400D4F496 /* KeychainStorageProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421B43D42190A82400D4F496 /* KeychainStorageProtocol.swift */; };
+		421B43D72190A82400D4F496 /* KeychainStorageWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421B43D52190A82400D4F496 /* KeychainStorageWrapper.swift */; };
+		421B43EB2190AF5A00D4F496 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421B43EA2190AF5A00D4F496 /* AppDelegate.swift */; };
+		421B43ED2190AF5A00D4F496 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421B43EC2190AF5A00D4F496 /* ViewController.swift */; };
+		421B43F02190AF5A00D4F496 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 421B43EE2190AF5A00D4F496 /* Main.storyboard */; };
+		421B43F22190AF5B00D4F496 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 421B43F12190AF5B00D4F496 /* Assets.xcassets */; };
+		421B43F52190AF5B00D4F496 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 421B43F32190AF5B00D4F496 /* LaunchScreen.storyboard */; };
 		424FAA102177506100622A3B /* VirgilSDKRatchet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 424FAA062177506100622A3B /* VirgilSDKRatchet.framework */; };
 		424FAA172177506100622A3B /* VirgilSDKRatchet.h in Headers */ = {isa = PBXBuildFile; fileRef = 424FAA092177506100622A3B /* VirgilSDKRatchet.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		424FAA9C2177511200622A3B /* VSCFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 424FAA982177511100622A3B /* VSCFoundation.framework */; };
@@ -56,6 +64,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		421B43FA2190AF6000D4F496 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 424FA9FD2177506100622A3B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 421B43E72190AF5900D4F496;
+			remoteInfo = "RatchetTestApp iOS";
+		};
 		424FAA112177506100622A3B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 424FA9FD2177506100622A3B /* Project object */;
@@ -96,6 +111,16 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		421B43CC2190650500D4F496 /* KeychainLongTermKeyStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainLongTermKeyStorage.swift; sourceTree = "<group>"; };
+		421B43D42190A82400D4F496 /* KeychainStorageProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainStorageProtocol.swift; sourceTree = "<group>"; };
+		421B43D52190A82400D4F496 /* KeychainStorageWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainStorageWrapper.swift; sourceTree = "<group>"; };
+		421B43E82190AF5900D4F496 /* RatchetTestApp iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "RatchetTestApp iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		421B43EA2190AF5A00D4F496 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		421B43EC2190AF5A00D4F496 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		421B43EF2190AF5A00D4F496 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		421B43F12190AF5B00D4F496 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		421B43F42190AF5B00D4F496 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		421B43F62190AF5B00D4F496 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		424FAA062177506100622A3B /* VirgilSDKRatchet.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = VirgilSDKRatchet.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		424FAA092177506100622A3B /* VirgilSDKRatchet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VirgilSDKRatchet.h; sourceTree = "<group>"; };
 		424FAA0A2177506100622A3B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -129,6 +154,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		421B43E52190AF5900D4F496 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		424FAA032177506100622A3B /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -165,12 +197,26 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		421B43E92190AF5900D4F496 /* RatchetTestApp iOS */ = {
+			isa = PBXGroup;
+			children = (
+				421B43EA2190AF5A00D4F496 /* AppDelegate.swift */,
+				421B43EC2190AF5A00D4F496 /* ViewController.swift */,
+				421B43EE2190AF5A00D4F496 /* Main.storyboard */,
+				421B43F12190AF5B00D4F496 /* Assets.xcassets */,
+				421B43F32190AF5B00D4F496 /* LaunchScreen.storyboard */,
+				421B43F62190AF5B00D4F496 /* Info.plist */,
+			);
+			path = "RatchetTestApp iOS";
+			sourceTree = "<group>";
+		};
 		424FA9FC2177506100622A3B = {
 			isa = PBXGroup;
 			children = (
 				424FAA082177506100622A3B /* VirgilSDKRatchet */,
 				424FAAA52177520200622A3B /* Source */,
 				424FAA132177506100622A3B /* Test */,
+				421B43E92190AF5900D4F496 /* RatchetTestApp iOS */,
 				424FAA072177506100622A3B /* Products */,
 				424FAA972177511100622A3B /* Frameworks */,
 			);
@@ -181,6 +227,7 @@
 			children = (
 				424FAA062177506100622A3B /* VirgilSDKRatchet.framework */,
 				424FAA0F2177506100622A3B /* VirgilSDKRatchetTests.xctest */,
+				421B43E82190AF5900D4F496 /* RatchetTestApp iOS.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -292,8 +339,11 @@
 		42AB65DA2184F31E00AC4631 /* KeyStorage */ = {
 			isa = PBXGroup;
 			children = (
+				421B43D42190A82400D4F496 /* KeychainStorageProtocol.swift */,
+				421B43D52190A82400D4F496 /* KeychainStorageWrapper.swift */,
 				42AB65DB2184F31E00AC4631 /* LongTermKeysStorage.swift */,
 				42AB65DC2184F31E00AC4631 /* OneTimeKeysStorage.swift */,
+				421B43CC2190650500D4F496 /* KeychainLongTermKeyStorage.swift */,
 			);
 			path = KeyStorage;
 			sourceTree = "<group>";
@@ -320,6 +370,23 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		421B43E72190AF5900D4F496 /* RatchetTestApp iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 421B43F72190AF5B00D4F496 /* Build configuration list for PBXNativeTarget "RatchetTestApp iOS" */;
+			buildPhases = (
+				421B43E42190AF5900D4F496 /* Sources */,
+				421B43E52190AF5900D4F496 /* Frameworks */,
+				421B43E62190AF5900D4F496 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "RatchetTestApp iOS";
+			productName = "RatchetTestApp iOS";
+			productReference = 421B43E82190AF5900D4F496 /* RatchetTestApp iOS.app */;
+			productType = "com.apple.product-type.application";
+		};
 		424FAA052177506100622A3B /* VirgilSDKRatchet */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 424FAA1A2177506100622A3B /* Build configuration list for PBXNativeTarget "VirgilSDKRatchet" */;
@@ -352,6 +419,7 @@
 			);
 			dependencies = (
 				424FAA122177506100622A3B /* PBXTargetDependency */,
+				421B43FB2190AF6000D4F496 /* PBXTargetDependency */,
 			);
 			name = VirgilSDKRatchetTests;
 			productName = VirgilSDKRatchetTests;
@@ -364,15 +432,19 @@
 		424FA9FD2177506100622A3B /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1000;
+				LastSwiftUpdateCheck = 1010;
 				LastUpgradeCheck = 1000;
 				ORGANIZATIONNAME = "Oleksandr Deundiak";
 				TargetAttributes = {
+					421B43E72190AF5900D4F496 = {
+						CreatedOnToolsVersion = 10.1;
+					};
 					424FAA052177506100622A3B = {
 						CreatedOnToolsVersion = 10.0;
 					};
 					424FAA0E2177506100622A3B = {
 						CreatedOnToolsVersion = 10.0;
+						TestTargetID = 421B43E72190AF5900D4F496;
 					};
 				};
 			};
@@ -382,6 +454,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = 424FA9FC2177506100622A3B;
 			productRefGroup = 424FAA072177506100622A3B /* Products */;
@@ -390,11 +463,22 @@
 			targets = (
 				424FAA052177506100622A3B /* VirgilSDKRatchet */,
 				424FAA0E2177506100622A3B /* VirgilSDKRatchetTests */,
+				421B43E72190AF5900D4F496 /* RatchetTestApp iOS */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		421B43E62190AF5900D4F496 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				421B43F52190AF5B00D4F496 /* LaunchScreen.storyboard in Resources */,
+				421B43F22190AF5B00D4F496 /* Assets.xcassets in Resources */,
+				421B43F02190AF5A00D4F496 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		424FAA042177506100622A3B /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -413,20 +497,32 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		421B43E42190AF5900D4F496 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				421B43ED2190AF5A00D4F496 /* ViewController.swift in Sources */,
+				421B43EB2190AF5A00D4F496 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		424FAA022177506100622A3B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				42AB65BD218350F700AC4631 /* SignedPublicKey.swift in Sources */,
+				421B43D62190A82400D4F496 /* KeychainStorageProtocol.swift in Sources */,
 				42AB65AD21834F0A00AC4631 /* KeysRotator.swift in Sources */,
 				42AB65E22184F31F00AC4631 /* LongTermKeysStorage.swift in Sources */,
 				42AB65BB218350F700AC4631 /* PublicKeySet.swift in Sources */,
+				421B43D72190A82400D4F496 /* KeychainStorageWrapper.swift in Sources */,
 				424FAAAF2177520200622A3B /* SecureChat.swift in Sources */,
 				42AB65C42183510000AC4631 /* Mutex.swift in Sources */,
 				42AB65E52184F31F00AC4631 /* SessionStorage.swift in Sources */,
 				424FAAB02177520200622A3B /* SecureSession.swift in Sources */,
 				42AB65E72184F34A00AC4631 /* CUtils.swift in Sources */,
 				42AB65E32184F31F00AC4631 /* OneTimeKeysStorage.swift in Sources */,
+				421B43CD2190650500D4F496 /* KeychainLongTermKeyStorage.swift in Sources */,
 				42AB65BE218350F700AC4631 /* RatchetClientProtocol.swift in Sources */,
 				42AB65BC218350F700AC4631 /* ValidatePublicKeysResponse.swift in Sources */,
 			);
@@ -446,6 +542,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		421B43FB2190AF6000D4F496 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 421B43E72190AF5900D4F496 /* RatchetTestApp iOS */;
+			targetProxy = 421B43FA2190AF6000D4F496 /* PBXContainerItemProxy */;
+		};
 		424FAA122177506100622A3B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 424FAA052177506100622A3B /* VirgilSDKRatchet */;
@@ -453,7 +554,62 @@
 		};
 /* End PBXTargetDependency section */
 
+/* Begin PBXVariantGroup section */
+		421B43EE2190AF5A00D4F496 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				421B43EF2190AF5A00D4F496 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		421B43F32190AF5B00D4F496 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				421B43F42190AF5B00D4F496 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
 /* Begin XCBuildConfiguration section */
+		421B43F82190AF5B00D4F496 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = "RatchetTestApp iOS/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.virgilsecurity.RatchetTestApp-iOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		421B43F92190AF5B00D4F496 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = "RatchetTestApp iOS/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.virgilsecurity.RatchetTestApp-iOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		424FAA182177506100622A3B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -653,6 +809,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RatchetTestApp iOS.app/RatchetTestApp iOS";
 			};
 			name = Debug;
 		};
@@ -675,12 +832,22 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RatchetTestApp iOS.app/RatchetTestApp iOS";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		421B43F72190AF5B00D4F496 /* Build configuration list for PBXNativeTarget "RatchetTestApp iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				421B43F82190AF5B00D4F496 /* Debug */,
+				421B43F92190AF5B00D4F496 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		424FAA002177506100622A3B /* Build configuration list for PBXProject "VirgilSDKRatchet" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

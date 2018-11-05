@@ -216,7 +216,7 @@ import VirgilCryptoApiImpl
                                         senderIdentityPublicKey: CUtils.extractRawPublicKey(self.crypto.exportPublicKey(senderIdentityPublicKey)),
                                         senderEphemeralPublicKey: prekeyMessage.pointee.sender_ephemeral_key,
                                         ratchetPublicKey: regularMessage.pointee.public_key,
-                                        cipherText: vsc_buffer_data(regularMessage.pointee.cipher_text))
+                                        regularMessage: regularMessage)
 
         self.replaceOneTimeKey(withId: receiverOneTimeKeyId)
         

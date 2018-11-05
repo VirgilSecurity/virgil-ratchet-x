@@ -84,7 +84,7 @@ import VirgilCryptoApiImpl
                   senderIdentityPublicKey: Data,
                   senderEphemeralPublicKey: OpaquePointer, //FIXME
                   ratchetPublicKey: OpaquePointer, //FIXME
-                  cipherText: vsc_data_t) throws {
+                  regularMessage: UnsafePointer<vscr_ratchet_regular_message_t>) throws {
         self.sessionStorage = sessionStorage
         self.participantIdentity = participantIdentity
         
@@ -104,7 +104,7 @@ import VirgilCryptoApiImpl
         try CUtils.copy(data: receiverLongTermPrivateKey.key, buffer: receiverLongTermPrivateKeyBuf)
         try CUtils.copy(data: receiverOneTimePrivateKey.key, buffer: receiverOneTimePrivateKeyBuf)
         
-        status = vscr_ratchet_session_respond(self.ratchetSession, senderIdentityPublicKeyBuf, senderEphemeralPublicKey, ratchetPublicKey, receiverIdentityPrivateKeyBuf, receiverLongTermPrivateKeyBuf, receiverOneTimePrivateKeyBuf, cipherText)
+        status = vscr_ratchet_session_respond(self.ratchetSession, senderIdentityPublicKeyBuf, senderEphemeralPublicKey, ratchetPublicKey, receiverIdentityPrivateKeyBuf, receiverLongTermPrivateKeyBuf, receiverOneTimePrivateKeyBuf, regularMessage)
         
         vsc_buffer_delete(senderIdentityPublicKeyBuf)
         
