@@ -15,6 +15,7 @@
 		421B43F02190AF5A00D4F496 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 421B43EE2190AF5A00D4F496 /* Main.storyboard */; };
 		421B43F22190AF5B00D4F496 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 421B43F12190AF5B00D4F496 /* Assets.xcassets */; };
 		421B43F52190AF5B00D4F496 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 421B43F32190AF5B00D4F496 /* LaunchScreen.storyboard */; };
+		421B440021912CA100D4F496 /* FileOneTimeKeysStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421B43FF21912CA100D4F496 /* FileOneTimeKeysStorage.swift */; };
 		424FAA102177506100622A3B /* VirgilSDKRatchet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 424FAA062177506100622A3B /* VirgilSDKRatchet.framework */; };
 		424FAA172177506100622A3B /* VirgilSDKRatchet.h in Headers */ = {isa = PBXBuildFile; fileRef = 424FAA092177506100622A3B /* VirgilSDKRatchet.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		424FAA9C2177511200622A3B /* VSCFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 424FAA982177511100622A3B /* VSCFoundation.framework */; };
@@ -121,6 +122,7 @@
 		421B43F12190AF5B00D4F496 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		421B43F42190AF5B00D4F496 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		421B43F62190AF5B00D4F496 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		421B43FF21912CA100D4F496 /* FileOneTimeKeysStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileOneTimeKeysStorage.swift; sourceTree = "<group>"; };
 		424FAA062177506100622A3B /* VirgilSDKRatchet.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = VirgilSDKRatchet.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		424FAA092177506100622A3B /* VirgilSDKRatchet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VirgilSDKRatchet.h; sourceTree = "<group>"; };
 		424FAA0A2177506100622A3B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -344,6 +346,7 @@
 				42AB65DB2184F31E00AC4631 /* LongTermKeysStorage.swift */,
 				42AB65DC2184F31E00AC4631 /* OneTimeKeysStorage.swift */,
 				421B43CC2190650500D4F496 /* KeychainLongTermKeyStorage.swift */,
+				421B43FF21912CA100D4F496 /* FileOneTimeKeysStorage.swift */,
 			);
 			path = KeyStorage;
 			sourceTree = "<group>";
@@ -519,6 +522,7 @@
 				424FAAAF2177520200622A3B /* SecureChat.swift in Sources */,
 				42AB65C42183510000AC4631 /* Mutex.swift in Sources */,
 				42AB65E52184F31F00AC4631 /* SessionStorage.swift in Sources */,
+				421B440021912CA100D4F496 /* FileOneTimeKeysStorage.swift in Sources */,
 				424FAAB02177520200622A3B /* SecureSession.swift in Sources */,
 				42AB65E72184F34A00AC4631 /* CUtils.swift in Sources */,
 				42AB65E32184F31F00AC4631 /* OneTimeKeysStorage.swift in Sources */,

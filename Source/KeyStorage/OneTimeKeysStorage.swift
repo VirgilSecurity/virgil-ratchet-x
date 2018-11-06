@@ -37,7 +37,7 @@
 import Foundation
 import VirgilSDK
 
-@objc(VSROneTimeKey) public final class OneTimeKey: NSObject {
+@objc(VSROneTimeKey) public final class OneTimeKey: NSObject, Codable {
     @objc public let identifier: Data
     @objc public let key: Data
     @objc public let orphanedFrom: Date?

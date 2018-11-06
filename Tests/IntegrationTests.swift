@@ -87,7 +87,7 @@ class IntegrationTests: XCTestCase {
         let senderCard = try! cardManager.publishCard(privateKey: senderIdentityKeyPair.privateKey, publicKey: senderIdentityKeyPair.publicKey).startSync().getResult()
         
         let receiverLongTermKeysStorage = try! KeychainLongTermKeysStorage(identity: receiverIdentity)
-        let receiverOneTimeKeysStorage = FakeOneTimeKeysStorage(db: [:])
+        let receiverOneTimeKeysStorage = FileOneTimeKeysStorage(identity: receiverIdentity)
         
         let fakeClient = FakeRamClient(cardManager: cardManager)
         
@@ -98,7 +98,7 @@ class IntegrationTests: XCTestCase {
                                           accessTokenProvider: senderTokenProvider,
                                           client: fakeClient,
                                           longTermKeysStorage: try! KeychainLongTermKeysStorage(identity: senderIdentity),
-                                          oneTimeKeysStorage: FakeOneTimeKeysStorage(db: [:]),
+                                          oneTimeKeysStorage: FileOneTimeKeysStorage(identity: senderIdentity),
                                           sessionStorage: FakeRamSessionStorage(),
                                           keysRotator: FakeKeysRotator())
         

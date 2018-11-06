@@ -36,7 +36,7 @@
 
 import Foundation
 
-@objc(VSRLongTermKey) public final class LongTermKey: NSObject {
+@objc(VSRLongTermKey) public final class LongTermKey: NSObject, Codable {
     @objc public let identifier: Data
     @objc public let key: Data
     @objc public let creationDate: Date
