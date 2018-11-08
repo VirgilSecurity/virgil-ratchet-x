@@ -62,6 +62,8 @@
 		42AB65E52184F31F00AC4631 /* SessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65DF2184F31F00AC4631 /* SessionStorage.swift */; };
 		42AB65E72184F34A00AC4631 /* CUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65E62184F34A00AC4631 /* CUtils.swift */; };
 		42AB65EA2185097800AC4631 /* IntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65E82185095700AC4631 /* IntegrationTests.swift */; };
+		42BA8F3E21946CF100075827 /* FileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BA8F3D21946CF100075827 /* FileSystem.swift */; };
+		42BA8F402194771C00075827 /* FileSessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BA8F3F2194771C00075827 /* FileSessionStorage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -153,6 +155,8 @@
 		42AB65DF2184F31F00AC4631 /* SessionStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionStorage.swift; sourceTree = "<group>"; };
 		42AB65E62184F34A00AC4631 /* CUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CUtils.swift; sourceTree = "<group>"; };
 		42AB65E82185095700AC4631 /* IntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrationTests.swift; sourceTree = "<group>"; };
+		42BA8F3D21946CF100075827 /* FileSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileSystem.swift; sourceTree = "<group>"; };
+		42BA8F3F2194771C00075827 /* FileSessionStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileSessionStorage.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -334,6 +338,7 @@
 			children = (
 				42AB65E62184F34A00AC4631 /* CUtils.swift */,
 				42AB65C12183510000AC4631 /* Mutex.swift */,
+				42BA8F3D21946CF100075827 /* FileSystem.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -355,6 +360,7 @@
 			isa = PBXGroup;
 			children = (
 				42AB65DF2184F31F00AC4631 /* SessionStorage.swift */,
+				42BA8F3F2194771C00075827 /* FileSessionStorage.swift */,
 			);
 			path = SessionStorage;
 			sourceTree = "<group>";
@@ -513,11 +519,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				42BA8F402194771C00075827 /* FileSessionStorage.swift in Sources */,
 				42AB65BD218350F700AC4631 /* SignedPublicKey.swift in Sources */,
 				421B43D62190A82400D4F496 /* KeychainStorageProtocol.swift in Sources */,
 				42AB65AD21834F0A00AC4631 /* KeysRotator.swift in Sources */,
 				42AB65E22184F31F00AC4631 /* LongTermKeysStorage.swift in Sources */,
 				42AB65BB218350F700AC4631 /* PublicKeySet.swift in Sources */,
+				42BA8F3E21946CF100075827 /* FileSystem.swift in Sources */,
 				421B43D72190A82400D4F496 /* KeychainStorageWrapper.swift in Sources */,
 				424FAAAF2177520200622A3B /* SecureChat.swift in Sources */,
 				42AB65C42183510000AC4631 /* Mutex.swift in Sources */,

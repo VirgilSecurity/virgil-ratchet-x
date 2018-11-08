@@ -38,77 +38,17 @@ import Foundation
 
 // TODO: Make thread-safe
 @objc(VSRFileOneTimeKeysStorage) open class FileOneTimeKeysStorage: NSObject, OneTimeKeysStorage {
-    @objc public let identity: String
     private var oneTimeKeys: OneTimeKeys?
-    private let fileManager = FileManager()
+    private let fileSystem: FileSystem
     
     private struct OneTimeKeys: Codable {
         var oneTimeKeys: [OneTimeKey]
     }
     
-    @objc public init(identity: String) {
-        self.identity = identity
+    @objc public init(fileSystem: FileSystem) {
+        self.fileSystem = fileSystem
         
         super.init()
-    }
-    
-    private func createTempDirUrl() throws -> URL {
-        var dirUrl = try self.fileManager.url(for: .itemReplacementDirectory, in: .userDomainMask, appropriateFor: try self.createFileUrl(), create: true)
-        
-        dirUrl.appendPathComponent("VIRGIL-RATCHET")
-        
-        if !self.fileManager.fileExists(atPath: dirUrl.path) {
-            try self.fileManager.createDirectory(at: dirUrl, withIntermediateDirectories: true, attributes: nil)
-        }
-        
-        dirUrl.appendPathComponent("\(self.identity)")
-        
-        if !self.fileManager.fileExists(atPath: dirUrl.path) {
-            try self.fileManager.createDirectory(at: dirUrl, withIntermediateDirectories: true, attributes: nil)
-        }
-        
-        return dirUrl
-    }
-    
-    private func createSuppDirUrl() throws -> URL {
-        var dirUrl = try self.fileManager.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-        
-        dirUrl.appendPathComponent("VIRGIL-RATCHET")
-        
-        if !self.fileManager.fileExists(atPath: dirUrl.path) {
-            try self.fileManager.createDirectory(at: dirUrl, withIntermediateDirectories: true, attributes: nil)
-        }
-        
-        dirUrl.appendPathComponent("\(self.identity)")
-        
-        if !self.fileManager.fileExists(atPath: dirUrl.path) {
-            try self.fileManager.createDirectory(at: dirUrl, withIntermediateDirectories: true, attributes: nil)
-        }
-        
-        var values = URLResourceValues()
-        values.isExcludedFromBackup = true
-        
-        try dirUrl.setResourceValues(values)
-        
-        return dirUrl
-    }
-    
-    private func createFileUrl() throws -> URL {
-        let dirUrl = try self.createSuppDirUrl()
-        
-        let fileUrl = dirUrl.appendingPathComponent("KEYS")
-        
-        if !self.fileManager.fileExists(atPath: fileUrl.path) {
-            self.fileManager.createFile(atPath: fileUrl.path, contents: nil, attributes: nil)
-        }
-        
-        return fileUrl
-    }
-    
-    private func createTempFileUrl() throws -> URL {
-        let dirUrl = try self.createTempDirUrl()
-        
-        return dirUrl.appendingPathComponent("TEMP")
     }
 
     public func startInteraction() {
@@ -116,29 +56,24 @@ import Foundation
             return
         }
         
-        let fileUrl = try! self.createFileUrl()
+        let data = try! self.fileSystem.readOneTimeKeysFile()
         
-        // TODO: Add encryption
-        let data = try! Data(contentsOf: fileUrl)
-        
-        if data.isEmpty {
-            self.oneTimeKeys = OneTimeKeys(oneTimeKeys: [])
+        if !data.isEmpty {
+            self.oneTimeKeys = try! PropertyListDecoder().decode(OneTimeKeys.self, from: data)
         }
         else {
-            self.oneTimeKeys = try! PropertyListDecoder().decode(OneTimeKeys.self, from: data)
+            self.oneTimeKeys = OneTimeKeys(oneTimeKeys: [])
         }
     }
     
     public func stopInteraction() {
-        let tempFileUrl = try! self.createTempFileUrl()
-        let fileUrl = try! self.createFileUrl()
+        guard let oneTimeKeys = self.oneTimeKeys else {
+            return
+        }
         
-        let data = try! PropertyListEncoder().encode(self.oneTimeKeys)
+        let data = try! PropertyListEncoder().encode(oneTimeKeys)
         
-        try? self.fileManager.removeItem(at: tempFileUrl)
-        self.fileManager.createFile(atPath: tempFileUrl.path, contents: data, attributes: nil)
-        
-        try! self.fileManager.replaceItem(at: fileUrl, withItemAt: tempFileUrl, backupItemName: "BACKUP", options: [], resultingItemURL: nil)
+        try! self.fileSystem.writeOneTimeKeysFile(data: data)
         
         self.oneTimeKeys = nil
     }
