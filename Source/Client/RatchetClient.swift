@@ -34,20 +34,38 @@
 // Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 //
 
-import Foundation
+import VirgilSDK
 
-public final class SignedPublicKey: NSObject, Codable {
-    public let publicKey: Data
-    public let signature: Data
+/// Declares client error types and codes
+///
+/// - constructingUrl: constructing url of endpoint failed
+@objc(VSRRatchetClientError) public enum RatchetClientError: Int, Error {
+    case constructingUrl = 1
+}
 
-    /// Defines coding keys for encoding and decoding
-    private enum CodingKeys: String, CodingKey {
-        case publicKey = "public_key"
-        case signature = "signature"
+/// Class representing operations with Virgil Cards service
+@objc(VSRRatchetClient) open class RatchetClient: BaseClient {
+    /// Default URL for service
+    @objc public static let defaultURL = URL(string: "https://api.virgilsecurity.com")!
+
+    /// Initializes a new `RatchetClient` instance
+    ///
+    /// - Parameters:
+    ///   - serviceUrl: URL of service client will use
+    ///   - connection: custom HTTPConnection
+    public override init(serviceUrl: URL = RatchetClient.defaultURL, connection: HttpConnectionProtocol) {
+        super.init(serviceUrl: serviceUrl, connection: connection)
     }
-    
-    internal init(publicKey: Data, signature: Data) {
-        self.publicKey = publicKey
-        self.signature = signature
+
+    /// Initializes a new `RatchetClient` instance
+    @objc convenience public init() {
+        self.init(serviceUrl: RatchetClient.defaultURL)
+    }
+
+    /// Initializes a new `RatchetClient` instance
+    ///
+    /// - Parameter serviceUrl: URL of service client will use
+    @objc convenience public init(serviceUrl: URL) {
+        self.init(serviceUrl: serviceUrl, connection: HttpConnection())
     }
 }

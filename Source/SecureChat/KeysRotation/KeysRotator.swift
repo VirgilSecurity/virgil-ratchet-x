@@ -142,7 +142,7 @@ class KeysRotator {
                 }
                 
                 Log.debug("Validating local keys")
-                let validateResponse = try self.client.validatePublicKeys(longTermKeyId: lastLongTermKey?.identifier, oneTimeKeysIds: oneTimeKeysIds, token: token.stringRepresentation())
+                let validateResponse = try self.client.validatePublicKeys(longTermKeyId: lastLongTermKey!.identifier, oneTimeKeysIds: oneTimeKeysIds, token: token.stringRepresentation())
                 
                 for usedOneTimeKeyId in validateResponse.usedOneTimeKeysIds {
                     Log.debug("Marking one-time key as orhpaned \(usedOneTimeKeyId.hexEncodedString())")

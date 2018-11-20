@@ -34,9 +34,9 @@
 // Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 //
 
-import Foundation
+import VirgilSDK
 
-public protocol RatchetClientProtocol: class {
+extension RatchetClient: RatchetClientProtocol {
     /// Uploads public keys
     ///
     /// Long-term public key signature should be verified.
@@ -49,15 +49,58 @@ public protocol RatchetClientProtocol: class {
     ///   - token: auth token (JWT)
     /// - Returns:
     /// - Throws:
-    func uploadPublicKeys(identityCardId: String?, longTermPublicKey: SignedPublicKey?, oneTimePublicKeys: [Data], token: String) throws
-    
+    public func uploadPublicKeys(identityCardId: String?, longTermPublicKey: SignedPublicKey?,
+                                 oneTimePublicKeys: [Data], token: String) throws {
+        guard let url = URL(string: "pfs/v2/keys", relativeTo: self.serviceUrl) else {
+            throw RatchetClientError.constructingUrl
+        }
+
+        var params: [String: Any] = [:]
+
+        if let identityCardId = identityCardId {
+            params["identity_card_id"] = identityCardId
+        }
+
+        if let longTermPublicKey = longTermPublicKey {
+            params["long_term_key"] = try JSONEncoder().encode(longTermPublicKey)
+        }
+
+        if !oneTimePublicKeys.isEmpty {
+            let oneTimePublicKeysStrings = oneTimePublicKeys.map { $0.base64EncodedString() }
+            params["one_time_keys"] = oneTimePublicKeysStrings
+        }
+
+        let request = try ServiceRequest(url: url, method: .put, accessToken: token, params: params)
+
+        let response = try self.connection.send(request)
+
+        try self.validateResponse(response)
+    }
+
     /// Returns number of active one-time public keys (0..<=150)
     ///
     /// - Parameter token: auth token (JWT)
     /// - Returns: Number of active one-time public keys (0..<=150)
     /// - Throws:
-    func getNumberOfActiveOneTimePublicKeys(token: String) throws -> Int
-    
+    public func getNumberOfActiveOneTimePublicKeys(token: String) throws -> Int {
+        guard let url = URL(string: "pfs/v2/keys/actions/count-otk", relativeTo: self.serviceUrl) else {
+            throw RatchetClientError.constructingUrl
+        }
+
+        let request = try ServiceRequest(url: url, method: .post, accessToken: token)
+
+        let response = try self.connection.send(request)
+
+        class NumberOTKResponse: Codable {
+            let active: Int
+        }
+
+        let numberOTKResponse: NumberOTKResponse = try self.processResponse(response)
+
+        return numberOTKResponse.active
+
+    }
+
     /// Checks list of keys ids and returns subset of that list with already used keys ids
     ///
     /// keyId == SHA512(publicKey)[0..<8]
@@ -68,8 +111,25 @@ public protocol RatchetClientProtocol: class {
     ///   - token: auth token (JWT)
     /// - Returns: Object with used keys ids
     /// - Throws:
-    func validatePublicKeys(longTermKeyId: Data, oneTimeKeysIds: [Data], token: String) throws -> ValidatePublicKeysResponse
-    
+    public func validatePublicKeys(longTermKeyId: Data, oneTimeKeysIds: [Data],
+                                   token: String) throws -> ValidatePublicKeysResponse {
+        guard let url = URL(string: "pfs/v2/keys/acrions/validate", relativeTo: self.serviceUrl) else {
+            throw RatchetClientError.constructingUrl
+        }
+
+        let longTermKeyIdAny = longTermKeyId.base64EncodedString() as Any
+        let oneTimeKeysIdsStrings = oneTimeKeysIds.map { $0.base64EncodedString() }
+
+        let params: [String: Any] = ["long_term_key_id": longTermKeyIdAny,
+                                     "one_time_keys_ids": oneTimeKeysIdsStrings]
+
+        let request = try ServiceRequest(url: url, method: .post, accessToken: token, params: params)
+
+        let response = try self.connection.send(request)
+
+        return try self.processResponse(response)
+    }
+
     /// Returns public keys set for given identity.
     ///
     /// One-time key should be marked as used (or removed)
@@ -79,5 +139,17 @@ public protocol RatchetClientProtocol: class {
     ///   - token: auth token (JWT)
     /// - Returns: Set of public keys
     /// - Throws:
-    func getPublicKeySet(forRecipientIdentity identity: String, token: String) throws -> PublicKeySet
+    public func getPublicKeySet(forRecipientIdentity identity: String, token: String) throws -> PublicKeySet {
+        guard let url = URL(string: "pfs/v2/keys/actions/get", relativeTo: self.serviceUrl) else {
+            throw RatchetClientError.constructingUrl
+        }
+
+        let params = ["identity": identity]
+
+        let request = try ServiceRequest(url: url, method: .post, accessToken: token, params: params)
+
+        let response = try self.connection.send(request)
+
+        return try self.processResponse(response)
+    }
 }

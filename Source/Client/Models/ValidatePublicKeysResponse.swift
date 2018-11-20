@@ -39,6 +39,12 @@ import Foundation
 public final class ValidatePublicKeysResponse: NSObject, Decodable {
     public let usedLongTermKeyId: Data?
     public let usedOneTimeKeysIds: [Data]
+
+    /// Defines coding keys for encoding and decoding
+    private enum CodingKeys: String, CodingKey {
+        case usedLongTermKeyId = "long_term_key_id"
+        case usedOneTimeKeysIds = "one_time_keys_ids"
+    }
     
     internal init(usedLongTermKeyId: Data?, usedOneTimeKeysIds: [Data]) {
         self.usedLongTermKeyId = usedLongTermKeyId
