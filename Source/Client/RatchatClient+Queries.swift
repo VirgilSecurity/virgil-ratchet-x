@@ -62,7 +62,9 @@ extension RatchetClient: RatchetClientProtocol {
         }
 
         if let longTermPublicKey = longTermPublicKey {
-            params["long_term_key"] = try JSONEncoder().encode(longTermPublicKey)
+            let longTermPublicKeyParam = ["public_key": longTermPublicKey.publicKey.base64EncodedString(),
+                                          "signature": longTermPublicKey.signature.base64EncodedString()]
+            params["long_term_key"] = longTermPublicKeyParam
         }
 
         if !oneTimePublicKeys.isEmpty {
@@ -91,7 +93,7 @@ extension RatchetClient: RatchetClientProtocol {
 
         let response = try self.connection.send(request)
 
-        class NumberOTKResponse: Codable {
+        class NumberOTKResponse: Decodable {
             let active: Int
         }
 
@@ -111,17 +113,25 @@ extension RatchetClient: RatchetClientProtocol {
     ///   - token: auth token (JWT)
     /// - Returns: Object with used keys ids
     /// - Throws:
-    public func validatePublicKeys(longTermKeyId: Data, oneTimeKeysIds: [Data],
+    public func validatePublicKeys(longTermKeyId: Data?, oneTimeKeysIds: [Data],
                                    token: String) throws -> ValidatePublicKeysResponse {
+        guard longTermKeyId != nil || !oneTimeKeysIds.isEmpty else {
+            return ValidatePublicKeysResponse(usedLongTermKeyId: nil, usedOneTimeKeysIds: [])
+        }
+
         guard let url = URL(string: "pfs/v2/keys/acrions/validate", relativeTo: self.serviceUrl) else {
             throw RatchetClientError.constructingUrl
         }
 
-        let longTermKeyIdAny = longTermKeyId.base64EncodedString() as Any
-        let oneTimeKeysIdsStrings = oneTimeKeysIds.map { $0.base64EncodedString() }
+        var params: [String: Any] = [:]
 
-        let params: [String: Any] = ["long_term_key_id": longTermKeyIdAny,
-                                     "one_time_keys_ids": oneTimeKeysIdsStrings]
+        if let longTermKeyId = longTermKeyId {
+            params["long_term_key_id"] = longTermKeyId.base64EncodedString()
+        }
+
+        if !oneTimeKeysIds.isEmpty {
+            params["one_time_keys_ids"] = oneTimeKeysIds.map { $0.base64EncodedString() }
+        }
 
         let request = try ServiceRequest(url: url, method: .post, accessToken: token, params: params)
 

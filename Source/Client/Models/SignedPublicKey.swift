@@ -36,7 +36,7 @@
 
 import Foundation
 
-public final class SignedPublicKey: NSObject, Codable {
+public final class SignedPublicKey: NSObject, Decodable {
     public let publicKey: Data
     public let signature: Data
 

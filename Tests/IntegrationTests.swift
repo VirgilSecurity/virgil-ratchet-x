@@ -93,8 +93,8 @@ class IntegrationTests: XCTestCase {
         
         let receiverOneTimeKeysStorage = FileOneTimeKeysStorage(fileSystem: receiverFileSystem)
         let senderOneTimeKeysStorage = FileOneTimeKeysStorage(fileSystem: senderFileSystem)
-        
-        let fakeClient = FakeRamClient(cardManager: cardManager)
+
+        let fakeClient = RatchetClient(serviceUrl: URL(string: testConfig.ServiceURL)!)
         
         let receiverKeysRotator = KeysRotator(identityPrivateKey: receiverIdentityKeyPair.privateKey, identityCardId: receiverCard.identifier, longTermKeysStorage: receiverLongTermKeysStorage, oneTimeKeysStorage: receiverOneTimeKeysStorage, client: fakeClient)
         
