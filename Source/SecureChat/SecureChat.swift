@@ -122,7 +122,7 @@ import VirgilCryptoApiImpl
             throw NSError()
         }
         
-        guard CUtils.extractRawPublicKey(self.crypto.exportPublicKey(identityPublicKey)) == publicKeySet.identityPublicKey else {
+        guard self.crypto.exportPublicKey(identityPublicKey) == publicKeySet.identityPublicKey else {
             throw NSError()
         }
         
@@ -140,7 +140,7 @@ import VirgilCryptoApiImpl
         let session = try SecureSession(sessionStorage: self.sessionStorage,
                                         participantIdentity: receiverCard.identity,
                                         senderIdentityPrivateKey: privateKeyData,
-                                        receiverIdentityPublicKey: publicKeySet.identityPublicKey,
+                                        receiverIdentityPublicKey: CUtils.extractRawPublicKey(publicKeySet.identityPublicKey),
                                         receiverLongTermPublicKey: publicKeySet.longTermPublicKey.publicKey,
                                         receiverOneTimePublicKey: publicKeySet.oneTimePublicKey)
         
