@@ -80,4 +80,10 @@ public protocol RatchetClientProtocol: class {
     /// - Returns: Set of public keys
     /// - Throws:
     func getPublicKeySet(forRecipientIdentity identity: String, token: String) throws -> PublicKeySet
+
+    /// Deletes a keys entity
+    ///
+    /// - Parameter token: auth token (JWT)
+    /// - Throws:
+    func deleteKeysEntity(token: String) throws
 }

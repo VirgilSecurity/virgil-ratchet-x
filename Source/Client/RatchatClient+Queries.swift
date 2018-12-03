@@ -162,4 +162,20 @@ extension RatchetClient: RatchetClientProtocol {
 
         return try self.processResponse(response)
     }
+    
+    /// Deletes a keys entity
+    ///
+    /// - Parameter token: auth token (JWT)
+    /// - Throws:
+    public func deleteKeysEntity(token: String) throws {
+        guard let url = URL(string: "pfs/v2/keys", relativeTo: self.serviceUrl) else {
+            throw RatchetClientError.constructingUrl
+        }
+
+        let request = try ServiceRequest(url: url, method: .delete, accessToken: token)
+
+        let response = try self.connection.send(request)
+
+        try self.validateResponse(response)
+    }
 }
