@@ -160,7 +160,7 @@ import VirgilCryptoApiImpl
                 
                 let oneTimePrivateKey = CUtils.extractRawPrivateKey(self.crypto.exportPrivateKey(keyPair.privateKey))
                 let oneTimePublicKey = CUtils.extractRawPublicKey(self.crypto.exportPublicKey(keyPair.publicKey))
-                let keyId = CUtils.computeKeyId(publicKey: oneTimePublicKey)
+                let keyId = SecureChat.computeKeyId(publicKey: oneTimePublicKey)
                 
                 try self.oneTimeKeysStorage.deleteKey(withId: receiverOneTimeKeyId)
                 _ = try self.oneTimeKeysStorage.storeKey(oneTimePrivateKey, withId: keyId)
@@ -226,7 +226,7 @@ import VirgilCryptoApiImpl
         return session
     }
     
-    private static func computeKeyId(publicKey: Data) -> Data {
+    internal static func computeKeyId(publicKey: Data) -> Data {
         let sha512 = Sha512()
         
         return sha512.hash(data: publicKey).subdata(in: 0..<8)

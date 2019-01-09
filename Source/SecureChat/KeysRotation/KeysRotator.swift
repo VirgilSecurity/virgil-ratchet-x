@@ -163,7 +163,7 @@ class KeysRotator {
                     let longTermKeyPair = try self.crypto.generateKeyPair()
                     let longTermPrivateKey = CUtils.extractRawPrivateKey(self.crypto.exportPrivateKey(longTermKeyPair.privateKey))
                     let longTermPublicKey = CUtils.extractRawPublicKey(self.crypto.exportPublicKey(longTermKeyPair.publicKey))
-                    _ = try self.longTermKeysStorage.storeKey(longTermPrivateKey, withId: CUtils.computeKeyId(publicKey: longTermPublicKey))
+                    _ = try self.longTermKeysStorage.storeKey(longTermPrivateKey, withId: SecureChat.computeKeyId(publicKey: longTermPublicKey))
                     longTermSignedPublicKey = SignedPublicKey(publicKey: longTermPublicKey, signature: try self.crypto.generateSignature(of: longTermPublicKey, using: self.identityPrivateKey))
                 }
                 else {
@@ -182,7 +182,7 @@ class KeysRotator {
                     for keyPair in keyPairs {
                         let oneTimePrivateKey = CUtils.extractRawPrivateKey(self.crypto.exportPrivateKey(keyPair.privateKey))
                         let oneTimePublicKey = CUtils.extractRawPublicKey(self.crypto.exportPublicKey(keyPair.publicKey))
-                        let keyId = CUtils.computeKeyId(publicKey: oneTimePublicKey)
+                        let keyId = SecureChat.computeKeyId(publicKey: oneTimePublicKey)
                         _ = try self.oneTimeKeysStorage.storeKey(oneTimePrivateKey, withId: keyId)
                         
                         publicKeys.append(oneTimePublicKey)
