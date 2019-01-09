@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2018 Virgil Security Inc.
+//  Copyright (C) 2015-2019 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -56,7 +56,7 @@
 #include "vscf_library.h"
 #include "vscf_impl.h"
 #include "vscf_hash.h"
-#include "vscf_public_key.h"
+#include "vscf_key_alg.h"
 #include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -85,12 +85,26 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handles implementation details.
+//  Public integral constants.
 //
-typedef struct vscf_rsa_public_key_impl_t vscf_rsa_public_key_impl_t;
+enum {
+    //
+    //  Defines whether a public key can be imported or not.
+    //
+    vscf_rsa_public_key_CAN_IMPORT_PUBLIC_KEY = true,
+    //
+    //  Define whether a public key can be exported or not.
+    //
+    vscf_rsa_public_key_CAN_EXPORT_PUBLIC_KEY = true
+};
 
 //
-//  Return size of 'vscf_rsa_public_key_impl_t' type.
+//  Handles implementation details.
+//
+typedef struct vscf_rsa_public_key_t vscf_rsa_public_key_t;
+
+//
+//  Return size of 'vscf_rsa_public_key_t' type.
 //
 VSCF_PUBLIC size_t
 vscf_rsa_public_key_impl_size(void);
@@ -99,26 +113,26 @@ vscf_rsa_public_key_impl_size(void);
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_rsa_public_key_impl(vscf_rsa_public_key_impl_t *rsa_public_key_impl);
+vscf_rsa_public_key_impl(vscf_rsa_public_key_t *rsa_public_key);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_rsa_public_key_init(vscf_rsa_public_key_impl_t *rsa_public_key_impl);
+vscf_rsa_public_key_init(vscf_rsa_public_key_t *rsa_public_key);
 
 //
 //  Cleanup implementation context and release dependencies.
 //  This is a reverse action of the function 'vscf_rsa_public_key_init()'.
 //
 VSCF_PUBLIC void
-vscf_rsa_public_key_cleanup(vscf_rsa_public_key_impl_t *rsa_public_key_impl);
+vscf_rsa_public_key_cleanup(vscf_rsa_public_key_t *rsa_public_key);
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
-VSCF_PUBLIC vscf_rsa_public_key_impl_t *
+VSCF_PUBLIC vscf_rsa_public_key_t *
 vscf_rsa_public_key_new(void);
 
 //
@@ -126,7 +140,7 @@ vscf_rsa_public_key_new(void);
 //  This is a reverse action of the function 'vscf_rsa_public_key_new()'.
 //
 VSCF_PUBLIC void
-vscf_rsa_public_key_delete(vscf_rsa_public_key_impl_t *rsa_public_key_impl);
+vscf_rsa_public_key_delete(vscf_rsa_public_key_t *rsa_public_key);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -134,137 +148,145 @@ vscf_rsa_public_key_delete(vscf_rsa_public_key_impl_t *rsa_public_key_impl);
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_rsa_public_key_destroy(vscf_rsa_public_key_impl_t **rsa_public_key_impl_ref);
+vscf_rsa_public_key_destroy(vscf_rsa_public_key_t **rsa_public_key_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
-VSCF_PUBLIC vscf_rsa_public_key_impl_t *
-vscf_rsa_public_key_copy(vscf_rsa_public_key_impl_t *rsa_public_key_impl);
+VSCF_PUBLIC vscf_rsa_public_key_t *
+vscf_rsa_public_key_shallow_copy(vscf_rsa_public_key_t *rsa_public_key);
 
 //
 //  Setup dependency to the interface api 'hash' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_rsa_public_key_use_hash(vscf_rsa_public_key_impl_t *rsa_public_key_impl, const vscf_hash_api_t *hash);
+vscf_rsa_public_key_use_hash(vscf_rsa_public_key_t *rsa_public_key, const vscf_hash_api_t *hash);
 
 //
 //  Release dependency to the interface api 'hash'.
 //
 VSCF_PUBLIC void
-vscf_rsa_public_key_release_hash(vscf_rsa_public_key_impl_t *rsa_public_key_impl);
+vscf_rsa_public_key_release_hash(vscf_rsa_public_key_t *rsa_public_key);
 
 //
 //  Setup dependency to the interface 'random' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_rsa_public_key_use_random(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vscf_impl_t *random);
+vscf_rsa_public_key_use_random(vscf_rsa_public_key_t *rsa_public_key, vscf_impl_t *random);
 
 //
 //  Setup dependency to the interface 'random' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_rsa_public_key_take_random(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vscf_impl_t *random);
+vscf_rsa_public_key_take_random(vscf_rsa_public_key_t *rsa_public_key, vscf_impl_t *random);
 
 //
 //  Release dependency to the interface 'random'.
 //
 VSCF_PUBLIC void
-vscf_rsa_public_key_release_random(vscf_rsa_public_key_impl_t *rsa_public_key_impl);
+vscf_rsa_public_key_release_random(vscf_rsa_public_key_t *rsa_public_key);
 
 //
 //  Setup dependency to the interface 'asn1 reader' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_rsa_public_key_use_asn1rd(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vscf_impl_t *asn1rd);
+vscf_rsa_public_key_use_asn1rd(vscf_rsa_public_key_t *rsa_public_key, vscf_impl_t *asn1rd);
 
 //
 //  Setup dependency to the interface 'asn1 reader' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_rsa_public_key_take_asn1rd(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vscf_impl_t *asn1rd);
+vscf_rsa_public_key_take_asn1rd(vscf_rsa_public_key_t *rsa_public_key, vscf_impl_t *asn1rd);
 
 //
 //  Release dependency to the interface 'asn1 reader'.
 //
 VSCF_PUBLIC void
-vscf_rsa_public_key_release_asn1rd(vscf_rsa_public_key_impl_t *rsa_public_key_impl);
+vscf_rsa_public_key_release_asn1rd(vscf_rsa_public_key_t *rsa_public_key);
 
 //
 //  Setup dependency to the interface 'asn1 writer' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_rsa_public_key_use_asn1wr(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vscf_impl_t *asn1wr);
+vscf_rsa_public_key_use_asn1wr(vscf_rsa_public_key_t *rsa_public_key, vscf_impl_t *asn1wr);
 
 //
 //  Setup dependency to the interface 'asn1 writer' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_rsa_public_key_take_asn1wr(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vscf_impl_t *asn1wr);
+vscf_rsa_public_key_take_asn1wr(vscf_rsa_public_key_t *rsa_public_key, vscf_impl_t *asn1wr);
 
 //
 //  Release dependency to the interface 'asn1 writer'.
 //
 VSCF_PUBLIC void
-vscf_rsa_public_key_release_asn1wr(vscf_rsa_public_key_impl_t *rsa_public_key_impl);
+vscf_rsa_public_key_release_asn1wr(vscf_rsa_public_key_t *rsa_public_key);
 
 //
-//  Returns instance of the implemented interface 'public key'.
+//  Return implemented asymmetric key algorithm type.
 //
-VSCF_PUBLIC const vscf_public_key_api_t *
-vscf_rsa_public_key_public_key_api(void);
+VSCF_PUBLIC vscf_key_alg_t
+vscf_rsa_public_key_alg(vscf_rsa_public_key_t *rsa_public_key);
 
 //
 //  Length of the key in bytes.
 //
 VSCF_PUBLIC size_t
-vscf_rsa_public_key_key_len(vscf_rsa_public_key_impl_t *rsa_public_key_impl);
+vscf_rsa_public_key_key_len(vscf_rsa_public_key_t *rsa_public_key);
 
 //
 //  Length of the key in bits.
 //
 VSCF_PUBLIC size_t
-vscf_rsa_public_key_key_bitlen(vscf_rsa_public_key_impl_t *rsa_public_key_impl);
+vscf_rsa_public_key_key_bitlen(vscf_rsa_public_key_t *rsa_public_key);
 
 //
 //  Encrypt given data.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_rsa_public_key_encrypt(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vsc_data_t data, vsc_buffer_t *out);
+vscf_rsa_public_key_encrypt(vscf_rsa_public_key_t *rsa_public_key, vsc_data_t data, vsc_buffer_t *out);
 
 //
 //  Calculate required buffer length to hold the encrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_rsa_public_key_encrypted_len(vscf_rsa_public_key_impl_t *rsa_public_key_impl, size_t data_len);
+vscf_rsa_public_key_encrypted_len(vscf_rsa_public_key_t *rsa_public_key, size_t data_len);
 
 //
 //  Verify data with given public key and signature.
 //
 VSCF_PUBLIC bool
-vscf_rsa_public_key_verify(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vsc_data_t data, vsc_data_t signature);
+vscf_rsa_public_key_verify(vscf_rsa_public_key_t *rsa_public_key, vsc_data_t data, vsc_data_t signature);
 
 //
 //  Export public key in the binary format.
 //
+//  Binary format must be defined in the key specification.
+//  For instance, RSA public key must be exported in format defined in
+//  RFC 3447 Appendix A.1.1.
+//
 VSCF_PUBLIC vscf_error_t
-vscf_rsa_public_key_export_public_key(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vsc_buffer_t *out);
+vscf_rsa_public_key_export_public_key(vscf_rsa_public_key_t *rsa_public_key, vsc_buffer_t *out);
 
 //
 //  Return length in bytes required to hold exported public key.
 //
 VSCF_PUBLIC size_t
-vscf_rsa_public_key_exported_public_key_len(vscf_rsa_public_key_impl_t *rsa_public_key_impl);
+vscf_rsa_public_key_exported_public_key_len(vscf_rsa_public_key_t *rsa_public_key);
 
 //
 //  Import public key from the binary format.
 //
+//  Binary format must be defined in the key specification.
+//  For instance, RSA public key must be imported from the format defined in
+//  RFC 3447 Appendix A.1.1.
+//
 VSCF_PUBLIC vscf_error_t
-vscf_rsa_public_key_import_public_key(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vsc_data_t data);
+vscf_rsa_public_key_import_public_key(vscf_rsa_public_key_t *rsa_public_key, vsc_data_t data);
 
 
 // --------------------------------------------------------------------------

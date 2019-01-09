@@ -36,7 +36,8 @@
 
 import Foundation
 import VirgilSDK
-import VSCRatchet
+import VirgilCryptoRatchet
+import VirgilCryptoFoundation
 import VirgilCryptoApiImpl
 
 @objc(VSRSecureChat) open class SecureChat: NSObject {
@@ -178,35 +179,35 @@ import VirgilCryptoApiImpl
         }
     }
     
-    @objc public func startNewSessionAsReceiver(senderCard: Card, ratchetMessage: UnsafePointer<vscr_ratchet_message_t>) throws -> SecureSession {
+    @objc public func startNewSessionAsReceiver(senderCard: Card, ratchetMessage: RatchetMessage) throws -> SecureSession {
         guard let senderIdentityPublicKey = senderCard.publicKey as? VirgilPublicKey else {
             throw NSError()
         }
         
-        guard ratchetMessage.pointee.type == vscr_ratchet_message_TYPE_PREKEY else {
+        guard ratchetMessage.getType() == .prekey else {
             throw NSError()
         }
+
+        let receiverLongTermPublicKey = ratchetMessage.getLongTermPublicKey()
+        let receiverLongTermPrivateKey = try self.longTermKeysStorage.retrieveKey(withId: SecureChat.computeKeyId(publicKey: receiverLongTermPublicKey))
         
-        // FIXME
-        guard let prekeyMessage = vscr_ratchet_prekey_message_deserialize(vsc_buffer_data(ratchetMessage.pointee.message), nil) else {
-            throw NSError()
+        let receiverOneTimePublicKey = ratchetMessage.getOneTimePublicKey()
+        let receiverOneTimeKeyId: Data? = receiverOneTimePublicKey.isEmpty ? nil : SecureChat.computeKeyId(publicKey: receiverOneTimePublicKey)
+        
+        let receiverOneTimePrivateKey: OneTimeKey?
+        
+        if let receiverOneTimeKeyId = receiverOneTimeKeyId {
+            self.oneTimeKeysStorage.startInteraction()
+            
+            defer {
+                self.oneTimeKeysStorage.stopInteraction()
+            }
+            
+            receiverOneTimePrivateKey = try self.oneTimeKeysStorage.retrieveKey(withId: receiverOneTimeKeyId)
         }
-        
-        // FIXME
-        guard let regularMessage = vscr_ratchet_regular_message_deserialize(vsc_buffer_data(prekeyMessage.pointee.message), nil) else {
-            throw NSError()
+        else {
+            receiverOneTimePrivateKey = nil
         }
-        
-        let receiverLongTermPublicKey = Data(bytesNoCopy: UnsafeMutableRawPointer(mutating: vsc_buffer_bytes(prekeyMessage.pointee.receiver_long_term_key)!), count: vsc_buffer_len(prekeyMessage.pointee.receiver_long_term_key), deallocator: Data.Deallocator.none)
-        
-        // CHECK one time is zero
-        let receiverOneTimePublicKey = Data(bytesNoCopy: UnsafeMutableRawPointer(mutating: vsc_buffer_bytes(prekeyMessage.pointee.receiver_one_time_key)!), count: vsc_buffer_len(prekeyMessage.pointee.receiver_one_time_key), deallocator: Data.Deallocator.none)
-        
-        let receiverLongTermPrivateKey = try self.longTermKeysStorage.retrieveKey(withId: CUtils.computeKeyId(publicKey: receiverLongTermPublicKey))
-        let receiverOneTimeKeyId = CUtils.computeKeyId(publicKey: receiverOneTimePublicKey)
-        
-        self.oneTimeKeysStorage.startInteraction()
-        let receiverOneTimePrivateKey = try self.oneTimeKeysStorage.retrieveKey(withId: receiverOneTimeKeyId)
         
         let session = try SecureSession(sessionStorage: self.sessionStorage,
                                         participantIdentity: senderCard.identity,
@@ -214,20 +215,20 @@ import VirgilCryptoApiImpl
                                         receiverLongTermPrivateKey: receiverLongTermPrivateKey,
                                         receiverOneTimePrivateKey: receiverOneTimePrivateKey,
                                         senderIdentityPublicKey: CUtils.extractRawPublicKey(self.crypto.exportPublicKey(senderIdentityPublicKey)),
-                                        senderEphemeralPublicKey: prekeyMessage.pointee.sender_ephemeral_key,
-                                        ratchetPublicKey: regularMessage.pointee.public_key,
-                                        regularMessage: regularMessage)
+                                        ratchetMessage: ratchetMessage)
 
-        self.replaceOneTimeKey(withId: receiverOneTimeKeyId)
-        
-        defer {
-            self.oneTimeKeysStorage.stopInteraction()
-            vscr_ratchet_regular_message_delete(regularMessage)
-            vscr_ratchet_prekey_message_delete(prekeyMessage)
+        if let receiverOneTimeKeyId = receiverOneTimeKeyId {
+            self.replaceOneTimeKey(withId: receiverOneTimeKeyId)
         }
         
         try self.sessionStorage.storeSession(session)
         
         return session
+    }
+    
+    private static func computeKeyId(publicKey: Data) -> Data {
+        let sha512 = Sha512()
+        
+        return sha512.hash(data: publicKey).subdata(in: 0..<8)
     }
 }

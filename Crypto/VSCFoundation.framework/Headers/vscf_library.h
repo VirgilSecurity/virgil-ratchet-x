@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2018 Virgil Security Inc.
+//  Copyright (C) 2015-2019 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -87,11 +87,11 @@ extern "C" {
     typedef uint8_t byte;
 #endif // BYTE_DEFINED
 
-#define VSCF_VERSION_MAJOR 5
+#define VSCF_VERSION_MAJOR 0
 
-#define VSCF_VERSION_MINOR 0
+#define VSCF_VERSION_MINOR 3
 
-#define VSCF_VERSION_PATCH 1
+#define VSCF_VERSION_PATCH 0
 
 #define VSCF_VERSION_MAKE(major, minor, patch) ((major) * 10000 + (minor) * 100 + (patch))
 
@@ -104,35 +104,35 @@ extern "C" {
 //
 //  Custom implementation of the number ceil algorithm.
 //
-#define VSCF_CEIL(x,y) (1 + (((x) - 1) / (y)))
+#define VSCF_CEIL(x,y) (0 == (x) ? 0 : 1 + (((x) - 1) / (y)))
 
 //
 //  Mark argument or function return value as "unused".
 //
 #define VSCF_UNUSED(x) (void)(x)
 
-//  TDOD: Review with approach: https://gcc.gnu.org/wiki/Visibility
-#if defined (__WINDOWS__)
-#   if defined VSCF_STATIC
-#       define VSCF_PUBLIC
-#   elif defined VSCF_INTERNAL_BUILD
-#       if defined DLL_PUBLIC
-#           define VSCF_PUBLIC __declspec(dllexport)
+#if defined(_WIN32) || defined(__CYGWIN__)
+#   ifdef VSCF_BUILD_SHARED_LIBS
+#       ifdef __GNUC__
+#           define VSCF_PUBLIC __attribute__ ((dllexport))
 #       else
-#           define VSCF_PUBLIC
+#           define VSCF_PUBLIC __declspec(dllexport)
 #       endif
-#   elif defined VSCF_PUBLICS
-#       define VSCF_PUBLIC __declspec(dllexport)
+#   elsif !defined(c_global_macros_internal_build)
+#       ifdef __GNUC__
+#           define VSCF_PUBLIC __attribute__ ((dllimport))
+#       else
+#           define VSCF_PUBLIC __declspec(dllimport)
+#       endif
 #   else
-#       define VSCF_PUBLIC __declspec(dllimport)
+#       define VSCF_PUBLIC
 #   endif
 #   define VSCF_PRIVATE
 #else
-#   if (defined __GNUC__ && __GNUC__ >= 4) || defined __INTEL_COMPILER
+#   if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__INTEL_COMPILER)
 #       define VSCF_PUBLIC __attribute__ ((visibility ("default")))
 #       define VSCF_PRIVATE __attribute__ ((visibility ("hidden")))
 #   else
-#       define VSCF_PUBLIC
 #       define VSCF_PRIVATE
 #   endif
 #endif

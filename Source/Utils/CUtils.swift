@@ -50,27 +50,4 @@ internal class CUtils {
     internal static func extractRawPrivateKey(_ key: Data) -> Data {
         return Data(key.subdata(in: 7..<39).reversed())
     }
-    
-    internal static func copy(data: Data, buffer: OpaquePointer) throws {
-        guard data.copyBytes(to: UnsafeMutableBufferPointer(start: vsc_buffer_ptr(buffer), count: vsc_buffer_capacity(buffer))) == data.count else {
-            throw NSError()
-        }
-        vsc_buffer_reserve(buffer, data.count)
-    }
-    
-    internal static func bindForRead(data: Data) -> vsc_data_t {
-        return data.withUnsafeBytes({ (pointer: UnsafePointer<UInt8>) in
-            return vsc_data(pointer, data.count)
-        })
-    }
-    
-    internal static func bindForWrite(capacity: Int, buffer: OpaquePointer) -> Data {
-        var data = Data(capacity: capacity)
-        data.count = capacity
-        data.withUnsafeMutableBytes({ (pointer: UnsafeMutablePointer<UInt8>) in
-            vsc_buffer_use(buffer, pointer, capacity)
-        })
-        
-        return data
-    }
 }

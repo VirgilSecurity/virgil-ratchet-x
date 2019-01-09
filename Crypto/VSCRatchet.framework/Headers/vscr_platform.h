@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2018 Virgil Security Inc.
+//  Copyright (C) 2015-2019 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -71,7 +71,7 @@ extern "C" {
 //
 //  Defines namespace include prefix for project 'common'.
 //
-#if !defined(VSCR_BUILD_INTERFACE)
+#if !defined(VSCR_INTERNAL_BUILD)
 #define VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK 1
 #else
 #define VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK 0
@@ -80,7 +80,7 @@ extern "C" {
 //
 //  Defines namespace include prefix for project 'foundation'.
 //
-#if !defined(VSCR_BUILD_INTERFACE)
+#if !defined(VSCR_INTERNAL_BUILD)
 #define VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK 1
 #else
 #define VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK 0

@@ -142,6 +142,10 @@ class FakeOneTimeKeysStorage: OneTimeKeysStorage {
 }
 
 class FakeClient: RatchetClientProtocol {
+    func deleteKeysEntity(token: String) throws {
+        throw NSError()
+    }
+    
     let publicKeySet: PublicKeySet
     
     init(publicKeySet: PublicKeySet) {
@@ -292,6 +296,10 @@ class FakeRamClient: RatchetClientProtocol {
         }
         
         return PublicKeySet(identityPublicKey: identityPublicKey, longTermPublicKey: longTermPublicKey, oneTimePublicKey: oneTimePublicKey)
+    }
+    
+    func deleteKeysEntity(token: String) throws {
+        self.users = [:]
     }
 }
 

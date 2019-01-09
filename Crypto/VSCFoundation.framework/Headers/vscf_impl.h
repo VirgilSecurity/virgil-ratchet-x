@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2018 Virgil Security Inc.
+//  Copyright (C) 2015-2019 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -73,29 +73,6 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible implementations within crypto library.
-//
-enum vscf_impl_tag_t {
-    vscf_impl_tag_BEGIN = 0,
-    vscf_impl_tag_AES256_GCM,
-    vscf_impl_tag_ASN1RD,
-    vscf_impl_tag_ASN1WR,
-    vscf_impl_tag_FAKE_RANDOM,
-    vscf_impl_tag_HKDF,
-    vscf_impl_tag_HMAC,
-    vscf_impl_tag_KDF1,
-    vscf_impl_tag_KDF2,
-    vscf_impl_tag_RSA_PRIVATE_KEY,
-    vscf_impl_tag_RSA_PUBLIC_KEY,
-    vscf_impl_tag_SHA224,
-    vscf_impl_tag_SHA256,
-    vscf_impl_tag_SHA384,
-    vscf_impl_tag_SHA512,
-    vscf_impl_tag_END
-};
-typedef enum vscf_impl_tag_t vscf_impl_tag_t;
-
-//
 //  Generic type for any 'implementation'.
 //
 typedef struct vscf_impl_t vscf_impl_t;
@@ -106,13 +83,7 @@ typedef struct vscf_impl_t vscf_impl_t;
 //  Or NULL if object does not implement requested 'API'.
 //
 VSCF_PUBLIC const vscf_api_t *
-vscf_impl_api(vscf_impl_t *impl, vscf_api_tag_t api_tag);
-
-//
-//  Return unique 'Implementation TAG'.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_impl_tag(vscf_impl_t *impl);
+vscf_impl_api(const vscf_impl_t *impl, vscf_api_tag_t api_tag);
 
 //
 //  Cleanup implementation object and it's dependencies.
@@ -134,10 +105,9 @@ vscf_impl_destroy(vscf_impl_t **impl_ref);
 
 //
 //  Copy implementation object by increasing reference counter.
-//  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_impl_copy(vscf_impl_t *impl);
+vscf_impl_shallow_copy(vscf_impl_t *impl);
 
 
 // --------------------------------------------------------------------------

@@ -139,13 +139,9 @@ class VirgilSDKRatchetTests: XCTestCase {
         let plainText = UUID().uuidString
         let cipherText = try! senderSession.encrypt(message: plainText)
         
-        let encryptedRatchetMessage = vscr_ratchet_message_deserialize(CUtils.bindForRead(data: cipherText), nil)!
+        let receiverSession = try! receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, ratchetMessage: cipherText)
         
-        let receiverSession = try! receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, ratchetMessage: encryptedRatchetMessage)
-        
-        let ratchetMessage = vscr_ratchet_message_deserialize(CUtils.bindForRead(data: cipherText), nil)!
-        
-        let decryptedMessage = try! receiverSession.decrypt(message: ratchetMessage)
+        let decryptedMessage = try! receiverSession.decrypt(message: cipherText)
         
         XCTAssert(decryptedMessage == plainText)
         

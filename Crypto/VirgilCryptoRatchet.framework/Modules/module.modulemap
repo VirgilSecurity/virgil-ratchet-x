@@ -1,0 +1,11 @@
+framework module VirgilCryptoRatchet {
+  umbrella header "VirgilCryptoRatchet.h"
+
+  export *
+  module * { export * }
+}
+
+module VirgilCryptoRatchet.Swift {
+    header "VirgilCryptoRatchet-Swift.h"
+    requires objc
+}

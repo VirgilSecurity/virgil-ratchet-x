@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2018 Virgil Security Inc.
+//  Copyright (C) 2015-2019 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -86,24 +86,24 @@ enum vscf_api_tag_t {
     vscf_api_tag_CIPHER_INFO,
     vscf_api_tag_COMPUTE_SHARED_KEY,
     vscf_api_tag_DECRYPT,
+    vscf_api_tag_DEFAULTS,
     vscf_api_tag_ENCRYPT,
-    vscf_api_tag_EX_KDF,
-    vscf_api_tag_EXPORT_PRIVATE_KEY,
-    vscf_api_tag_EXPORT_PUBLIC_KEY,
+    vscf_api_tag_ENTROPY_SOURCE,
     vscf_api_tag_GENERATE_KEY,
     vscf_api_tag_HASH,
     vscf_api_tag_HASH_INFO,
     vscf_api_tag_HASH_STREAM,
-    vscf_api_tag_IMPORT_PRIVATE_KEY,
-    vscf_api_tag_IMPORT_PUBLIC_KEY,
     vscf_api_tag_KDF,
     vscf_api_tag_KEY,
+    vscf_api_tag_KEY_DESERIALIZER,
+    vscf_api_tag_KEY_SERIALIZER,
     vscf_api_tag_MAC,
     vscf_api_tag_MAC_INFO,
     vscf_api_tag_MAC_STREAM,
     vscf_api_tag_PRIVATE_KEY,
     vscf_api_tag_PUBLIC_KEY,
     vscf_api_tag_RANDOM,
+    vscf_api_tag_SALTED_KDF,
     vscf_api_tag_SIGN,
     vscf_api_tag_VERIFY,
     vscf_api_tag_END
