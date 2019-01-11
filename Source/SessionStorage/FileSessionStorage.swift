@@ -39,25 +39,30 @@ import Foundation
 @objc(VSRFileSessionStorage) open class FileSessionStorage: NSObject, SessionStorage {
     private let fileSystem: FileSystem
     
-    @objc public init(identity: String) {
-        self.fileSystem = FileSystem(identity: identity)
+    @objc convenience init(identity: String) {
+        let fileSystem = FileSystem(identity: identity)
+        
+        self.init(fileSystem: fileSystem)
+    }
+    
+    @objc public init(fileSystem: FileSystem) {
+        self.fileSystem = fileSystem
         
         super.init()
     }
     
     public func storeSession(_ session: SecureSession) throws {
-        // TODO: Serialize session
-        let data = Data()
+        let data = session.serialize()
+
         try self.fileSystem.writeSessionFile(identity: session.participantIdentity, data: data)
     }
     
     public func retrieveSession(participantIdentity: String) -> SecureSession? {
-        let data = try? self.fileSystem.readSession(identity: participantIdentity)
+        guard let data = try? self.fileSystem.readSession(identity: participantIdentity), !data.isEmpty else {
+            return nil
+        }
         
-        // TODO: Deserialize session
-        let session: SecureSession? = nil
-        
-        return session
+        return try? SecureSession(data: data, participantIdentity: participantIdentity, sessionStorage: self)
     }
     
     public func deleteSession(participantIdentity: String) throws {

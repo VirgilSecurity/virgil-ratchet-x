@@ -107,4 +107,22 @@ import VirgilCryptoApiImpl
         
         return String(data: data, encoding: .utf8)!
     }
+    
+    public init(data: Data, participantIdentity: String, sessionStorage: SessionStorage) throws {
+        let errCtx = ErrorCtx()
+        
+        self.ratchetSession = RatchetSession.deserialize(input: data, errCtx: errCtx)
+        self.ratchetSession.setupDefaults()
+        
+        try errCtx.error()
+        
+        self.sessionStorage = sessionStorage
+        self.participantIdentity = participantIdentity
+        
+        super.init()
+    }
+    
+    public func serialize() -> Data {
+        return self.ratchetSession.serialize()
+    }
 }

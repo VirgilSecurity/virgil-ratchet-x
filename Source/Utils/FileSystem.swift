@@ -38,6 +38,7 @@ import Foundation
 import VirgilSDK
 
 // TODO: Add logging
+// TODO: Make thread-safe?
 @objc(VSRFileSystem) open class FileSystem: NSObject {
     @objc public let fileManager = FileManager()
     @objc public let identity: String
