@@ -151,23 +151,38 @@ import VirgilCryptoApiImpl
     }
     
     private let queue = DispatchQueue(label: "VSRSecureChat", qos: .background)
-    private func replaceOneTimeKey(withId receiverOneTimeKeyId: Data) {
-        Log.debug("Adding one time key")
+    private func replaceOneTimeKey() {
+        Log.debug("Adding one time key queued")
 
         self.queue.async {
+            Log.debug("Adding one time started")
+            
+            let oneTimePublicKey: Data
+            
             do {
+                self.oneTimeKeysStorage.startInteraction()
+                
+                defer {
+                    self.oneTimeKeysStorage.stopInteraction()
+                }
+                
                 let keyPair = try self.crypto.generateKeyPair()
                 
                 let oneTimePrivateKey = CUtils.extractRawPrivateKey(self.crypto.exportPrivateKey(keyPair.privateKey))
-                let oneTimePublicKey = CUtils.extractRawPublicKey(self.crypto.exportPublicKey(keyPair.publicKey))
+                oneTimePublicKey = CUtils.extractRawPublicKey(self.crypto.exportPublicKey(keyPair.publicKey))
                 let keyId = SecureChat.computeKeyId(publicKey: oneTimePublicKey)
                 
-                try self.oneTimeKeysStorage.deleteKey(withId: receiverOneTimeKeyId)
                 _ = try self.oneTimeKeysStorage.storeKey(oneTimePrivateKey, withId: keyId)
                 
+                Log.debug("Saved one-time key successfully")
+            }
+            catch {
+                Log.error("Error saving one-time key")
+                return
+            }
+            
+            do {
                 let token = try OperationUtils.makeGetTokenOperation(tokenContext: TokenContext(service: "ratchet", operation: "post"), accessTokenProvider: self.accessTokenProvider).startSync().getResult()
-                
-                try self.client.uploadPublicKeys(identityCardId: nil, longTermPublicKey: nil, oneTimePublicKeys: [oneTimePublicKey], token: token.stringRepresentation())
                 
                 try self.client.uploadPublicKeys(identityCardId: nil, longTermPublicKey: nil, oneTimePublicKeys: [oneTimePublicKey], token: token.stringRepresentation())
                 
@@ -199,26 +214,37 @@ import VirgilCryptoApiImpl
         if let receiverOneTimeKeyId = receiverOneTimeKeyId {
             self.oneTimeKeysStorage.startInteraction()
             
-            defer {
-                self.oneTimeKeysStorage.stopInteraction()
-            }
-            
             receiverOneTimePrivateKey = try self.oneTimeKeysStorage.retrieveKey(withId: receiverOneTimeKeyId)
         }
         else {
             receiverOneTimePrivateKey = nil
         }
         
-        let session = try SecureSession(sessionStorage: self.sessionStorage,
+        let session: SecureSession
+        
+        do {
+            session = try SecureSession(sessionStorage: self.sessionStorage,
                                         participantIdentity: senderCard.identity,
                                         receiverIdentityPrivateKey: self.identityPrivateKey,
                                         receiverLongTermPrivateKey: receiverLongTermPrivateKey,
                                         receiverOneTimePrivateKey: receiverOneTimePrivateKey,
                                         senderIdentityPublicKey: CUtils.extractRawPublicKey(self.crypto.exportPublicKey(senderIdentityPublicKey)),
                                         ratchetMessage: ratchetMessage)
-
+        }
+        catch {
+            self.oneTimeKeysStorage.stopInteraction()
+            
+            throw error
+        }
+        
         if let receiverOneTimeKeyId = receiverOneTimeKeyId {
-            self.replaceOneTimeKey(withId: receiverOneTimeKeyId)
+            defer {
+                self.oneTimeKeysStorage.stopInteraction()
+            }
+            
+            try self.oneTimeKeysStorage.deleteKey(withId: receiverOneTimeKeyId)
+            
+            self.replaceOneTimeKey()            
         }
         
         try self.sessionStorage.storeSession(session)

@@ -39,7 +39,7 @@ import VirgilSDK
 import VirgilCryptoApiImpl
 @testable import VirgilSDKRatchet
 
-class FakeRamSessionStorage: SessionStorage {
+class RamSessionStorage: SessionStorage {
     private var db: [String: SecureSession] = [:]
     
     func storeSession(_ session: SecureSession) throws {
@@ -57,7 +57,7 @@ class FakeRamSessionStorage: SessionStorage {
     }
 }
 
-class FakeLongTermKeysStorage: LongTermKeysStorage {
+class RamLongTermKeysStorage: LongTermKeysStorage {
     var db: [Data: LongTermKey] = [:]
     
     init(db: [Data: LongTermKey]) {
@@ -97,7 +97,7 @@ class FakeLongTermKeysStorage: LongTermKeysStorage {
     }
 }
 
-class FakeOneTimeKeysStorage: OneTimeKeysStorage {
+class RamOneTimeKeysStorage: OneTimeKeysStorage {
     var db: [Data: OneTimeKey] = [:]
     
     init(db: [Data: OneTimeKey]) {
@@ -141,35 +141,7 @@ class FakeOneTimeKeysStorage: OneTimeKeysStorage {
     }
 }
 
-class FakeClient: RatchetClientProtocol {
-    func deleteKeysEntity(token: String) throws {
-        throw NSError()
-    }
-    
-    let publicKeySet: PublicKeySet
-    
-    init(publicKeySet: PublicKeySet) {
-        self.publicKeySet = publicKeySet
-    }
-    
-    func uploadPublicKeys(identityCardId: String?, longTermPublicKey: SignedPublicKey?, oneTimePublicKeys: [Data], token: String) throws {
-        
-    }
-    
-    func getNumberOfActiveOneTimePublicKeys(token: String) throws -> Int {
-        return 0
-    }
-    
-    func validatePublicKeys(longTermKeyId: Data?, oneTimeKeysIds: [Data], token: String) throws -> ValidatePublicKeysResponse {
-        return try JSONDecoder().decode(ValidatePublicKeysResponse.self, from: Data())
-    }
-    
-    func getPublicKeySet(forRecipientIdentity identity: String, token: String) throws -> PublicKeySet {
-        return publicKeySet
-    }
-}
-
-class FakeRamClient: RatchetClientProtocol {
+class RamClient: RatchetClientProtocol {
     struct UserStore {
         var identityPublicKey: (VirgilPublicKey, Data)?
         var longTermPublicKey: SignedPublicKey?
@@ -197,7 +169,7 @@ class FakeRamClient: RatchetClientProtocol {
         if let identityCardId = identityCardId {
             let card = try self.cardManager.getCard(withId: identityCardId).startSync().getResult()
             publicKey = card.publicKey as! VirgilPublicKey
-            userStore.identityPublicKey = (publicKey, CUtils.extractRawPublicKey(self.crypto.exportPublicKey(publicKey)))
+            userStore.identityPublicKey = (publicKey, self.crypto.exportPublicKey(publicKey))
         }
         else {
             guard let existingIdentityPublicKey = userStore.identityPublicKey else {
@@ -273,7 +245,7 @@ class FakeRamClient: RatchetClientProtocol {
     }
     
     func getPublicKeySet(forRecipientIdentity identity: String, token: String) throws -> PublicKeySet {
-        guard let jwt = try? Jwt(stringRepresentation: token) else {
+        guard let _ = try? Jwt(stringRepresentation: token) else {
             throw NSError()
         }
         
@@ -308,5 +280,36 @@ class FakeKeysRotator: KeysRotatorProtocol {
         return CallbackOperation { _, completion in
             completion(Void(), nil)
         }
+    }
+}
+
+class RamCardClient: CardClientProtocol {
+    let crypto = VirgilCrypto()
+    private var cards: [String: RawSignedModel] = [:]
+    
+    func getCard(withId cardId: String, token: String) throws -> GetCardResponse {
+        if let model = self.cards[cardId] {
+            return GetCardResponse(rawCard: model, isOutdated: false)
+        }
+        
+        throw NSError()
+    }
+    
+    func publishCard(model: RawSignedModel, token: String) throws -> RawSignedModel {
+        let cardId = self.crypto.computeHash(for: model.contentSnapshot, using: .SHA512).subdata(in: 0..<32).hexEncodedString()
+        
+        self.cards[cardId] = model
+        
+        return model
+    }
+    
+    func searchCards(identity: String, token: String) throws -> [RawSignedModel] {
+        throw NSError()
+    }
+}
+
+class PositiveCardVerifier: CardVerifier {
+    func verifyCard(_ card: Card) -> Bool {
+        return true
     }
 }

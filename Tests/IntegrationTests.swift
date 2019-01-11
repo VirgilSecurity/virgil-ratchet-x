@@ -78,6 +78,7 @@ class IntegrationTests: XCTestCase {
         
         let cardVerifier = VirgilCardVerifier(cardCrypto: VirgilCardCrypto())!
         cardVerifier.verifyVirgilSignature = false
+        
         let cardManagerParams = CardManagerParams(cardCrypto: VirgilCardCrypto(), accessTokenProvider: receiverTokenProvider, cardVerifier: cardVerifier)
         cardManagerParams.cardClient = CardClient(serviceUrl: URL(string: testConfig.ServiceURL)!)
         
@@ -94,31 +95,31 @@ class IntegrationTests: XCTestCase {
         let receiverOneTimeKeysStorage = FileOneTimeKeysStorage(fileSystem: receiverFileSystem)
         let senderOneTimeKeysStorage = FileOneTimeKeysStorage(fileSystem: senderFileSystem)
 
-        let fakeClient = RatchetClient(serviceUrl: URL(string: testConfig.ServiceURL)!)
+        let client = RatchetClient(serviceUrl: URL(string: testConfig.ServiceURL)!)
         
-        let receiverKeysRotator = KeysRotator(identityPrivateKey: receiverIdentityKeyPair.privateKey, identityCardId: receiverCard.identifier, longTermKeysStorage: receiverLongTermKeysStorage, oneTimeKeysStorage: receiverOneTimeKeysStorage, client: fakeClient)
+        let receiverKeysRotator = KeysRotator(identityPrivateKey: receiverIdentityKeyPair.privateKey, identityCardId: receiverCard.identifier, longTermKeysStorage: receiverLongTermKeysStorage, oneTimeKeysStorage: receiverOneTimeKeysStorage, client: client)
         
         
         let senderSecureChat = SecureChat(identityPrivateKey: senderIdentityKeyPair.privateKey,
                                           accessTokenProvider: senderTokenProvider,
-                                          client: fakeClient,
+                                          client: client,
                                           longTermKeysStorage: try! KeychainLongTermKeysStorage(identity: senderIdentity),
                                           oneTimeKeysStorage: senderOneTimeKeysStorage,
-                                          sessionStorage: FakeRamSessionStorage(),
+                                          sessionStorage: FileSessionStorage(fileSystem: senderFileSystem),
                                           keysRotator: FakeKeysRotator())
         
         let receiverSecureChat = SecureChat(identityPrivateKey: receiverIdentityKeyPair.privateKey,
                                             accessTokenProvider: receiverTokenProvider,
-                                            client: fakeClient,
+                                            client: client,
                                             longTermKeysStorage: receiverLongTermKeysStorage,
                                             oneTimeKeysStorage: receiverOneTimeKeysStorage,
-                                            sessionStorage: FakeRamSessionStorage(),
+                                            sessionStorage: FileSessionStorage(fileSystem: receiverFileSystem),
                                             keysRotator: receiverKeysRotator)
         
         return (senderCard, receiverCard, senderSecureChat, receiverSecureChat)
     }
     
-    func test1() {
+    func test1__encrypt_decrypt__random_uuid_messages__should_decrypt() {
         let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = self.initChat()
         
         try! receiverSecureChat.rotateKeys().startSync().getResult()
@@ -128,14 +129,7 @@ class IntegrationTests: XCTestCase {
         let plainText = UUID().uuidString
         let cipherText = try! senderSession.encrypt(message: plainText)
 
-        let receiverSession: SecureSession
-            
-        do {
-            receiverSession = try receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, ratchetMessage: cipherText)
-        }
-        catch {
-            exit(0)
-        }
+        let receiverSession = try! receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, ratchetMessage: cipherText)
         
         let decryptedMessage = try! receiverSession.decrypt(message: cipherText)
         
@@ -159,6 +153,49 @@ class IntegrationTests: XCTestCase {
             let encryptedData = try! sender.encrypt(message: plainText)
             
             let decryptedMessage = try! receiver.decrypt(message: encryptedData)
+            
+            XCTAssert(decryptedMessage == plainText)
+        }
+    }
+    
+    func test2__session_persistence__random_uuid_messages__should_decrypt() {
+        let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = self.initChat()
+        
+        _ = try! receiverSecureChat.rotateKeys().startSync().getResult()
+        
+        let senderSession = try! senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard)
+        
+        XCTAssert(senderSecureChat.existingSession(withParticpantIdentity: receiverCard.identity) != nil)
+        
+        let plainText = UUID().uuidString
+        let cipherText = try! senderSession.encrypt(message: plainText)
+        
+        let receiverSession = try! receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, ratchetMessage: cipherText)
+        
+        XCTAssert(receiverSecureChat.existingSession(withParticpantIdentity: senderCard.identity) != nil)
+        
+        let decryptedMessage = try! receiverSession.decrypt(message: cipherText)
+        
+        XCTAssert(decryptedMessage == plainText)
+        
+        for _ in 0..<100 {
+            let sender: SecureSession
+            let receiver: SecureSession
+            
+            if Bool.random() {
+                sender = senderSecureChat.existingSession(withParticpantIdentity: receiverCard.identity)!
+                receiver = receiverSecureChat.existingSession(withParticpantIdentity: senderCard.identity)!
+            }
+            else {
+                sender = receiverSecureChat.existingSession(withParticpantIdentity: senderCard.identity)!
+                receiver = senderSecureChat.existingSession(withParticpantIdentity: receiverCard.identity)!
+            }
+            
+            let plainText = UUID().uuidString
+            
+            let message = try! sender.encrypt(message: plainText)
+            
+            let decryptedMessage = try! receiver.decrypt(message: message)
             
             XCTAssert(decryptedMessage == plainText)
         }
