@@ -51,47 +51,75 @@ import Foundation
         super.init()
     }
 
+    private let queue = DispatchQueue(label: "FileOneTimeKeysStorageQueue")
+    private var interactionCounter = 0
+    
     public func startInteraction() {
-        guard self.oneTimeKeys == nil else {
-            return
-        }
-        
-        let data = try! self.fileSystem.readOneTimeKeysFile()
-        
-        if !data.isEmpty {
-            self.oneTimeKeys = try! PropertyListDecoder().decode(OneTimeKeys.self, from: data)
-        }
-        else {
-            self.oneTimeKeys = OneTimeKeys(oneTimeKeys: [])
+        self.queue.sync {
+            if self.interactionCounter > 0 {
+                self.interactionCounter += 1
+                return
+            }
+            
+            guard self.oneTimeKeys == nil else {
+                return
+            }
+            
+            let data = try! self.fileSystem.readOneTimeKeysFile()
+            
+            if !data.isEmpty {
+                self.oneTimeKeys = try! PropertyListDecoder().decode(OneTimeKeys.self, from: data)
+            }
+            else {
+                self.oneTimeKeys = OneTimeKeys(oneTimeKeys: [])
+            }
+            
+            self.interactionCounter = 1
         }
     }
     
     public func stopInteraction() {
-        guard let oneTimeKeys = self.oneTimeKeys else {
-            return
+        self.queue.sync {
+            guard self.interactionCounter > 0 else {
+                assertionFailure("interactionCounter should be > 0")
+                return
+            }
+            
+            self.interactionCounter -= 1
+            
+            if self.interactionCounter > 0 {
+                return
+            }
+
+            guard let oneTimeKeys = self.oneTimeKeys else {
+                assertionFailure("oneTimeKeys should not be nil")
+                return
+            }
+            
+            let data = try! PropertyListEncoder().encode(oneTimeKeys)
+            
+            try! self.fileSystem.writeOneTimeKeysFile(data: data)
+            
+            self.oneTimeKeys = nil
         }
-        
-        let data = try! PropertyListEncoder().encode(oneTimeKeys)
-        
-        try! self.fileSystem.writeOneTimeKeysFile(data: data)
-        
-        self.oneTimeKeys = nil
     }
     
     public func storeKey(_ key: Data, withId id: Data) throws -> OneTimeKey {
-        guard var oneTimeKeys = self.oneTimeKeys else {
-            throw NSError()
+        return try self.queue.sync {
+            guard var oneTimeKeys = self.oneTimeKeys else {
+                throw NSError()
+            }
+            
+            guard !oneTimeKeys.oneTimeKeys.map({ $0.identifier }).contains(id) else {
+                throw NSError()
+            }
+            
+            let oneTimeKey = OneTimeKey(identifier: id, key: key, orphanedFrom: nil)
+            oneTimeKeys.oneTimeKeys.append(oneTimeKey)
+            self.oneTimeKeys = oneTimeKeys
+            
+            return oneTimeKey
         }
-        
-        guard !oneTimeKeys.oneTimeKeys.map({ $0.identifier }).contains(id) else {
-            throw NSError()
-        }
-        
-        let oneTimeKey = OneTimeKey(identifier: id, key: key, orphanedFrom: nil)
-        oneTimeKeys.oneTimeKeys.append(oneTimeKey)
-        self.oneTimeKeys = oneTimeKeys
-        
-        return oneTimeKey
     }
     
     public func retrieveKey(withId id: Data) throws -> OneTimeKey {
@@ -107,16 +135,18 @@ import Foundation
     }
     
     public func deleteKey(withId id: Data) throws {
-        guard var oneTimeKeys = self.oneTimeKeys else {
-            throw NSError()
+        try self.queue.sync {
+            guard var oneTimeKeys = self.oneTimeKeys else {
+                throw NSError()
+            }
+            
+            guard let index = oneTimeKeys.oneTimeKeys.firstIndex(where: { $0.identifier == id }) else {
+                throw NSError()
+            }
+            
+            oneTimeKeys.oneTimeKeys.remove(at: index)
+            self.oneTimeKeys = oneTimeKeys
         }
-        
-        guard let index = oneTimeKeys.oneTimeKeys.firstIndex(where: { $0.identifier == id }) else {
-            throw NSError()
-        }
-        
-        oneTimeKeys.oneTimeKeys.remove(at: index)
-        self.oneTimeKeys = oneTimeKeys
     }
     
     public func retrieveAllKeys() throws -> [OneTimeKey] {
@@ -128,21 +158,23 @@ import Foundation
     }
     
     public func markKeyOrphaned(startingFrom date: Date, keyId: Data) throws {
-        guard var oneTimeKeys = self.oneTimeKeys else {
-            throw NSError()
+        try self.queue.sync {
+            guard var oneTimeKeys = self.oneTimeKeys else {
+                throw NSError()
+            }
+            
+            guard let index = oneTimeKeys.oneTimeKeys.firstIndex(where: { $0.identifier == keyId }) else {
+                throw NSError()
+            }
+            
+            let oneTimeKey = oneTimeKeys.oneTimeKeys[index]
+            
+            guard oneTimeKey.orphanedFrom == nil else {
+                throw NSError()
+            }
+            
+            oneTimeKeys.oneTimeKeys[index] = OneTimeKey(identifier: oneTimeKey.identifier, key: oneTimeKey.key, orphanedFrom: date)
+            self.oneTimeKeys = oneTimeKeys
         }
-        
-        guard let index = oneTimeKeys.oneTimeKeys.firstIndex(where: { $0.identifier == keyId }) else {
-            throw NSError()
-        }
-        
-        let oneTimeKey = oneTimeKeys.oneTimeKeys[index]
-        
-        guard oneTimeKey.orphanedFrom == nil else {
-            throw NSError()
-        }
-        
-        oneTimeKeys.oneTimeKeys[index] = OneTimeKey(identifier: oneTimeKey.identifier, key: oneTimeKey.key, orphanedFrom: date)
-        self.oneTimeKeys = oneTimeKeys
     }
 }
