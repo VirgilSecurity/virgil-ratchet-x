@@ -1,5 +1,5 @@
 language: swift
-osx_image: xcode10
+osx_image: xcode10.1
 
 env:
   global:
@@ -7,14 +7,14 @@ env:
     - PROJECT=VirgilSDKRatchet.xcodeproj
     - IOS_FRAMEWORK_SCHEME="VirgilSDKRatchet iOS"
     - IOS_TEST_SCHEME="RatchetTestApp iOS"
-    - IOS_SDK=iphonesimulator12.0
+    - IOS_SDK=iphonesimulator12.1
     - MACOS_SDK=macosx10.14
-    - TVOS_SDK=appletvsimulator12.0
-    - WATCHOS_SDK=watchsimulator5.0
+    - TVOS_SDK=appletvsimulator12.1
+    - WATCHOS_SDK=watchsimulator5.1
     - FRAMEWORK_NAME=VirgilSDKRatchet
 
   matrix:
-    - DESTINATION="OS=12.0,name=iPhone SE"                     ENABLE_BUILD="YES"    SCHEME="$IOS_FRAMEWORK_SCHEME"        SDK="$IOS_SDK"        TWO_STEP_BUILD_ENABLED="YES"    CARTHAGE_PLATFORM_NAME="iOS"        RUN_TESTS="YES"    ADDITIONAL_TESTS_SCHEME="$IOS_TEST_SCHEME"     PUBLISH_DOCS="YES"     PUBLISH_CARTHAGE="YES"     POD_LIB_LINT="NO"    SWIFT_LINT="YES"
+    - DESTINATION="OS=12.1,name=iPhone SE"                     ENABLE_BUILD="YES"    SCHEME="$IOS_FRAMEWORK_SCHEME"        SDK="$IOS_SDK"        TWO_STEP_BUILD_ENABLED="YES"    CARTHAGE_PLATFORM_NAME="iOS"        RUN_TESTS="YES"    ADDITIONAL_TESTS_SCHEME="$IOS_TEST_SCHEME"     PUBLISH_DOCS="YES"     PUBLISH_CARTHAGE="YES"     POD_LIB_LINT="NO"    SWIFT_LINT="YES"
 
 before_install:
   - set -e
@@ -65,7 +65,7 @@ script:
 
   # Build with carthage
   - if [ $PUBLISH_CARTHAGE == "YES" ]; then
-      carthage build --no-skip-current --no-use-binaries;
+      carthage build --no-skip-current;
     fi
   
   # Check pod lib
