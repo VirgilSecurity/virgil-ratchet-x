@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2018 Virgil Security Inc.
+// Copyright (C) 2015-2019 Virgil Security Inc.
 //
 // All rights reserved.
 //
@@ -79,26 +79,26 @@ class KeysRotator {
         return CallbackOperation { operation, completion in
             guard self.mutex.trylock() else {
                 Log.debug("Interrupted concurrent keys' rotation")
-                
+
                 completion(nil, NSError())
                 return
             }
-            
+
             Log.debug("Started keys' rotation")
-            
-            let completionWrapper: (Void?, Error?) -> () = {
+
+            let completionWrapper: (Void?, Error?) -> Void = {
                 self.mutex.unlock()
                 self.oneTimeKeysStorage.stopInteraction()
                 Log.debug("Completed keys' rotation")
-                
+
                 completion($0, $1)
             }
-            
+
             do {
                 let token: AccessToken = try operation.findDependencyResult()
-                
+
                 let now = Date()
-                
+
                 // TODO: Parallelize
                 self.oneTimeKeysStorage.startInteraction()
                 let oneTimeKeys = try self.oneTimeKeysStorage.retrieveAllKeys()
@@ -115,7 +115,7 @@ class KeysRotator {
                         oneTimeKeysIds.append(oneTimeKey.identifier)
                     }
                 }
-                
+
                 let longTermKeys = try self.longTermKeysStorage.retrieveAllKeys()
                 var lastLongTermKey: LongTermKey? = nil
                 for longTermKey in longTermKeys {
@@ -140,15 +140,15 @@ class KeysRotator {
                         }
                     }
                 }
-                
+
                 Log.debug("Validating local keys")
                 let validateResponse = try self.client.validatePublicKeys(longTermKeyId: lastLongTermKey?.identifier, oneTimeKeysIds: oneTimeKeysIds, token: token.stringRepresentation())
-                
+
                 for usedOneTimeKeyId in validateResponse.usedOneTimeKeysIds {
                     Log.debug("Marking one-time key as orhpaned \(usedOneTimeKeyId.hexEncodedString())")
                     try self.oneTimeKeysStorage.markKeyOrphaned(startingFrom: now, keyId: usedOneTimeKeyId)
                 }
-                
+
                 var rotateLongTermKey = false
                 if validateResponse.usedLongTermKeyId != nil || lastLongTermKey == nil {
                     rotateLongTermKey = true
@@ -156,7 +156,7 @@ class KeysRotator {
                 if let lastLongTermKey = lastLongTermKey, lastLongTermKey.creationDate + self.longTermKeyTtl < now {
                     rotateLongTermKey = true
                 }
-                
+
                 let longTermSignedPublicKey: SignedPublicKey?
                 if rotateLongTermKey {
                     Log.debug("Rotating long-term key")
@@ -169,14 +169,14 @@ class KeysRotator {
                 else {
                     longTermSignedPublicKey = nil
                 }
-                
+
                 let numberOfOneTimeKeysToGenerate = max(self.desiredNumberOfOneTimeKeys - (oneTimeKeysIds.count - validateResponse.usedOneTimeKeysIds.count), 0)
-                
+
                 Log.debug("Generating \(numberOfOneTimeKeysToGenerate) one-time keys")
                 let oneTimePublicKeys: [Data]
                 if numberOfOneTimeKeysToGenerate > 0 {
                     let keyPairs = try self.crypto.generateMultipleKeyPairs(numberOfKeyPairs: UInt(numberOfOneTimeKeysToGenerate))
-                    
+
                     var publicKeys = [Data]()
                     publicKeys.reserveCapacity(numberOfOneTimeKeysToGenerate)
                     for keyPair in keyPairs {
@@ -184,19 +184,19 @@ class KeysRotator {
                         let oneTimePublicKey = CUtils.extractRawPublicKey(self.crypto.exportPublicKey(keyPair.publicKey))
                         let keyId = SecureChat.computeKeyId(publicKey: oneTimePublicKey)
                         _ = try self.oneTimeKeysStorage.storeKey(oneTimePrivateKey, withId: keyId)
-                        
+
                         publicKeys.append(oneTimePublicKey)
                     }
-                    
+
                     oneTimePublicKeys = publicKeys
                 }
                 else {
                     oneTimePublicKeys = []
                 }
-                
+
                 Log.debug("Uploading keys")
                 try self.client.uploadPublicKeys(identityCardId: self.identityCardId, longTermPublicKey: longTermSignedPublicKey, oneTimePublicKeys: oneTimePublicKeys, token: token.stringRepresentation())
-                
+
                 completionWrapper(Void(), nil)
             }
             catch {

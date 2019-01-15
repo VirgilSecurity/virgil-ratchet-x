@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2018 Virgil Security Inc.
+// Copyright (C) 2015-2019 Virgil Security Inc.
 //
 // All rights reserved.
 //
@@ -50,14 +50,14 @@ public protocol RatchetClientProtocol: class {
     /// - Returns:
     /// - Throws:
     func uploadPublicKeys(identityCardId: String?, longTermPublicKey: SignedPublicKey?, oneTimePublicKeys: [Data], token: String) throws
-    
+
     /// Returns number of active one-time public keys (0..<=150)
     ///
     /// - Parameter token: auth token (JWT)
     /// - Returns: Number of active one-time public keys (0..<=150)
     /// - Throws:
     func getNumberOfActiveOneTimePublicKeys(token: String) throws -> Int
-    
+
     /// Checks list of keys ids and returns subset of that list with already used keys ids
     ///
     /// keyId == SHA512(publicKey)[0..<8]
@@ -69,7 +69,7 @@ public protocol RatchetClientProtocol: class {
     /// - Returns: Object with used keys ids
     /// - Throws:
     func validatePublicKeys(longTermKeyId: Data?, oneTimeKeysIds: [Data], token: String) throws -> ValidatePublicKeysResponse
-    
+
     /// Returns public keys set for given identity.
     ///
     /// One-time key should be marked as used (or removed)

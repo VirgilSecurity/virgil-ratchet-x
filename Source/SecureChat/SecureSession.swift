@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2018 Virgil Security Inc.
+// Copyright (C) 2015-2019 Virgil Security Inc.
 //
 // All rights reserved.
 //
@@ -41,10 +41,10 @@ import VirgilCryptoApiImpl
 @objc(VSRSecureSession) public final class SecureSession: NSObject {
     @objc public let crypto = VirgilCrypto()
     @objc public let sessionStorage: SessionStorage
-    
+
     private let ratchetSession: RatchetSession
     @objc public let participantIdentity: String
-    
+
     internal init(sessionStorage: SessionStorage,
                   participantIdentity: String,
                   receiverIdentityPrivateKey: VirgilPrivateKey,
@@ -54,17 +54,17 @@ import VirgilCryptoApiImpl
                   ratchetMessage: RatchetMessage) throws {
         self.sessionStorage = sessionStorage
         self.participantIdentity = participantIdentity
-        
+
         let ratchetSession = RatchetSession()
         ratchetSession.setupDefaults()
-        
+
         try ratchetSession.respond(senderIdentityPublicKey: senderIdentityPublicKey, receiverIdentityPrivateKey: CUtils.extractRawPrivateKey(self.crypto.exportPrivateKey(receiverIdentityPrivateKey)), receiverLongTermPrivateKey: receiverLongTermPrivateKey.key, receiverOneTimePrivateKey: receiverOneTimePrivateKey?.key ?? Data(), message: ratchetMessage)
-        
+
         self.ratchetSession = ratchetSession
-        
+
         super.init()
     }
-    
+
     // As sender
     internal init(sessionStorage: SessionStorage,
                   participantIdentity: String,
@@ -74,54 +74,54 @@ import VirgilCryptoApiImpl
                   receiverOneTimePublicKey: Data?) throws {
         self.sessionStorage = sessionStorage
         self.participantIdentity = participantIdentity
-        
+
         let ratchetSession = RatchetSession()
         ratchetSession.setupDefaults()
-        
+
         try ratchetSession.initiate(senderIdentityPrivateKey: senderIdentityPrivateKey, receiverIdentityPublicKey: receiverIdentityPublicKey, receiverLongTermPublicKey: receiverLongTermPublicKey, receiverOneTimePublicKey: receiverOneTimePublicKey ?? Data())
-        
+
         self.ratchetSession = ratchetSession
-        
+
         super.init()
     }
-    
+
     public func encrypt(message: String) throws -> RatchetMessage {
         guard let msgData = message.data(using: .utf8) else {
             throw NSError()
         }
-        
+
         let errCtx = ErrorCtx()
         let msg = self.ratchetSession.encrypt(plainText: msgData, errCtx: errCtx)
-        
+
         try errCtx.error()
-        
+
         try self.sessionStorage.storeSession(self)
-        
+
         return msg
     }
-    
+
     public func decrypt(message: RatchetMessage) throws -> String {
         let data = try self.ratchetSession.decrypt(message: message)
-        
+
         try self.sessionStorage.storeSession(self)
-        
+
         return String(data: data, encoding: .utf8)!
     }
-    
+
     public init(data: Data, participantIdentity: String, sessionStorage: SessionStorage) throws {
         let errCtx = ErrorCtx()
-        
+
         self.ratchetSession = RatchetSession.deserialize(input: data, errCtx: errCtx)
         self.ratchetSession.setupDefaults()
-        
+
         try errCtx.error()
-        
+
         self.sessionStorage = sessionStorage
         self.participantIdentity = participantIdentity
-        
+
         super.init()
     }
-    
+
     public func serialize() -> Data {
         return self.ratchetSession.serialize()
     }

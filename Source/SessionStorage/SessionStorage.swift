@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2018 Virgil Security Inc.
+// Copyright (C) 2015-2019 Virgil Security Inc.
 //
 // All rights reserved.
 //
@@ -40,6 +40,6 @@ import Foundation
     @objc func storeSession(_ session: SecureSession) throws
     @objc func retrieveSession(participantIdentity: String) -> SecureSession?
     @objc func deleteSession(participantIdentity: String) throws
-    
+
     // TODO: Add reset
 }

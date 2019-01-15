@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2018 Virgil Security Inc.
+// Copyright (C) 2015-2019 Virgil Security Inc.
 //
 // All rights reserved.
 //
@@ -34,48 +34,47 @@
 // Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 //
 
-
 import Foundation
 
 // TODO: Add docs and make public
 internal class Mutex {
     private var mutex = pthread_mutex_t()
-    
+
     internal init() {
         pthread_mutex_init(&self.mutex, nil)
     }
-    
+
     deinit {
         pthread_mutex_destroy(&self.mutex)
     }
-    
+
     internal func trylock() -> Bool {
         return pthread_mutex_trylock(&self.mutex) == 0
     }
-    
+
     internal func lock() {
         pthread_mutex_lock(&self.mutex)
     }
-    
+
     internal func unlock() {
         pthread_mutex_unlock(&self.mutex)
     }
-    
-    internal func lock(closure: ()->()) {
+
+    internal func lock(closure: () -> Void) {
         self.lock()
-        
+
         closure()
-        
+
         defer {
             self.unlock()
         }
     }
-    
-    internal func lock(closure: () throws -> ()) throws {
+
+    internal func lock(closure: () throws -> Void) throws {
         self.lock()
-        
+
         try closure()
-        
+
         defer {
             self.unlock()
         }

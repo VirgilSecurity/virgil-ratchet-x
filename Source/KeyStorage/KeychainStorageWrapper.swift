@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2018 Virgil Security Inc.
+// Copyright (C) 2015-2019 Virgil Security Inc.
 //
 // All rights reserved.
 //
@@ -63,7 +63,7 @@ public final class KeychainStorageWrapper {
         else {
             identityStr = ""
         }
-        
+
         let prefixStr: String
         if let prefix = self.prefix {
             prefixStr = "PREFIX=\(prefix)."
@@ -71,7 +71,7 @@ public final class KeychainStorageWrapper {
         else {
             prefixStr = ""
         }
-        
+
         return "VIRGIL.\(identityStr)\(prefixStr)"
     }
 
@@ -101,7 +101,7 @@ extension KeychainStorageWrapper {
 
     private func mapKeychainEntries(_ keychainEntries: [KeychainEntry]) -> [KeychainEntry] {
         return keychainEntries.compactMap {
-            return self.mapKeychainEntry($0)
+            self.mapKeychainEntry($0)
         }
     }
 
@@ -109,11 +109,11 @@ extension KeychainStorageWrapper {
         let keychainName = self.keychainName(fromEntryName: name)
 
         let keychainEntry = try self.keychainStorage.store(data: data, withName: keychainName, meta: meta)
-        
+
         guard let entry = self.mapKeychainEntry(keychainEntry) else {
             throw KeychainStorageWrapperError.errorConvertingKeychainEntry
         }
-        
+
         return entry
     }
 

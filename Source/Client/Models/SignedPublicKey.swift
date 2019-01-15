@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2018 Virgil Security Inc.
+// Copyright (C) 2015-2019 Virgil Security Inc.
 //
 // All rights reserved.
 //
@@ -45,7 +45,7 @@ public final class SignedPublicKey: NSObject, Decodable {
         case publicKey = "public_key"
         case signature = "signature"
     }
-    
+
     internal init(publicKey: Data, signature: Data) {
         self.publicKey = publicKey
         self.signature = signature

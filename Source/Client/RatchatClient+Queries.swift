@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2018 Virgil Security Inc.
+// Copyright (C) 2015-2019 Virgil Security Inc.
 //
 // All rights reserved.
 //
@@ -162,7 +162,7 @@ extension RatchetClient: RatchetClientProtocol {
 
         return try self.processResponse(response)
     }
-    
+
     /// Deletes a keys entity
     ///
     /// - Parameter token: auth token (JWT)

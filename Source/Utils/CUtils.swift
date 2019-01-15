@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2018 Virgil Security Inc.
+// Copyright (C) 2015-2019 Virgil Security Inc.
 //
 // All rights reserved.
 //
@@ -42,7 +42,7 @@ internal class CUtils {
     internal static func extractRawPublicKey(_ key: Data) -> Data {
         return Data(key.subdata(in: key.count - 64..<key.count - 32).reversed())
     }
-    
+
     internal static func extractRawPrivateKey(_ key: Data) -> Data {
         return Data(key.subdata(in: 7..<39).reversed())
     }

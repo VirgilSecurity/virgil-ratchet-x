@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2018 Virgil Security Inc.
+// Copyright (C) 2015-2019 Virgil Security Inc.
 //
 // All rights reserved.
 //
@@ -41,12 +41,12 @@ import VirgilSDK
     @objc public let identifier: Data
     @objc public let key: Data
     @objc public let orphanedFrom: Date?
-    
+
     @objc public init(identifier: Data, key: Data, orphanedFrom: Date?) {
         self.identifier = identifier
         self.key = key
         self.orphanedFrom = orphanedFrom
-        
+
         super.init()
     }
 }

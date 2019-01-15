@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2018 Virgil Security Inc.
+// Copyright (C) 2015-2019 Virgil Security Inc.
 //
 // All rights reserved.
 //
@@ -40,53 +40,53 @@ import Foundation
 @objc(VSRFileOneTimeKeysStorage) open class FileOneTimeKeysStorage: NSObject, OneTimeKeysStorage {
     private var oneTimeKeys: OneTimeKeys?
     private let fileSystem: FileSystem
-    
+
     private struct OneTimeKeys: Codable {
         var oneTimeKeys: [OneTimeKey]
     }
-    
+
     @objc public init(fileSystem: FileSystem) {
         self.fileSystem = fileSystem
-        
+
         super.init()
     }
 
     private let queue = DispatchQueue(label: "FileOneTimeKeysStorageQueue")
     private var interactionCounter = 0
-    
+
     public func startInteraction() {
         self.queue.sync {
             if self.interactionCounter > 0 {
                 self.interactionCounter += 1
                 return
             }
-            
+
             guard self.oneTimeKeys == nil else {
                 return
             }
-            
+
             let data = try! self.fileSystem.readOneTimeKeysFile()
-            
+
             if !data.isEmpty {
                 self.oneTimeKeys = try! PropertyListDecoder().decode(OneTimeKeys.self, from: data)
             }
             else {
                 self.oneTimeKeys = OneTimeKeys(oneTimeKeys: [])
             }
-            
+
             self.interactionCounter = 1
         }
     }
-    
+
     public func stopInteraction() {
         self.queue.sync {
             guard self.interactionCounter > 0 else {
                 assertionFailure("interactionCounter should be > 0")
                 return
             }
-            
+
             self.interactionCounter -= 1
-            
+
             if self.interactionCounter > 0 {
                 return
             }
@@ -95,84 +95,84 @@ import Foundation
                 assertionFailure("oneTimeKeys should not be nil")
                 return
             }
-            
+
             let data = try! PropertyListEncoder().encode(oneTimeKeys)
-            
+
             try! self.fileSystem.writeOneTimeKeysFile(data: data)
-            
+
             self.oneTimeKeys = nil
         }
     }
-    
+
     public func storeKey(_ key: Data, withId id: Data) throws -> OneTimeKey {
         return try self.queue.sync {
             guard var oneTimeKeys = self.oneTimeKeys else {
                 throw NSError()
             }
-            
+
             guard !oneTimeKeys.oneTimeKeys.map({ $0.identifier }).contains(id) else {
                 throw NSError()
             }
-            
+
             let oneTimeKey = OneTimeKey(identifier: id, key: key, orphanedFrom: nil)
             oneTimeKeys.oneTimeKeys.append(oneTimeKey)
             self.oneTimeKeys = oneTimeKeys
-            
+
             return oneTimeKey
         }
     }
-    
+
     public func retrieveKey(withId id: Data) throws -> OneTimeKey {
         guard let oneTimeKeys = self.oneTimeKeys else {
             throw NSError()
         }
-        
-        guard let oneTimeKey = oneTimeKeys.oneTimeKeys.first(where: { $0.identifier == id } ) else {
+
+        guard let oneTimeKey = oneTimeKeys.oneTimeKeys.first(where: { $0.identifier == id }) else {
             throw NSError()
         }
-        
+
         return oneTimeKey
     }
-    
+
     public func deleteKey(withId id: Data) throws {
         try self.queue.sync {
             guard var oneTimeKeys = self.oneTimeKeys else {
                 throw NSError()
             }
-            
+
             guard let index = oneTimeKeys.oneTimeKeys.firstIndex(where: { $0.identifier == id }) else {
                 throw NSError()
             }
-            
+
             oneTimeKeys.oneTimeKeys.remove(at: index)
             self.oneTimeKeys = oneTimeKeys
         }
     }
-    
+
     public func retrieveAllKeys() throws -> [OneTimeKey] {
         guard let oneTimeKeys = self.oneTimeKeys else {
             throw NSError()
         }
-        
+
         return oneTimeKeys.oneTimeKeys
     }
-    
+
     public func markKeyOrphaned(startingFrom date: Date, keyId: Data) throws {
         try self.queue.sync {
             guard var oneTimeKeys = self.oneTimeKeys else {
                 throw NSError()
             }
-            
+
             guard let index = oneTimeKeys.oneTimeKeys.firstIndex(where: { $0.identifier == keyId }) else {
                 throw NSError()
             }
-            
+
             let oneTimeKey = oneTimeKeys.oneTimeKeys[index]
-            
+
             guard oneTimeKey.orphanedFrom == nil else {
                 throw NSError()
             }
-            
+
             oneTimeKeys.oneTimeKeys[index] = OneTimeKey(identifier: oneTimeKey.identifier, key: oneTimeKey.key, orphanedFrom: date)
             self.oneTimeKeys = oneTimeKeys
         }

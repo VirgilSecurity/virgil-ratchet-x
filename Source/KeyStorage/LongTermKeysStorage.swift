@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2018 Virgil Security Inc.
+// Copyright (C) 2015-2019 Virgil Security Inc.
 //
 // All rights reserved.
 //
@@ -41,13 +41,13 @@ import Foundation
     @objc public let key: Data
     @objc public let creationDate: Date
     @objc public let outdatedFrom: Date?
-    
+
     @objc public init(identifier: Data, key: Data, creationDate: Date, outdatedFrom: Date?) {
         self.identifier = identifier
         self.key = key
         self.creationDate = creationDate
         self.outdatedFrom = outdatedFrom
-        
+
         super.init()
     }
 }

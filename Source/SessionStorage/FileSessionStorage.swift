@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2018 Virgil Security Inc.
+// Copyright (C) 2015-2019 Virgil Security Inc.
 //
 // All rights reserved.
 //
@@ -38,33 +38,33 @@ import Foundation
 
 @objc(VSRFileSessionStorage) open class FileSessionStorage: NSObject, SessionStorage {
     private let fileSystem: FileSystem
-    
+
     @objc convenience init(identity: String) {
         let fileSystem = FileSystem(identity: identity)
-        
+
         self.init(fileSystem: fileSystem)
     }
-    
+
     @objc public init(fileSystem: FileSystem) {
         self.fileSystem = fileSystem
-        
+
         super.init()
     }
-    
+
     public func storeSession(_ session: SecureSession) throws {
         let data = session.serialize()
 
         try self.fileSystem.writeSessionFile(identity: session.participantIdentity, data: data)
     }
-    
+
     public func retrieveSession(participantIdentity: String) -> SecureSession? {
         guard let data = try? self.fileSystem.readSession(identity: participantIdentity), !data.isEmpty else {
             return nil
         }
-        
+
         return try? SecureSession(data: data, participantIdentity: participantIdentity, sessionStorage: self)
     }
-    
+
     public func deleteSession(participantIdentity: String) throws {
         try self.fileSystem.deleteSessionFile(identity: participantIdentity)
     }

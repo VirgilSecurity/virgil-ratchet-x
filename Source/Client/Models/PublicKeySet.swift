@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2018 Virgil Security Inc.
+// Copyright (C) 2015-2019 Virgil Security Inc.
 //
 // All rights reserved.
 //
@@ -47,7 +47,7 @@ public final class PublicKeySet: NSObject, Decodable {
         case longTermPublicKey = "long_term_key"
         case oneTimePublicKey = "one_time_key"
     }
-    
+
     internal init(identityPublicKey: Data, longTermPublicKey: SignedPublicKey, oneTimePublicKey: Data?) {
         self.identityPublicKey = identityPublicKey
         self.longTermPublicKey = longTermPublicKey

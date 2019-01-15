@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2018 Virgil Security Inc.
+// Copyright (C) 2015-2019 Virgil Security Inc.
 //
 // All rights reserved.
 //
@@ -45,11 +45,11 @@ public final class ValidatePublicKeysResponse: NSObject, Decodable {
         case usedLongTermKeyId = "long_term_key_id"
         case usedOneTimeKeysIds = "one_time_keys_ids"
     }
-    
+
     internal init(usedLongTermKeyId: Data?, usedOneTimeKeysIds: [Data]) {
         self.usedLongTermKeyId = usedLongTermKeyId
         self.usedOneTimeKeysIds = usedOneTimeKeysIds
-        
+
         super.init()
     }
 }
