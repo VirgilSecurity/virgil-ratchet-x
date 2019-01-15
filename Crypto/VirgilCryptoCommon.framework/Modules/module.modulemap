@@ -1,6 +1,0 @@
-framework module VirgilCryptoCommon {
-  umbrella header "VirgilCryptoCommon.h"
-
-  export *
-  module * { export * }
-}
