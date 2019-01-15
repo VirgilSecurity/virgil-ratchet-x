@@ -15,8 +15,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "424FAA052177506100622A3B"
-               BuildableName = "VirgilSDKRatchet.framework"
-               BlueprintName = "VirgilSDKRatchet"
+               BuildableName = "VirgilSDKRatchet_iOS.framework"
+               BlueprintName = "VirgilSDKRatchet iOS"
                ReferencedContainer = "container:VirgilSDKRatchet.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -43,8 +43,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "424FAA052177506100622A3B"
-            BuildableName = "VirgilSDKRatchet.framework"
-            BlueprintName = "VirgilSDKRatchet"
+            BuildableName = "VirgilSDKRatchet_iOS.framework"
+            BlueprintName = "VirgilSDKRatchet iOS"
             ReferencedContainer = "container:VirgilSDKRatchet.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -65,8 +65,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "424FAA052177506100622A3B"
-            BuildableName = "VirgilSDKRatchet.framework"
-            BlueprintName = "VirgilSDKRatchet"
+            BuildableName = "VirgilSDKRatchet_iOS.framework"
+            BlueprintName = "VirgilSDKRatchet iOS"
             ReferencedContainer = "container:VirgilSDKRatchet.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -83,8 +83,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "424FAA052177506100622A3B"
-            BuildableName = "VirgilSDKRatchet.framework"
-            BlueprintName = "VirgilSDKRatchet"
+            BuildableName = "VirgilSDKRatchet_iOS.framework"
+            BlueprintName = "VirgilSDKRatchet iOS"
             ReferencedContainer = "container:VirgilSDKRatchet.xcodeproj">
          </BuildableReference>
       </MacroExpansion>

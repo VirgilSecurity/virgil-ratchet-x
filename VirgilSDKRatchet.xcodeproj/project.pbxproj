@@ -406,9 +406,9 @@
 			productReference = 421B43E82190AF5900D4F496 /* RatchetTestApp iOS.app */;
 			productType = "com.apple.product-type.application";
 		};
-		424FAA052177506100622A3B /* VirgilSDKRatchet */ = {
+		424FAA052177506100622A3B /* VirgilSDKRatchet iOS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 424FAA1A2177506100622A3B /* Build configuration list for PBXNativeTarget "VirgilSDKRatchet" */;
+			buildConfigurationList = 424FAA1A2177506100622A3B /* Build configuration list for PBXNativeTarget "VirgilSDKRatchet iOS" */;
 			buildPhases = (
 				424FAA012177506100622A3B /* Headers */,
 				424FAA022177506100622A3B /* Sources */,
@@ -420,7 +420,7 @@
 			);
 			dependencies = (
 			);
-			name = VirgilSDKRatchet;
+			name = "VirgilSDKRatchet iOS";
 			productName = VirgilSDKRatchet;
 			productReference = 424FAA062177506100622A3B /* VirgilSDKRatchet.framework */;
 			productType = "com.apple.product-type.framework";
@@ -480,7 +480,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				424FAA052177506100622A3B /* VirgilSDKRatchet */,
+				424FAA052177506100622A3B /* VirgilSDKRatchet iOS */,
 				424FAA0E2177506100622A3B /* VirgilSDKRatchetTests */,
 				421B43E72190AF5900D4F496 /* RatchetTestApp iOS */,
 			);
@@ -573,7 +573,7 @@
 		};
 		424FAA122177506100622A3B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 424FAA052177506100622A3B /* VirgilSDKRatchet */;
+			target = 424FAA052177506100622A3B /* VirgilSDKRatchet iOS */;
 			targetProxy = 424FAA112177506100622A3B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -777,7 +777,8 @@
 					"@loader_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.virgilsecurity.VirgilSDKRatchet;
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PRODUCT_MODULE_NAME = VirgilSDKRatchet;
+				PRODUCT_NAME = VirgilSDKRatchet;
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -805,7 +806,8 @@
 					"@loader_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.virgilsecurity.VirgilSDKRatchet;
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PRODUCT_MODULE_NAME = VirgilSDKRatchet;
+				PRODUCT_NAME = VirgilSDKRatchet;
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -877,7 +879,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		424FAA1A2177506100622A3B /* Build configuration list for PBXNativeTarget "VirgilSDKRatchet" */ = {
+		424FAA1A2177506100622A3B /* Build configuration list for PBXNativeTarget "VirgilSDKRatchet iOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				424FAA1B2177506100622A3B /* Debug */,
