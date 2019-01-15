@@ -52,8 +52,8 @@ import VirgilSDK
 }
 
 @objc(VSROneTimeKeysStorage) public protocol OneTimeKeysStorage: class {
-    @objc func startInteraction()
-    @objc func stopInteraction()
+    @objc func startInteraction() throws
+    @objc func stopInteraction() throws
     @objc func storeKey(_ key: Data, withId id: Data) throws -> OneTimeKey
     @objc func retrieveKey(withId id: Data) throws -> OneTimeKey
     @objc func deleteKey(withId id: Data) throws

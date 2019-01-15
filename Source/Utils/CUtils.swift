@@ -35,8 +35,6 @@
 //
 
 import Foundation
-import VirgilCryptoApiImpl
-import VSCCommon
 
 internal class CUtils {
     internal static func extractRawPublicKey(_ key: Data) -> Data {

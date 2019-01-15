@@ -104,9 +104,9 @@ class RamOneTimeKeysStorage: OneTimeKeysStorage {
         self.db = db
     }
     
-    func startInteraction() { }
+    func startInteraction() throws { }
     
-    func stopInteraction() { }
+    func stopInteraction() throws { }
     
     func storeKey(_ key: Data, withId id: Data) throws -> OneTimeKey {
         let oneTimeKey = OneTimeKey(identifier: id, key: key, orphanedFrom: nil)

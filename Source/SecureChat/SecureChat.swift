@@ -160,10 +160,10 @@ import VirgilCryptoApiImpl
             let oneTimePublicKey: Data
 
             do {
-                self.oneTimeKeysStorage.startInteraction()
+                try self.oneTimeKeysStorage.startInteraction()
 
                 defer {
-                    self.oneTimeKeysStorage.stopInteraction()
+                    try? self.oneTimeKeysStorage.stopInteraction()
                 }
 
                 let keyPair = try self.crypto.generateKeyPair()
@@ -212,7 +212,7 @@ import VirgilCryptoApiImpl
         let receiverOneTimePrivateKey: OneTimeKey?
 
         if let receiverOneTimeKeyId = receiverOneTimeKeyId {
-            self.oneTimeKeysStorage.startInteraction()
+            try self.oneTimeKeysStorage.startInteraction()
 
             receiverOneTimePrivateKey = try self.oneTimeKeysStorage.retrieveKey(withId: receiverOneTimeKeyId)
         }
@@ -232,14 +232,14 @@ import VirgilCryptoApiImpl
                                         ratchetMessage: ratchetMessage)
         }
         catch {
-            self.oneTimeKeysStorage.stopInteraction()
+            try self.oneTimeKeysStorage.stopInteraction()
 
             throw error
         }
 
         if let receiverOneTimeKeyId = receiverOneTimeKeyId {
             defer {
-                self.oneTimeKeysStorage.stopInteraction()
+                try? self.oneTimeKeysStorage.stopInteraction()
             }
 
             try self.oneTimeKeysStorage.deleteKey(withId: receiverOneTimeKeyId)

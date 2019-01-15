@@ -88,10 +88,27 @@ class KeysRotator {
 
             let completionWrapper: (Void?, Error?) -> Void = {
                 self.mutex.unlock()
-                self.oneTimeKeysStorage.stopInteraction()
-                Log.debug("Completed keys' rotation")
-
-                completion($0, $1)
+                do {
+                    try self.oneTimeKeysStorage.stopInteraction()
+                }
+                catch {
+                    Log.debug("Completed keys' rotation with error")
+                    completion(nil, error)
+                    return
+                }
+                
+                if let error = $1 {
+                    Log.debug("Completed keys' rotation with error")
+                    completion(nil, error)
+                    return
+                }
+                else if let res = $0 {
+                    Log.debug("Completed keys' rotation with successfully")
+                    completion(res, nil)
+                    return
+                }
+                
+                completion(nil, nil)
             }
 
             do {
@@ -100,7 +117,7 @@ class KeysRotator {
                 let now = Date()
 
                 // TODO: Parallelize
-                self.oneTimeKeysStorage.startInteraction()
+                try self.oneTimeKeysStorage.startInteraction()
                 let oneTimeKeys = try self.oneTimeKeysStorage.retrieveAllKeys()
                 var oneTimeKeysIds = [Data]()
                 oneTimeKeysIds.reserveCapacity(oneTimeKeys.count)

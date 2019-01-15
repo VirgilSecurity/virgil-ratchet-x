@@ -54,8 +54,8 @@ import Foundation
     private let queue = DispatchQueue(label: "FileOneTimeKeysStorageQueue")
     private var interactionCounter = 0
 
-    public func startInteraction() {
-        self.queue.sync {
+    public func startInteraction() throws {
+        try self.queue.sync {
             if self.interactionCounter > 0 {
                 self.interactionCounter += 1
                 return
@@ -65,10 +65,10 @@ import Foundation
                 return
             }
 
-            let data = try! self.fileSystem.readOneTimeKeysFile()
+            let data = try self.fileSystem.readOneTimeKeysFile()
 
             if !data.isEmpty {
-                self.oneTimeKeys = try! PropertyListDecoder().decode(OneTimeKeys.self, from: data)
+                self.oneTimeKeys = try PropertyListDecoder().decode(OneTimeKeys.self, from: data)
             }
             else {
                 self.oneTimeKeys = OneTimeKeys(oneTimeKeys: [])
@@ -78,8 +78,8 @@ import Foundation
         }
     }
 
-    public func stopInteraction() {
-        self.queue.sync {
+    public func stopInteraction() throws {
+        try self.queue.sync {
             guard self.interactionCounter > 0 else {
                 assertionFailure("interactionCounter should be > 0")
                 return
@@ -96,9 +96,9 @@ import Foundation
                 return
             }
 
-            let data = try! PropertyListEncoder().encode(oneTimeKeys)
+            let data = try PropertyListEncoder().encode(oneTimeKeys)
 
-            try! self.fileSystem.writeOneTimeKeysFile(data: data)
+            try self.fileSystem.writeOneTimeKeysFile(data: data)
 
             self.oneTimeKeys = nil
         }
@@ -173,7 +173,9 @@ import Foundation
                 throw NSError()
             }
 
-            oneTimeKeys.oneTimeKeys[index] = OneTimeKey(identifier: oneTimeKey.identifier, key: oneTimeKey.key, orphanedFrom: date)
+            oneTimeKeys.oneTimeKeys[index] = OneTimeKey(identifier: oneTimeKey.identifier,
+                                                        key: oneTimeKey.key,
+                                                        orphanedFrom: date)
             self.oneTimeKeys = oneTimeKeys
         }
     }
