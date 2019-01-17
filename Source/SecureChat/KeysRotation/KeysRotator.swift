@@ -87,7 +87,14 @@ class KeysRotator {
             Log.debug("Started keys' rotation")
 
             let completionWrapper: (Void?, Error?) -> Void = {
-                self.mutex.unlock()
+                do {
+                    try self.mutex.unlock()
+                }
+                catch {
+                    completion(nil, error)
+                    return
+                }
+
                 do {
                     try self.oneTimeKeysStorage.stopInteraction()
                 }

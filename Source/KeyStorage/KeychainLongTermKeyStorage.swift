@@ -38,12 +38,12 @@ import Foundation
 import VirgilSDK
 
 @objc(VSRKeychainLongTermKeysStorage) open class KeychainLongTermKeysStorage: NSObject, LongTermKeysStorage {
-    private let keychainWrapper: KeychainStorageWrapper
+    private let keychain: SandboxedKeychainStorage
 
     @objc public init(identity: String) throws {
         let params = try KeychainStorageParams.makeKeychainStorageParams()
         let keychainStorage = KeychainStorage(storageParams: params)
-        self.keychainWrapper = KeychainStorageWrapper(identity: identity,
+        self.keychain = SandboxedKeychainStorage(identity: identity,
                                                       prefix: "LTK",
                                                       keychainStorage: keychainStorage)
 
@@ -78,33 +78,33 @@ import VirgilSDK
     }
 
     public func storeKey(_ key: Data, withId id: Data) throws -> LongTermKey {
-        let entry = try self.keychainWrapper.store(data: key, withName: id.base64EncodedString(), meta: [:])
+        let entry = try self.keychain.store(data: key, withName: id.base64EncodedString(), meta: [:])
 
         return try self.mapEntry(entry)
     }
 
     public func retrieveKey(withId id: Data) throws -> LongTermKey {
-        let entry = try self.keychainWrapper.retrieveEntry(withName: id.base64EncodedString())
+        let entry = try self.keychain.retrieveEntry(withName: id.base64EncodedString())
 
         return try self.mapEntry(entry)
     }
 
     public func deleteKey(withId id: Data) throws {
-        try self.keychainWrapper.deleteEntry(withName: id.base64EncodedString())
+        try self.keychain.deleteEntry(withName: id.base64EncodedString())
     }
 
     public func retrieveAllKeys() throws -> [LongTermKey] {
-        return try self.keychainWrapper.retrieveAllEntries().map(self.mapEntry)
+        return try self.keychain.retrieveAllEntries().map(self.mapEntry)
     }
 
     public func markKeyOutdated(startingFrom date: Date, keyId: Data) throws {
-        let entry = try self.keychainWrapper.retrieveEntry(withName: keyId.base64EncodedString())
+        let entry = try self.keychain.retrieveEntry(withName: keyId.base64EncodedString())
 
         guard self.parseMeta(entry.meta) == nil else {
             throw NSError()
         }
 
-        try self.keychainWrapper.updateEntry(withName: keyId.base64EncodedString(),
+        try self.keychain.updateEntry(withName: keyId.base64EncodedString(),
                                              data: entry.data,
                                              meta: self.makeMeta(outdated: date))
     }

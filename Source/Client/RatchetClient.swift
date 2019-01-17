@@ -66,6 +66,9 @@ import VirgilSDK
     ///
     /// - Parameter serviceUrl: URL of service client will use
     @objc convenience public init(serviceUrl: URL) {
-        self.init(serviceUrl: serviceUrl, connection: HttpConnection())
+        let adapter = VirgilAgentAdapter(product: "ratchet", version: VersionUtils.getVersion(bundleIdentitifer: "com.virgilsecurity.VirgilSDKRatchet"))
+        let connection = HttpConnection(adapters: [adapter])
+
+        self.init(serviceUrl: serviceUrl, connection: connection)
     }
 }

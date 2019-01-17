@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "424FAA052177506100622A3B"
-               BuildableName = "VirgilSDKRatchet_iOS.framework"
+               BuildableName = "VirgilSDKRatchet.framework"
                BlueprintName = "VirgilSDKRatchet iOS"
                ReferencedContainer = "container:VirgilSDKRatchet.xcodeproj">
             </BuildableReference>
@@ -43,7 +43,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "424FAA052177506100622A3B"
-            BuildableName = "VirgilSDKRatchet_iOS.framework"
+            BuildableName = "VirgilSDKRatchet.framework"
             BlueprintName = "VirgilSDKRatchet iOS"
             ReferencedContainer = "container:VirgilSDKRatchet.xcodeproj">
          </BuildableReference>
@@ -65,7 +65,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "424FAA052177506100622A3B"
-            BuildableName = "VirgilSDKRatchet_iOS.framework"
+            BuildableName = "VirgilSDKRatchet.framework"
             BlueprintName = "VirgilSDKRatchet iOS"
             ReferencedContainer = "container:VirgilSDKRatchet.xcodeproj">
          </BuildableReference>
@@ -83,7 +83,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "424FAA052177506100622A3B"
-            BuildableName = "VirgilSDKRatchet_iOS.framework"
+            BuildableName = "VirgilSDKRatchet.framework"
             BlueprintName = "VirgilSDKRatchet iOS"
             ReferencedContainer = "container:VirgilSDKRatchet.xcodeproj">
          </BuildableReference>
