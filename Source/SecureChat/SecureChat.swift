@@ -49,9 +49,18 @@ import VirgilCryptoApiImpl
     @objc public let oneTimeKeysStorage: OneTimeKeysStorage
     @objc public let sessionStorage: SessionStorage
     private let keysRotator: KeysRotatorProtocol
+    
+    @objc public convenience init(identity: String, identityCardId: String, identityPrivateKey: VirgilPrivateKey, accessTokenProvider: AccessTokenProvider) throws {
+        let client = RatchetClient()
+        let longTermKeysStorage = try KeychainLongTermKeysStorage(identity: identity)
+        let oneTimeKeysStorage = FileOneTimeKeysStorage(identity: identity)
+        let sessionStorage = FileSessionStorage(identity: identity)
+        let keysRotator = KeysRotator(identityPrivateKey: identityPrivateKey, identityCardId: identityCardId, longTermKeysStorage: longTermKeysStorage, oneTimeKeysStorage: oneTimeKeysStorage, client: client)
+        
+        self.init(identityPrivateKey: identityPrivateKey, accessTokenProvider: accessTokenProvider, client: client, longTermKeysStorage: longTermKeysStorage, oneTimeKeysStorage: oneTimeKeysStorage, sessionStorage: sessionStorage, keysRotator: keysRotator)
+    }
 
-    // FIXME
-    internal init(identityPrivateKey: VirgilPrivateKey,
+    public init(identityPrivateKey: VirgilPrivateKey,
                   accessTokenProvider: AccessTokenProvider,
                   client: RatchetClientProtocol,
                   longTermKeysStorage: LongTermKeysStorage,

@@ -44,6 +44,10 @@ import Foundation
     private struct OneTimeKeys: Codable {
         var oneTimeKeys: [OneTimeKey]
     }
+    
+    @objc public convenience init(identity: String) {
+        self.init(fileSystem: FileSystem(identity: identity))
+    }
 
     @objc public init(fileSystem: FileSystem) {
         self.fileSystem = fileSystem

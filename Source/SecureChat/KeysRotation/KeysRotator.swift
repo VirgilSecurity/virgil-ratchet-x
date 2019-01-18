@@ -38,7 +38,7 @@ import Foundation
 import VirgilCryptoApiImpl
 import VirgilSDK
 
-protocol KeysRotatorProtocol: class {
+public protocol KeysRotatorProtocol: class {
     func rotateKeysOperation() -> GenericOperation<Void>
 }
 
