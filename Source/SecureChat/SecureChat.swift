@@ -43,8 +43,9 @@ import VirgilCryptoApiImpl
 @objc(VSRSecureChat) open class SecureChat: NSObject {
     @objc public let accessTokenProvider: AccessTokenProvider
     @objc public let identityPrivateKey: VirgilPrivateKey
+    private let keyExtractor = RatchetKeyExtractor()
     public let client: RatchetClientProtocol
-    @objc public let crypto = VirgilCrypto(defaultKeyType: .EC_CURVE25519, useSHA256Fingerprints: false)
+    @objc public let crypto = VirgilCrypto()
     @objc public let longTermKeysStorage: LongTermKeysStorage
     @objc public let oneTimeKeysStorage: OneTimeKeysStorage
     @objc public let sessionStorage: SessionStorage
@@ -145,12 +146,12 @@ import VirgilCryptoApiImpl
             Log.error("Creating weak session with \(receiverCard.identity)")
         }
 
-        let privateKeyData = CUtils.extractRawPrivateKey(self.crypto.exportPrivateKey(self.identityPrivateKey))
+        let privateKeyData = self.crypto.exportPrivateKey(self.identityPrivateKey)
 
         let session = try SecureSession(sessionStorage: self.sessionStorage,
                                         participantIdentity: receiverCard.identity,
                                         senderIdentityPrivateKey: privateKeyData,
-                                        receiverIdentityPublicKey: CUtils.extractRawPublicKey(publicKeySet.identityPublicKey),
+                                        receiverIdentityPublicKey: publicKeySet.identityPublicKey,
                                         receiverLongTermPublicKey: publicKeySet.longTermPublicKey.publicKey,
                                         receiverOneTimePublicKey: publicKeySet.oneTimePublicKey)
 
@@ -175,11 +176,11 @@ import VirgilCryptoApiImpl
                     try? self.oneTimeKeysStorage.stopInteraction()
                 }
 
-                let keyPair = try self.crypto.generateKeyPair()
+                let keyPair = try self.crypto.generateKeyPair(ofType: .FAST_EC_X25519)
 
-                let oneTimePrivateKey = CUtils.extractRawPrivateKey(self.crypto.exportPrivateKey(keyPair.privateKey))
-                oneTimePublicKey = CUtils.extractRawPublicKey(self.crypto.exportPublicKey(keyPair.publicKey))
-                let keyId = SecureChat.computeKeyId(publicKey: oneTimePublicKey)
+                let oneTimePrivateKey = self.crypto.exportPrivateKey(keyPair.privateKey)
+                oneTimePublicKey = self.crypto.exportPublicKey(keyPair.publicKey)
+                let keyId = try self.keyExtractor.computePublicKeyId(publicKey: oneTimePublicKey)
 
                 _ = try self.oneTimeKeysStorage.storeKey(oneTimePrivateKey, withId: keyId)
 
@@ -213,10 +214,10 @@ import VirgilCryptoApiImpl
         }
 
         let receiverLongTermPublicKey = ratchetMessage.getLongTermPublicKey()
-        let receiverLongTermPrivateKey = try self.longTermKeysStorage.retrieveKey(withId: SecureChat.computeKeyId(publicKey: receiverLongTermPublicKey))
+        let receiverLongTermPrivateKey = try self.longTermKeysStorage.retrieveKey(withId: try self.keyExtractor.computePublicKeyId(publicKey: receiverLongTermPublicKey))
 
         let receiverOneTimePublicKey = ratchetMessage.getOneTimePublicKey()
-        let receiverOneTimeKeyId: Data? = receiverOneTimePublicKey.isEmpty ? nil : SecureChat.computeKeyId(publicKey: receiverOneTimePublicKey)
+        let receiverOneTimeKeyId: Data? = receiverOneTimePublicKey.isEmpty ? nil : try self.keyExtractor.computePublicKeyId(publicKey: receiverOneTimePublicKey)
 
         let receiverOneTimePrivateKey: OneTimeKey?
 
@@ -237,7 +238,7 @@ import VirgilCryptoApiImpl
                                         receiverIdentityPrivateKey: self.identityPrivateKey,
                                         receiverLongTermPrivateKey: receiverLongTermPrivateKey,
                                         receiverOneTimePrivateKey: receiverOneTimePrivateKey,
-                                        senderIdentityPublicKey: CUtils.extractRawPublicKey(self.crypto.exportPublicKey(senderIdentityPublicKey)),
+                                        senderIdentityPublicKey: self.crypto.exportPublicKey(senderIdentityPublicKey),
                                         ratchetMessage: ratchetMessage)
         }
         catch {
@@ -259,11 +260,5 @@ import VirgilCryptoApiImpl
         try self.sessionStorage.storeSession(session)
 
         return session
-    }
-
-    internal static func computeKeyId(publicKey: Data) -> Data {
-        let sha512 = Sha512()
-
-        return sha512.hash(data: publicKey).subdata(in: 0..<8)
     }
 }

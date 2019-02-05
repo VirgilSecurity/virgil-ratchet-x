@@ -37,13 +37,14 @@
 import Foundation
 import VirgilCryptoApiImpl
 import VirgilSDK
+import VirgilCryptoRatchet
 
 public protocol KeysRotatorProtocol: class {
     func rotateKeysOperation() -> GenericOperation<Void>
 }
 
 class KeysRotator {
-    private let crypto = VirgilCrypto(defaultKeyType: .EC_CURVE25519, useSHA256Fingerprints: false)
+    private let crypto = VirgilCrypto()
     private let identityPrivateKey: VirgilPrivateKey
     private let identityCardId: String
     private let orphanedOneTimeKeyTtl: TimeInterval
@@ -54,6 +55,7 @@ class KeysRotator {
     private let oneTimeKeysStorage: OneTimeKeysStorage
     private let client: RatchetClientProtocol
     private let mutex = Mutex()
+    private let keyExtractor = RatchetKeyExtractor()
 
     init(identityPrivateKey: VirgilPrivateKey,
          identityCardId: String,
@@ -184,10 +186,10 @@ class KeysRotator {
                 let longTermSignedPublicKey: SignedPublicKey?
                 if rotateLongTermKey {
                     Log.debug("Rotating long-term key")
-                    let longTermKeyPair = try self.crypto.generateKeyPair()
-                    let longTermPrivateKey = CUtils.extractRawPrivateKey(self.crypto.exportPrivateKey(longTermKeyPair.privateKey))
-                    let longTermPublicKey = CUtils.extractRawPublicKey(self.crypto.exportPublicKey(longTermKeyPair.publicKey))
-                    _ = try self.longTermKeysStorage.storeKey(longTermPrivateKey, withId: SecureChat.computeKeyId(publicKey: longTermPublicKey))
+                    let longTermKeyPair = try self.crypto.generateKeyPair(ofType: .FAST_EC_X25519)
+                    let longTermPrivateKey = self.crypto.exportPrivateKey(longTermKeyPair.privateKey)
+                    let longTermPublicKey = self.crypto.exportPublicKey(longTermKeyPair.publicKey)
+                    _ = try self.longTermKeysStorage.storeKey(longTermPrivateKey, withId: try self.keyExtractor.computePublicKeyId(publicKey: longTermPublicKey))
                     longTermSignedPublicKey = SignedPublicKey(publicKey: longTermPublicKey, signature: try self.crypto.generateSignature(of: longTermPublicKey, using: self.identityPrivateKey))
                 }
                 else {
@@ -204,9 +206,9 @@ class KeysRotator {
                     var publicKeys = [Data]()
                     publicKeys.reserveCapacity(numberOfOneTimeKeysToGenerate)
                     for keyPair in keyPairs {
-                        let oneTimePrivateKey = CUtils.extractRawPrivateKey(self.crypto.exportPrivateKey(keyPair.privateKey))
-                        let oneTimePublicKey = CUtils.extractRawPublicKey(self.crypto.exportPublicKey(keyPair.publicKey))
-                        let keyId = SecureChat.computeKeyId(publicKey: oneTimePublicKey)
+                        let oneTimePrivateKey = self.crypto.exportPrivateKey(keyPair.privateKey)
+                        let oneTimePublicKey = self.crypto.exportPublicKey(keyPair.publicKey)
+                        let keyId = try self.keyExtractor.computePublicKeyId(publicKey: oneTimePublicKey)
                         _ = try self.oneTimeKeysStorage.storeKey(oneTimePrivateKey, withId: keyId)
 
                         publicKeys.append(oneTimePublicKey)

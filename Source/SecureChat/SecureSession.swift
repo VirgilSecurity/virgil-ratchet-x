@@ -58,7 +58,7 @@ import VirgilCryptoApiImpl
         let ratchetSession = RatchetSession()
         ratchetSession.setupDefaults()
 
-        try ratchetSession.respond(senderIdentityPublicKey: senderIdentityPublicKey, receiverIdentityPrivateKey: CUtils.extractRawPrivateKey(self.crypto.exportPrivateKey(receiverIdentityPrivateKey)), receiverLongTermPrivateKey: receiverLongTermPrivateKey.key, receiverOneTimePrivateKey: receiverOneTimePrivateKey?.key ?? Data(), message: ratchetMessage)
+        try ratchetSession.respond(senderIdentityPublicKey: senderIdentityPublicKey, receiverIdentityPrivateKey: self.crypto.exportPrivateKey(receiverIdentityPrivateKey), receiverLongTermPrivateKey: receiverLongTermPrivateKey.key, receiverOneTimePrivateKey: receiverOneTimePrivateKey?.key ?? Data(), message: ratchetMessage)
 
         self.ratchetSession = ratchetSession
 

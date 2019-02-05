@@ -53,9 +53,9 @@ class IntegrationTests: XCTestCase {
     private func initChat() -> (Card, Card, SecureChat, SecureChat) {
         let testConfig = TestConfig.readFromBundle()
         
-        let crypto = VirgilCrypto(defaultKeyType: .EC_CURVE25519, useSHA256Fingerprints: false)
-        let receiverIdentityKeyPair = try! crypto.generateKeyPair()
-        let senderIdentityKeyPair = try! crypto.generateKeyPair()
+        let crypto = VirgilCrypto()
+        let receiverIdentityKeyPair = try! crypto.generateKeyPair(ofType: .FAST_EC_ED25519)
+        let senderIdentityKeyPair = try! crypto.generateKeyPair(ofType: .FAST_EC_ED25519)
         
         let senderIdentity = NSUUID().uuidString
         let receiverIdentity = NSUUID().uuidString
@@ -84,7 +84,14 @@ class IntegrationTests: XCTestCase {
         
         let cardManager = CardManager(params: cardManagerParams)
         
-        let receiverCard = try! cardManager.publishCard(privateKey: receiverIdentityKeyPair.privateKey, publicKey: receiverIdentityKeyPair.publicKey).startSync().getResult()
+        let receiverCard: Card
+        
+        do {
+            receiverCard = try cardManager.publishCard(privateKey: receiverIdentityKeyPair.privateKey, publicKey: receiverIdentityKeyPair.publicKey).startSync().getResult()
+        }
+        catch {
+            exit(0)
+        }
         let senderCard = try! cardManager.publishCard(privateKey: senderIdentityKeyPair.privateKey, publicKey: senderIdentityKeyPair.publicKey).startSync().getResult()
         
         let receiverLongTermKeysStorage = try! KeychainLongTermKeysStorage(identity: receiverIdentity)
@@ -129,7 +136,15 @@ class IntegrationTests: XCTestCase {
         let plainText = UUID().uuidString
         let cipherText = try! senderSession.encrypt(message: plainText)
 
-        let receiverSession = try! receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, ratchetMessage: cipherText)
+        
+        let receiverSession: SecureSession
+        
+        do {
+            receiverSession = try receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, ratchetMessage: cipherText)
+        }
+        catch {
+            exit(0)
+        }
         
         let decryptedMessage = try! receiverSession.decrypt(message: cipherText)
         

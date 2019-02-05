@@ -53,9 +53,9 @@ class SecureSessionTests: XCTestCase {
     private func initChat() -> (Card, Card, SecureChat, SecureChat) {
         let testConfig = TestConfig.readFromBundle()
         
-        let crypto = VirgilCrypto(defaultKeyType: .EC_CURVE25519, useSHA256Fingerprints: false)
-        let receiverIdentityKeyPair = try! crypto.generateKeyPair()
-        let senderIdentityKeyPair = try! crypto.generateKeyPair()
+        let crypto = VirgilCrypto()
+        let receiverIdentityKeyPair = try! crypto.generateKeyPair(ofType: .FAST_EC_ED25519)
+        let senderIdentityKeyPair = try! crypto.generateKeyPair(ofType: .FAST_EC_ED25519)
         
         let senderIdentity = NSUUID().uuidString
         let receiverIdentity = NSUUID().uuidString
