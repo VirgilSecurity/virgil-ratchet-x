@@ -43,7 +43,7 @@ import VirgilCryptoApiImpl
 @objc(VSRSecureChat) open class SecureChat: NSObject {
     @objc public let accessTokenProvider: AccessTokenProvider
     @objc public let identityPrivateKey: VirgilPrivateKey
-    private let keyExtractor = RatchetKeyExtractor()
+    private let keyUtils = RatchetKeyUtils()
     public let client: RatchetClientProtocol
     @objc public let crypto = VirgilCrypto()
     @objc public let longTermKeysStorage: LongTermKeysStorage
@@ -180,7 +180,7 @@ import VirgilCryptoApiImpl
 
                 let oneTimePrivateKey = self.crypto.exportPrivateKey(keyPair.privateKey)
                 oneTimePublicKey = self.crypto.exportPublicKey(keyPair.publicKey)
-                let keyId = try self.keyExtractor.computePublicKeyId(publicKey: oneTimePublicKey)
+                let keyId = try self.keyUtils.computePublicKeyId(publicKey: oneTimePublicKey)
 
                 _ = try self.oneTimeKeysStorage.storeKey(oneTimePrivateKey, withId: keyId)
 
@@ -214,10 +214,10 @@ import VirgilCryptoApiImpl
         }
 
         let receiverLongTermPublicKey = ratchetMessage.getLongTermPublicKey()
-        let receiverLongTermPrivateKey = try self.longTermKeysStorage.retrieveKey(withId: try self.keyExtractor.computePublicKeyId(publicKey: receiverLongTermPublicKey))
+        let receiverLongTermPrivateKey = try self.longTermKeysStorage.retrieveKey(withId: try self.keyUtils.computePublicKeyId(publicKey: receiverLongTermPublicKey))
 
         let receiverOneTimePublicKey = ratchetMessage.getOneTimePublicKey()
-        let receiverOneTimeKeyId: Data? = receiverOneTimePublicKey.isEmpty ? nil : try self.keyExtractor.computePublicKeyId(publicKey: receiverOneTimePublicKey)
+        let receiverOneTimeKeyId: Data? = receiverOneTimePublicKey.isEmpty ? nil : try self.keyUtils.computePublicKeyId(publicKey: receiverOneTimePublicKey)
 
         let receiverOneTimePrivateKey: OneTimeKey?
 

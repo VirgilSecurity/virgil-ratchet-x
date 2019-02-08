@@ -43,6 +43,7 @@ import VirgilCryptoApiImpl
     @objc public let sessionStorage: SessionStorage
 
     private let ratchetSession: RatchetSession
+    private let queue = DispatchQueue(label: "SecureSessionQueue")
     @objc public let participantIdentity: String
 
     internal init(sessionStorage: SessionStorage,
@@ -85,27 +86,27 @@ import VirgilCryptoApiImpl
         super.init()
     }
 
-    public func encrypt(message: String) throws -> RatchetMessage {
-        guard let msgData = message.data(using: .utf8) else {
-            throw NSError()
+    public func encrypt(message: Data) throws -> RatchetMessage {
+        return try self.queue.sync {
+            let errCtx = ErrorCtx()
+            let msg = self.ratchetSession.encrypt(plainText: message, errCtx: errCtx)
+
+            try errCtx.error()
+
+            try self.sessionStorage.storeSession(self)
+
+            return msg
         }
-
-        let errCtx = ErrorCtx()
-        let msg = self.ratchetSession.encrypt(plainText: msgData, errCtx: errCtx)
-
-        try errCtx.error()
-
-        try self.sessionStorage.storeSession(self)
-
-        return msg
     }
 
-    public func decrypt(message: RatchetMessage) throws -> String {
-        let data = try self.ratchetSession.decrypt(message: message)
+    public func decrypt(message: RatchetMessage) throws -> Data {
+        return try self.queue.sync {
+            let data = try self.ratchetSession.decrypt(message: message)
 
-        try self.sessionStorage.storeSession(self)
+            try self.sessionStorage.storeSession(self)
 
-        return String(data: data, encoding: .utf8)!
+            return data
+        }
     }
 
     public init(data: Data, participantIdentity: String, sessionStorage: SessionStorage) throws {

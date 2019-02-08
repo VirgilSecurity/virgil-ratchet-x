@@ -44,7 +44,7 @@ public protocol KeysRotatorProtocol: class {
 }
 
 class KeysRotator {
-    private let crypto = VirgilCrypto()
+    private let crypto = VirgilCrypto(defaultKeyType: .FAST_EC_X25519, useSHA256Fingerprints: false)
     private let identityPrivateKey: VirgilPrivateKey
     private let identityCardId: String
     private let orphanedOneTimeKeyTtl: TimeInterval
@@ -55,7 +55,7 @@ class KeysRotator {
     private let oneTimeKeysStorage: OneTimeKeysStorage
     private let client: RatchetClientProtocol
     private let mutex = Mutex()
-    private let keyExtractor = RatchetKeyExtractor()
+    private let keyUtils = RatchetKeyUtils()
 
     init(identityPrivateKey: VirgilPrivateKey,
          identityCardId: String,
@@ -186,10 +186,10 @@ class KeysRotator {
                 let longTermSignedPublicKey: SignedPublicKey?
                 if rotateLongTermKey {
                     Log.debug("Rotating long-term key")
-                    let longTermKeyPair = try self.crypto.generateKeyPair(ofType: .FAST_EC_X25519)
+                    let longTermKeyPair = try self.crypto.generateKeyPair()
                     let longTermPrivateKey = self.crypto.exportPrivateKey(longTermKeyPair.privateKey)
                     let longTermPublicKey = self.crypto.exportPublicKey(longTermKeyPair.publicKey)
-                    _ = try self.longTermKeysStorage.storeKey(longTermPrivateKey, withId: try self.keyExtractor.computePublicKeyId(publicKey: longTermPublicKey))
+                    _ = try self.longTermKeysStorage.storeKey(longTermPrivateKey, withId: try self.keyUtils.computePublicKeyId(publicKey: longTermPublicKey))
                     longTermSignedPublicKey = SignedPublicKey(publicKey: longTermPublicKey, signature: try self.crypto.generateSignature(of: longTermPublicKey, using: self.identityPrivateKey))
                 }
                 else {
@@ -208,7 +208,7 @@ class KeysRotator {
                     for keyPair in keyPairs {
                         let oneTimePrivateKey = self.crypto.exportPrivateKey(keyPair.privateKey)
                         let oneTimePublicKey = self.crypto.exportPublicKey(keyPair.publicKey)
-                        let keyId = try self.keyExtractor.computePublicKeyId(publicKey: oneTimePublicKey)
+                        let keyId = try self.keyUtils.computePublicKeyId(publicKey: oneTimePublicKey)
                         _ = try self.oneTimeKeysStorage.storeKey(oneTimePrivateKey, withId: keyId)
 
                         publicKeys.append(oneTimePublicKey)
