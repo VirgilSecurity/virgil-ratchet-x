@@ -121,14 +121,14 @@ class SecureSessionTests: XCTestCase {
         
         _ = try! receiverSecureChat.rotateKeys().startSync().getResult()
         
-        let senderSession = try! senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard)
+        let senderSession = try! senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().getResult()
         
-        let plainText = UUID().uuidString.data(using: .utf8)!
-        let cipherText = try! senderSession.encrypt(message: plainText)
+        let plainText = UUID().uuidString
+        let cipherText = try! senderSession.encrypt(string: plainText)
         
         let receiverSession = try! receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, ratchetMessage: cipherText)
         
-        let decryptedMessage = try! receiverSession.decrypt(message: cipherText)
+        let decryptedMessage = try! receiverSession.decryptString(from: cipherText)
         
         XCTAssert(decryptedMessage == plainText)
         
@@ -145,11 +145,11 @@ class SecureSessionTests: XCTestCase {
                 receiver = senderSession
             }
             
-            let plainText = UUID().uuidString.data(using: .utf8)!
+            let plainText = UUID().uuidString
             
-            let message = try! sender.encrypt(message: plainText)
+            let message = try! sender.encrypt(string: plainText)
             
-            let decryptedMessage = try! receiver.decrypt(message: message)
+            let decryptedMessage = try! receiver.decryptString(from: message)
             
             XCTAssert(decryptedMessage == plainText)
         }
@@ -160,18 +160,18 @@ class SecureSessionTests: XCTestCase {
         
         _ = try! receiverSecureChat.rotateKeys().startSync().getResult()
         
-        let senderSession = try! senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard)
+        let senderSession = try! senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().getResult()
         
         XCTAssert(senderSecureChat.existingSession(withParticpantIdentity: receiverCard.identity) != nil)
         
-        let plainText = UUID().uuidString.data(using: .utf8)!
-        let cipherText = try! senderSession.encrypt(message: plainText)
+        let plainText = UUID().uuidString
+        let cipherText = try! senderSession.encrypt(string: plainText)
         
         let receiverSession = try! receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, ratchetMessage: cipherText)
         
         XCTAssert(receiverSecureChat.existingSession(withParticpantIdentity: senderCard.identity) != nil)
         
-        let decryptedMessage = try! receiverSession.decrypt(message: cipherText)
+        let decryptedMessage = try! receiverSession.decryptString(from: cipherText)
         
         XCTAssert(decryptedMessage == plainText)
         
@@ -188,11 +188,11 @@ class SecureSessionTests: XCTestCase {
                 receiver = senderSecureChat.existingSession(withParticpantIdentity: receiverCard.identity)!
             }
             
-            let plainText = UUID().uuidString.data(using: .utf8)!
+            let plainText = UUID().uuidString
             
-            let message = try! sender.encrypt(message: plainText)
+            let message = try! sender.encrypt(string: plainText)
             
-            let decryptedMessage = try! receiver.decrypt(message: message)
+            let decryptedMessage = try! receiver.decryptString(from: message)
             
             XCTAssert(decryptedMessage == plainText)
         }
