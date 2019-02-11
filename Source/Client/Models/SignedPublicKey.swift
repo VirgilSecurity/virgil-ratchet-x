@@ -36,9 +36,13 @@
 
 import Foundation
 
-public final class SignedPublicKey: NSObject, Decodable {
-    public let publicKey: Data
-    public let signature: Data
+/// Signed public key
+@objc(VSRSignedPublicKey) public final class SignedPublicKey: NSObject, Decodable {
+    /// Public key
+    @objc public let publicKey: Data
+
+    /// Signature
+    @objc public let signature: Data
 
     /// Defines coding keys for encoding and decoding
     private enum CodingKeys: String, CodingKey {

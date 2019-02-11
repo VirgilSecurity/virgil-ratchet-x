@@ -89,11 +89,8 @@ class IntegrationTests: XCTestCase {
         
         let receiverLongTermKeysStorage = try! KeychainLongTermKeysStorage(identity: receiverIdentity)
         
-        let receiverFileSystem = FileSystem(identity: receiverIdentity)
-        let senderFileSystem = FileSystem(identity: senderIdentity)
-        
-        let receiverOneTimeKeysStorage = FileOneTimeKeysStorage(fileSystem: receiverFileSystem)
-        let senderOneTimeKeysStorage = FileOneTimeKeysStorage(fileSystem: senderFileSystem)
+        let receiverOneTimeKeysStorage = FileOneTimeKeysStorage(identity: receiverIdentity)
+        let senderOneTimeKeysStorage = FileOneTimeKeysStorage(identity: senderIdentity)
 
         let client = RatchetClient(serviceUrl: URL(string: testConfig.ServiceURL)!)
         
@@ -105,7 +102,7 @@ class IntegrationTests: XCTestCase {
                                           client: client,
                                           longTermKeysStorage: try! KeychainLongTermKeysStorage(identity: senderIdentity),
                                           oneTimeKeysStorage: senderOneTimeKeysStorage,
-                                          sessionStorage: FileSessionStorage(fileSystem: senderFileSystem),
+                                          sessionStorage: FileSessionStorage(identity: senderIdentity),
                                           keysRotator: FakeKeysRotator())
         
         let receiverSecureChat = SecureChat(identityPrivateKey: receiverIdentityKeyPair.privateKey,
@@ -113,7 +110,7 @@ class IntegrationTests: XCTestCase {
                                             client: client,
                                             longTermKeysStorage: receiverLongTermKeysStorage,
                                             oneTimeKeysStorage: receiverOneTimeKeysStorage,
-                                            sessionStorage: FileSessionStorage(fileSystem: receiverFileSystem),
+                                            sessionStorage: FileSessionStorage(identity: receiverIdentity),
                                             keysRotator: receiverKeysRotator)
         
         return (senderCard, receiverCard, senderSecureChat, receiverSecureChat)

@@ -37,26 +37,60 @@
 import Foundation
 import VirgilSDK
 
-@objc(VSROneTimeKey) public final class OneTimeKey: NSObject, Codable {
-    @objc public let identifier: Data
-    @objc public let key: Data
-    @objc public let orphanedFrom: Date?
-
-    @objc public init(identifier: Data, key: Data, orphanedFrom: Date?) {
-        self.identifier = identifier
-        self.key = key
-        self.orphanedFrom = orphanedFrom
-
-        super.init()
-    }
-}
-
+/// One-time keys storage
 @objc(VSROneTimeKeysStorage) public protocol OneTimeKeysStorage: class {
+    /// Starts interaction with storage
+    /// This method should be called before any other interaction with storage
+    /// This method can be called many times and works like a stack
+    ///
+    /// - Throws: Depends on implementation
     @objc func startInteraction() throws
+
+    /// Stops interaction with storage
+    /// This method should be called after all interactions with storage
+    /// This method can be called many times and works like a stack
+    ///
+    /// - Throws: Depends on implementation
     @objc func stopInteraction() throws
+
+    /// Stores key
+    ///
+    /// - Parameters:
+    ///   - key: private key
+    ///   - id: key id
+    /// - Returns: One-time private key
+    /// - Throws: Depends on implementation
     @objc func storeKey(_ key: Data, withId id: Data) throws -> OneTimeKey
+
+    /// Retrieves key
+    ///
+    /// - Parameter id: key id
+    /// - Returns: One-time private key
+    /// - Throws: Depends on implementation
     @objc func retrieveKey(withId id: Data) throws -> OneTimeKey
+
+    /// Deletes key
+    ///
+    /// - Parameter id: key id
+    /// - Throws: Depends on implementation
     @objc func deleteKey(withId id: Data) throws
+
+    /// Retrieves all keys
+    ///
+    /// - Returns: Returns all keys
+    /// - Throws: Depends on implementation
     @objc func retrieveAllKeys() throws -> [OneTimeKey]
+
+    /// Marks key as orphaned
+    ///
+    /// - Parameters:
+    ///   - date: date from which we found out that this key if orphaned
+    ///   - keyId: key id
+    /// - Throws: Depends on implementation
     @objc func markKeyOrphaned(startingFrom date: Date, keyId: Data) throws
+
+    /// Deletes all keys
+    ///
+    /// - Throws: Depends on implementation
+    @objc func reset() throws
 }

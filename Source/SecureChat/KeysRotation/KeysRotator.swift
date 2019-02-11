@@ -39,11 +39,15 @@ import VirgilCryptoApiImpl
 import VirgilSDK
 import VirgilCryptoRatchet
 
-public protocol KeysRotatorProtocol: class {
-    func rotateKeysOperation() -> GenericOperation<Void>
+/// KeysRotator errors
+///
+/// - concurrentRotation: concurrent rotation is not allowed
+public enum KeysRotatorError: Int, Error {
+    case concurrentRotation = 1
 }
 
-class KeysRotator {
+/// Default implementation of KeysRotatorProtocol
+public class KeysRotator {
     private let crypto = VirgilCrypto(defaultKeyType: .FAST_EC_X25519, useSHA256Fingerprints: false)
     private let identityPrivateKey: VirgilPrivateKey
     private let identityCardId: String
@@ -57,15 +61,27 @@ class KeysRotator {
     private let mutex = Mutex()
     private let keyUtils = RatchetKeyUtils()
 
-    init(identityPrivateKey: VirgilPrivateKey,
-         identityCardId: String,
-         orphanedOneTimeKeyTtl: TimeInterval = 24 * 60 * 60,
-         longTermKeyTtl: TimeInterval = 5 * 24 * 60 * 60,
-         outdatedLongTermKeyTtl: TimeInterval = 24 * 60 * 60,
-         desiredNumberOfOneTimeKeys: Int = 100,
-         longTermKeysStorage: LongTermKeysStorage,
-         oneTimeKeysStorage: OneTimeKeysStorage,
-         client: RatchetClientProtocol) {
+    /// Initializer
+    ///
+    /// - Parameters:
+    ///   - identityPrivateKey: identity private key
+    ///   - identityCardId: identity card id
+    ///   - orphanedOneTimeKeyTtl: time that one-time key lives in the storage after been marked as orphaned. Seconds
+    ///   - longTermKeyTtl: time that long-term key is been used before rotation. Seconds
+    ///   - outdatedLongTermKeyTtl: time that long-term key lives in the storage after been marked as outdated. Seconds
+    ///   - desiredNumberOfOneTimeKeys: desired number of one-time keys
+    ///   - longTermKeysStorage: long-term keys storage
+    ///   - oneTimeKeysStorage: one-time keys storage
+    ///   - client: RatchetClient
+    public init(identityPrivateKey: VirgilPrivateKey,
+                identityCardId: String,
+                orphanedOneTimeKeyTtl: TimeInterval = 24 * 60 * 60,
+                longTermKeyTtl: TimeInterval = 5 * 24 * 60 * 60,
+                outdatedLongTermKeyTtl: TimeInterval = 24 * 60 * 60,
+                desiredNumberOfOneTimeKeys: Int = 100,
+                longTermKeysStorage: LongTermKeysStorage,
+                oneTimeKeysStorage: OneTimeKeysStorage,
+                client: RatchetClientProtocol) {
         self.identityPrivateKey = identityPrivateKey
         self.identityCardId = identityCardId
         self.orphanedOneTimeKeyTtl = orphanedOneTimeKeyTtl
@@ -77,12 +93,27 @@ class KeysRotator {
         self.client = client
     }
 
-    func rotateKeysOperation() -> GenericOperation<Void> {
+    /// Rotates keys
+    ///
+    /// Rotation process:
+    ///         - Retrieve all one-time keys
+    ///         - Delete one-time keys that were marked as orphaned more than orphanedOneTimeKeyTtl seconds ago
+    ///         - Retrieve all long-term keys
+    ///         - Delete long-term keys that were marked as outdated more than outdatedLongTermKeyTtl seconds ago
+    ///         - Check that all relevant long-term and one-time keys are in the cloud
+    ///             (still persistent in the cloud and were not used)
+    ///         - Mark used one-time keys as used
+    ///         - Decide on long-term key roration
+    ///         - Generate needed number of one-time keys
+    ///         - Upload keys to the cloud
+    ///
+    /// - Returns: GenericOperation
+    public func rotateKeysOperation() -> GenericOperation<Void> {
         return CallbackOperation { operation, completion in
             guard self.mutex.trylock() else {
                 Log.debug("Interrupted concurrent keys' rotation")
 
-                completion(nil, NSError())
+                completion(nil, KeysRotatorError.concurrentRotation)
                 return
             }
 
@@ -105,18 +136,18 @@ class KeysRotator {
                     completion(nil, error)
                     return
                 }
-                
+
                 if let error = $1 {
                     Log.debug("Completed keys' rotation with error")
                     completion(nil, error)
                     return
                 }
                 else if let res = $0 {
-                    Log.debug("Completed keys' rotation with successfully")
+                    Log.debug("Completed keys' rotation successfully")
                     completion(res, nil)
                     return
                 }
-                
+
                 completion(nil, nil)
             }
 
@@ -125,7 +156,6 @@ class KeysRotator {
 
                 let now = Date()
 
-                // TODO: Parallelize
                 try self.oneTimeKeysStorage.startInteraction()
                 let oneTimeKeys = try self.oneTimeKeysStorage.retrieveAllKeys()
                 var oneTimeKeysIds = [Data]()
@@ -154,7 +184,8 @@ class KeysRotator {
                     else {
                         if longTermKey.creationDate + self.longTermKeyTtl < now {
                             Log.debug("Marking long-term key as outdated \(longTermKey.identifier.hexEncodedString())")
-                            try self.longTermKeysStorage.markKeyOutdated(startingFrom: now, keyId: longTermKey.identifier)
+                            try self.longTermKeysStorage.markKeyOutdated(startingFrom: now,
+                                                                         keyId: longTermKey.identifier)
                         }
                         else {
                             if let key = lastLongTermKey, key.creationDate < longTermKey.creationDate {
@@ -168,7 +199,9 @@ class KeysRotator {
                 }
 
                 Log.debug("Validating local keys")
-                let validateResponse = try self.client.validatePublicKeys(longTermKeyId: lastLongTermKey?.identifier, oneTimeKeysIds: oneTimeKeysIds, token: token.stringRepresentation())
+                let validateResponse = try self.client.validatePublicKeys(longTermKeyId: lastLongTermKey?.identifier,
+                                                                          oneTimeKeysIds: oneTimeKeysIds,
+                                                                          token: token.stringRepresentation())
 
                 for usedOneTimeKeyId in validateResponse.usedOneTimeKeysIds {
                     Log.debug("Marking one-time key as orhpaned \(usedOneTimeKeyId.hexEncodedString())")
@@ -189,22 +222,28 @@ class KeysRotator {
                     let longTermKeyPair = try self.crypto.generateKeyPair()
                     let longTermPrivateKey = self.crypto.exportPrivateKey(longTermKeyPair.privateKey)
                     let longTermPublicKey = self.crypto.exportPublicKey(longTermKeyPair.publicKey)
-                    _ = try self.longTermKeysStorage.storeKey(longTermPrivateKey, withId: try self.keyUtils.computePublicKeyId(publicKey: longTermPublicKey))
-                    longTermSignedPublicKey = SignedPublicKey(publicKey: longTermPublicKey, signature: try self.crypto.generateSignature(of: longTermPublicKey, using: self.identityPrivateKey))
+                    let longTermKeyId = try self.keyUtils.computePublicKeyId(publicKey: longTermPublicKey)
+                    _ = try self.longTermKeysStorage.storeKey(longTermPrivateKey,
+                                                              withId: longTermKeyId)
+                    let longTermKeySignature = try self.crypto.generateSignature(of: longTermPublicKey,
+                                                                                 using: self.identityPrivateKey)
+                    longTermSignedPublicKey = SignedPublicKey(publicKey: longTermPublicKey,
+                                                              signature: longTermKeySignature)
                 }
                 else {
                     longTermSignedPublicKey = nil
                 }
 
-                let numberOfOneTimeKeysToGenerate = max(self.desiredNumberOfOneTimeKeys - (oneTimeKeysIds.count - validateResponse.usedOneTimeKeysIds.count), 0)
+                let numOfrelevantOneTimeKeys = oneTimeKeysIds.count - validateResponse.usedOneTimeKeysIds.count
+                let numbOfOneTimeKeysToGen = UInt(max(self.desiredNumberOfOneTimeKeys - numOfrelevantOneTimeKeys, 0))
 
-                Log.debug("Generating \(numberOfOneTimeKeysToGenerate) one-time keys")
+                Log.debug("Generating \(numbOfOneTimeKeysToGen) one-time keys")
                 let oneTimePublicKeys: [Data]
-                if numberOfOneTimeKeysToGenerate > 0 {
-                    let keyPairs = try self.crypto.generateMultipleKeyPairs(numberOfKeyPairs: UInt(numberOfOneTimeKeysToGenerate))
+                if numbOfOneTimeKeysToGen > 0 {
+                    let keyPairs = try self.crypto.generateMultipleKeyPairs(numberOfKeyPairs: numbOfOneTimeKeysToGen)
 
                     var publicKeys = [Data]()
-                    publicKeys.reserveCapacity(numberOfOneTimeKeysToGenerate)
+                    publicKeys.reserveCapacity(Int(numbOfOneTimeKeysToGen))
                     for keyPair in keyPairs {
                         let oneTimePrivateKey = self.crypto.exportPrivateKey(keyPair.privateKey)
                         let oneTimePublicKey = self.crypto.exportPublicKey(keyPair.publicKey)
@@ -221,7 +260,10 @@ class KeysRotator {
                 }
 
                 Log.debug("Uploading keys")
-                try self.client.uploadPublicKeys(identityCardId: self.identityCardId, longTermPublicKey: longTermSignedPublicKey, oneTimePublicKeys: oneTimePublicKeys, token: token.stringRepresentation())
+                try self.client.uploadPublicKeys(identityCardId: self.identityCardId,
+                                                 longTermPublicKey: longTermSignedPublicKey,
+                                                 oneTimePublicKeys: oneTimePublicKeys,
+                                                 token: token.stringRepresentation())
 
                 completionWrapper(Void(), nil)
             }
@@ -232,4 +274,5 @@ class KeysRotator {
     }
 }
 
+// MARK: - KeysRotatorProtocol
 extension KeysRotator: KeysRotatorProtocol { }

@@ -40,34 +40,89 @@ import VirgilCryptoRatchet
 import VirgilCryptoFoundation
 import VirgilCryptoApiImpl
 
+/// SecureChat errors
+///
+/// - sessionAlreadyExists: Session with this participant already exists
+/// - wrongIdentityPublicKeyCrypto: PublicKey is not VirgilPublicKey
+/// - identityKeyDoesntMatch: Identity key in the Card and on Ratchet Cloud doesn't match
+/// - invalidLongTermKeySignature: Long-term key signature is invalid
+/// - invalidMessageType: Message type should be .prekey
+@objc public enum SecureChatError: Int, Error {
+    case sessionAlreadyExists = 1
+    case wrongIdentityPublicKeyCrypto = 2
+    case identityKeyDoesntMatch = 3
+    case invalidLongTermKeySignature = 4
+    case invalidMessageType = 5
+}
+
+/// SecureChat. Class for rotating keys, starting and responding to conversation
 @objc(VSRSecureChat) open class SecureChat: NSObject {
+    /// Access token provider
     @objc public let accessTokenProvider: AccessTokenProvider
+
+    /// Identity private key
     @objc public let identityPrivateKey: VirgilPrivateKey
-    private let keyUtils = RatchetKeyUtils()
-    public let client: RatchetClientProtocol
+
+    /// Crypto
     @objc public let crypto = VirgilCrypto()
+
+    /// Long-term keys storage
     @objc public let longTermKeysStorage: LongTermKeysStorage
+
+    /// One-time keys storage
     @objc public let oneTimeKeysStorage: OneTimeKeysStorage
+
+    /// Session storage
     @objc public let sessionStorage: SessionStorage
+
+    /// Client
+    public let client: RatchetClientProtocol
+
+    private let keyUtils = RatchetKeyUtils()
     private let keysRotator: KeysRotatorProtocol
-    
-    @objc public convenience init(identity: String, identityCardId: String, identityPrivateKey: VirgilPrivateKey, accessTokenProvider: AccessTokenProvider) throws {
+
+    /// Initializer
+    ///
+    /// - Parameter context: SecureChatContext
+    /// - Throws:
+    ///         - Rethrows from KeychainLongTermKeysStorage
+    @objc public convenience init(context: SecureChatContext) throws {
         let client = RatchetClient()
-        let longTermKeysStorage = try KeychainLongTermKeysStorage(identity: identity)
-        let oneTimeKeysStorage = FileOneTimeKeysStorage(identity: identity)
-        let sessionStorage = FileSessionStorage(identity: identity)
-        let keysRotator = KeysRotator(identityPrivateKey: identityPrivateKey, identityCardId: identityCardId, longTermKeysStorage: longTermKeysStorage, oneTimeKeysStorage: oneTimeKeysStorage, client: client)
-        
-        self.init(identityPrivateKey: identityPrivateKey, accessTokenProvider: accessTokenProvider, client: client, longTermKeysStorage: longTermKeysStorage, oneTimeKeysStorage: oneTimeKeysStorage, sessionStorage: sessionStorage, keysRotator: keysRotator)
+        let longTermKeysStorage = try KeychainLongTermKeysStorage(identity: context.identity)
+        let oneTimeKeysStorage = FileOneTimeKeysStorage(identity: context.identity)
+        let sessionStorage = FileSessionStorage(identity: context.identity)
+        let keysRotator = KeysRotator(identityPrivateKey: context.identityPrivateKey,
+                                      identityCardId: context.identityCardId,
+                                      longTermKeysStorage: longTermKeysStorage,
+                                      oneTimeKeysStorage: oneTimeKeysStorage,
+                                      client: client)
+
+        self.init(identityPrivateKey: context.identityPrivateKey,
+                  accessTokenProvider: context.accessTokenProvider,
+                  client: client,
+                  longTermKeysStorage: longTermKeysStorage,
+                  oneTimeKeysStorage: oneTimeKeysStorage,
+                  sessionStorage: sessionStorage,
+                  keysRotator: keysRotator)
     }
 
+    /// Initializer
+    ///
+    /// - Parameters:
+    ///   - identityPrivateKey: identity private key
+    ///   - accessTokenProvider: access token provider
+    ///   - client: client
+    ///   - longTermKeysStorage: long-term keys storage
+    ///   - oneTimeKeysStorage: one-time keys storage
+    ///   - sessionStorage: session storage
+    ///   - keysRotator: keys rotation
     public init(identityPrivateKey: VirgilPrivateKey,
-                  accessTokenProvider: AccessTokenProvider,
-                  client: RatchetClientProtocol,
-                  longTermKeysStorage: LongTermKeysStorage,
-                  oneTimeKeysStorage: OneTimeKeysStorage,
-                  sessionStorage: SessionStorage,
-                  keysRotator: KeysRotatorProtocol) {
+                accessTokenProvider: AccessTokenProvider,
+                client: RatchetClientProtocol,
+                longTermKeysStorage: LongTermKeysStorage,
+                oneTimeKeysStorage: OneTimeKeysStorage,
+                sessionStorage: SessionStorage,
+                keysRotator: KeysRotatorProtocol) {
         self.identityPrivateKey = identityPrivateKey
         self.accessTokenProvider = accessTokenProvider
         self.client = client
@@ -79,14 +134,36 @@ import VirgilCryptoApiImpl
         super.init()
     }
 
+    /// Rotates keys. See rotateKeys() -> GenericOperation<Void> for details
+    ///
+    /// - Parameter completion: completion handler
     @objc public func rotateKeys(completion: @escaping (Error?) -> Void) {
-        self.rotateKeys().start(completion: {
-            completion($1)
-        })
+        self.rotateKeys().start { _, error in
+            completion(error)
+        }
     }
 
+    /// Rotates keys
+    ///
+    /// Rotation process:
+    ///         - Retrieve all one-time keys
+    ///         - Delete one-time keys that were marked as orphaned more than orphanedOneTimeKeyTtl seconds ago
+    ///         - Retrieve all long-term keys
+    ///         - Delete long-term keys that were marked as outdated more than outdatedLongTermKeyTtl seconds ago
+    ///         - Check that all relevant long-term and one-time keys are in the cloud
+    ///             (still persistent in the cloud and were not used)
+    ///         - Mark used one-time keys as used
+    ///         - Decide on long-term key roration
+    ///         - Generate needed number of one-time keys
+    ///         - Upload keys to the cloud
+    ///
+    /// - Returns: GenericOperation
     public func rotateKeys() -> GenericOperation<Void> {
+        Log.debug("Keys rotation queued")
+
         return CallbackOperation { _, completion in
+            Log.debug("Started keys rotation")
+
             let tokenContext = TokenContext(service: "ratchet", operation: "rotate", forceReload: false)
             let getTokenOperation = OperationUtils.makeGetTokenOperation(
                 tokenContext: tokenContext, accessTokenProvider: self.accessTokenProvider)
@@ -105,62 +182,118 @@ import VirgilCryptoApiImpl
         }
     }
 
+    /// Checks for existing session with given participent in the storage
+    ///
+    /// - Parameter particpantIdentity: participant identity
+    /// - Returns: SecureSession if exists
     @objc open func existingSession(withParticpantIdentity particpantIdentity: String) -> SecureSession? {
-        return self.sessionStorage.retrieveSession(participantIdentity: particpantIdentity)
+        if let session = self.sessionStorage.retrieveSession(participantIdentity: particpantIdentity) {
+            Log.debug("Found existing session with \(particpantIdentity)")
+
+            return session
+        }
+        else {
+            Log.debug("Existing session with \(particpantIdentity) was not found")
+
+            return nil
+        }
     }
 
-    @objc func deleteSession(withParticpantIdentity particpantIdentity: String) throws {
-        // FIXME
-        throw NSError()
+    /// Deletes session with given participant identity
+    ///
+    /// - Parameter particpantIdentity: participant identity
+    /// - Throws: Rethrows from SessionStorage
+    @objc public func deleteSession(withParticpantIdentity particpantIdentity: String) throws {
+        Log.debug("Deleting session with \(particpantIdentity)")
+
+        try self.sessionStorage.deleteSession(participantIdentity: particpantIdentity)
     }
 
-    @objc open func startNewSessionAsSender(receiverCard: Card) throws -> SecureSession {
-        let tokenContext = TokenContext(service: "ratchet", operation: "get")
-        let getTokenOperation = OperationUtils.makeGetTokenOperation(
-            tokenContext: tokenContext, accessTokenProvider: self.accessTokenProvider)
+    /// Starts new session with given participant using his identity card
+    ///
+    /// - Parameters:
+    ///   - receiverCard: receiver identity cards
+    ///   - completion: completion handler
+    @objc open func startNewSessionAsSender(receiverCard: Card,
+                                            completion: @escaping (SecureSession?, Error?) -> Void) {
+        self.startNewSessionAsSender(receiverCard: receiverCard).start(completion: completion)
+    }
 
-        // FIXME: run async
-        let token = try getTokenOperation.startSync().getResult()
+    /// Starts new session with given participant using his identity card
+    ///
+    /// - Parameter receiverCard: receiver identity cards
+    /// - Returns: GenericOperation with SecureSession
+    /// - Throws:
+    ///         - SecureChatError.sessionAlreadyExists if session already exists.
+    ///             Try geting existing session or removing it
+    ///         - SecureChatError.wrongIdentityPublicKeyCrypto PublicKey is not VirgilPublicKey
+    ///         - SecureChatError.identityKeyDoesntMatch Identity key in the Card and on Ratchet Cloud doesn't match
+    ///         - SecureChatError.invalidLongTermKeySignature Long-term key signature is invalid
+    ///         - Rethrows from SessionStorage
+    ///         - Rethrows from RatchetClient
+    ///         - Rethrows form SecureSession
+    ///         - Rethrows form AccessTokenProvider
+    open func startNewSessionAsSender(receiverCard: Card) -> GenericOperation<SecureSession> {
+        Log.debug("Starting new session with \(receiverCard.identity) queued")
 
-        guard self.existingSession(withParticpantIdentity: receiverCard.identity) == nil else {
-            throw NSError()
+        return CallbackOperation { _, completion in
+            do {
+                Log.debug("Starting new session with \(receiverCard.identity)")
+
+                guard self.existingSession(withParticpantIdentity: receiverCard.identity) == nil else {
+                    throw SecureChatError.sessionAlreadyExists
+                }
+
+                let tokenContext = TokenContext(service: "ratchet", operation: "get")
+                let getTokenOperation = OperationUtils.makeGetTokenOperation(
+                    tokenContext: tokenContext, accessTokenProvider: self.accessTokenProvider)
+
+                let token = try getTokenOperation.startSync().getResult()
+
+                // TODO: Check long-term and one-time public keys are X25519
+                let publicKeySet = try self.client.getPublicKeySet(forRecipientIdentity: receiverCard.identity,
+                                                                   token: token.stringRepresentation())
+
+                // TODO: Check identityPublicKey is ED25519
+                guard let identityPublicKey = receiverCard.publicKey as? VirgilPublicKey else {
+                    throw SecureChatError.wrongIdentityPublicKeyCrypto
+                }
+
+                guard self.crypto.exportPublicKey(identityPublicKey) == publicKeySet.identityPublicKey else {
+                    throw SecureChatError.identityKeyDoesntMatch
+                }
+
+                guard self.crypto.verifySignature(publicKeySet.longTermPublicKey.signature,
+                                                  of: publicKeySet.longTermPublicKey.publicKey,
+                                                  with: identityPublicKey) else {
+                    throw SecureChatError.invalidLongTermKeySignature
+                }
+
+                if publicKeySet.oneTimePublicKey == nil {
+                    Log.error("Creating weak session with \(receiverCard.identity)")
+                }
+
+                let privateKeyData = self.crypto.exportPrivateKey(self.identityPrivateKey)
+
+                let session = try SecureSession(sessionStorage: self.sessionStorage,
+                                                participantIdentity: receiverCard.identity,
+                                                senderIdentityPrivateKey: privateKeyData,
+                                                receiverIdentityPublicKey: publicKeySet.identityPublicKey,
+                                                receiverLongTermPublicKey: publicKeySet.longTermPublicKey.publicKey,
+                                                receiverOneTimePublicKey: publicKeySet.oneTimePublicKey)
+
+                try self.sessionStorage.storeSession(session)
+
+                completion(session, nil)
+            }
+            catch {
+                completion(nil, error)
+            }
         }
-
-        // FIXME: run async
-        let publicKeySet = try self.client.getPublicKeySet(forRecipientIdentity: receiverCard.identity, token: token.stringRepresentation())
-
-        guard let identityPublicKey = receiverCard.publicKey as? VirgilPublicKey else {
-            throw NSError()
-        }
-
-        guard self.crypto.exportPublicKey(identityPublicKey) == publicKeySet.identityPublicKey else {
-            throw NSError()
-        }
-
-        // FIXME
-        guard self.crypto.verifySignature(publicKeySet.longTermPublicKey.signature, of: publicKeySet.longTermPublicKey.publicKey, with: identityPublicKey) else {
-            throw NSError()
-        }
-
-        if publicKeySet.oneTimePublicKey == nil {
-            Log.error("Creating weak session with \(receiverCard.identity)")
-        }
-
-        let privateKeyData = self.crypto.exportPrivateKey(self.identityPrivateKey)
-
-        let session = try SecureSession(sessionStorage: self.sessionStorage,
-                                        participantIdentity: receiverCard.identity,
-                                        senderIdentityPrivateKey: privateKeyData,
-                                        receiverIdentityPublicKey: publicKeySet.identityPublicKey,
-                                        receiverLongTermPublicKey: publicKeySet.longTermPublicKey.publicKey,
-                                        receiverOneTimePublicKey: publicKeySet.oneTimePublicKey)
-
-        try self.sessionStorage.storeSession(session)
-
-        return session
     }
 
     private let queue = DispatchQueue(label: "VSRSecureChat", qos: .background)
+
     private func replaceOneTimeKey() {
         Log.debug("Adding one time key queued")
 
@@ -192,9 +325,16 @@ import VirgilCryptoApiImpl
             }
 
             do {
-                let token = try OperationUtils.makeGetTokenOperation(tokenContext: TokenContext(service: "ratchet", operation: "post"), accessTokenProvider: self.accessTokenProvider).startSync().getResult()
+                let tokenContext = TokenContext(service: "ratchet", operation: "post")
+                let token = try OperationUtils.makeGetTokenOperation(tokenContext: tokenContext,
+                                                                     accessTokenProvider: self.accessTokenProvider)
+                    .startSync()
+                    .getResult()
 
-                try self.client.uploadPublicKeys(identityCardId: nil, longTermPublicKey: nil, oneTimePublicKeys: [oneTimePublicKey], token: token.stringRepresentation())
+                try self.client.uploadPublicKeys(identityCardId: nil,
+                                                 longTermPublicKey: nil,
+                                                 oneTimePublicKeys: [oneTimePublicKey],
+                                                 token: token.stringRepresentation())
 
                 Log.debug("Added one-time key successfully")
             }
@@ -204,20 +344,49 @@ import VirgilCryptoApiImpl
         }
     }
 
-    @objc public func startNewSessionAsReceiver(senderCard: Card, ratchetMessage: RatchetMessage) throws -> SecureSession {
+    /// Responds with new session with given participant using his initiation message
+    ///
+    /// - Parameters:
+    ///   - senderCard: Sender identity card
+    ///   - ratchetMessage: Ratchet initiation message (should be prekey message)
+    /// - Returns: SecureSession
+    /// - Throws:
+    ///         - SecureChatError.sessionAlreadyExists if session already exists.
+    ///             Try geting existing session or removing it
+    ///         - SecureChatError.wrongIdentityPublicKeyCrypto PublicKey is not VirgilPublicKey
+    ///         - Rethrows from SessionStorage
+    ///         - Rethrows form SecureSession
+    ///         - Rethrows form AccessTokenProvider
+    @objc public func startNewSessionAsReceiver(senderCard: Card,
+                                                ratchetMessage: RatchetMessage) throws -> SecureSession {
+        Log.debug("Responding to session with \(senderCard.identity) queued")
+
+        guard self.existingSession(withParticpantIdentity: senderCard.identity) == nil else {
+            throw SecureChatError.sessionAlreadyExists
+        }
+
+        // TODO: Check senderIdentityPublicKey should be ED25519
         guard let senderIdentityPublicKey = senderCard.publicKey as? VirgilPublicKey else {
-            throw NSError()
+            throw SecureChatError.wrongIdentityPublicKeyCrypto
         }
 
         guard ratchetMessage.getType() == .prekey else {
-            throw NSError()
+            throw SecureChatError.invalidMessageType
         }
 
         let receiverLongTermPublicKey = ratchetMessage.getLongTermPublicKey()
-        let receiverLongTermPrivateKey = try self.longTermKeysStorage.retrieveKey(withId: try self.keyUtils.computePublicKeyId(publicKey: receiverLongTermPublicKey))
+        let longTermKeyId = try self.keyUtils.computePublicKeyId(publicKey: receiverLongTermPublicKey)
+        let receiverLongTermPrivateKey = try self.longTermKeysStorage.retrieveKey(withId: longTermKeyId)
 
         let receiverOneTimePublicKey = ratchetMessage.getOneTimePublicKey()
-        let receiverOneTimeKeyId: Data? = receiverOneTimePublicKey.isEmpty ? nil : try self.keyUtils.computePublicKeyId(publicKey: receiverOneTimePublicKey)
+        let receiverOneTimeKeyId: Data?
+
+        if receiverOneTimePublicKey.isEmpty {
+            receiverOneTimeKeyId = nil
+        }
+        else {
+            receiverOneTimeKeyId = try self.keyUtils.computePublicKeyId(publicKey: receiverOneTimePublicKey)
+        }
 
         let receiverOneTimePrivateKey: OneTimeKey?
 
@@ -260,5 +429,46 @@ import VirgilCryptoApiImpl
         try self.sessionStorage.storeSession(session)
 
         return session
+    }
+
+    @objc public func reset(completion: @escaping (Error?) -> Void) {
+        self.reset().start { _, error in
+            completion(error)
+        }
+    }
+
+    public func reset() -> GenericOperation<Void> {
+        Log.debug("Reset queued")
+
+        return CallbackOperation { _, completion in
+            do {
+                Log.debug("Started reset")
+
+                let tokenContext = TokenContext(service: "ratchet", operation: "delete")
+                let tokenOp = OperationUtils.makeGetTokenOperation(
+                    tokenContext: tokenContext, accessTokenProvider: self.accessTokenProvider)
+
+                let token = try tokenOp.startSync().getResult()
+
+                Log.debug("Reseting cloud")
+                try self.client.deleteKeysEntity(token: token.stringRepresentation())
+
+                Log.debug("Reseting one-time keys")
+                try self.oneTimeKeysStorage.reset()
+
+                Log.debug("Reseting long-term keys")
+                try self.longTermKeysStorage.reset()
+
+                Log.debug("Reseting sessions")
+                try self.sessionStorage.reset()
+
+                Log.debug("Reseting success")
+
+                completion(Void(), nil)
+            }
+            catch {
+                completion(nil, error)
+            }
+        }
     }
 }

@@ -36,27 +36,28 @@
 
 import Foundation
 
-/// Set of public keys for some receiver
-@objc(VSRPublicKeySet) public final class PublicKeySet: NSObject, Decodable {
-    /// Identity public key
-    @objc public let identityPublicKey: Data
+/// Class representing One-time private key
+@objc(VSROneTimeKey) public final class OneTimeKey: NSObject, Codable {
+    /// Key id
+    @objc public let identifier: Data
 
-    /// Long-term public key
-    @objc public let longTermPublicKey: SignedPublicKey
+    /// Private key
+    @objc public let key: Data
 
-    /// One-time public key
-    @objc public let oneTimePublicKey: Data?
+    /// Date from which we found out that this key if orphaned
+    @objc public let orphanedFrom: Date?
 
-    /// Defines coding keys for encoding and decoding
-    private enum CodingKeys: String, CodingKey {
-        case identityPublicKey = "identity_key"
-        case longTermPublicKey = "long_term_key"
-        case oneTimePublicKey = "one_time_key"
-    }
+    /// Initializer
+    ///
+    /// - Parameters:
+    ///   - identifier: key id
+    ///   - key: private key
+    ///   - orphanedFrom: date from which we found out that this key if orphaned
+    @objc public init(identifier: Data, key: Data, orphanedFrom: Date?) {
+        self.identifier = identifier
+        self.key = key
+        self.orphanedFrom = orphanedFrom
 
-    internal init(identityPublicKey: Data, longTermPublicKey: SignedPublicKey, oneTimePublicKey: Data?) {
-        self.identityPublicKey = identityPublicKey
-        self.longTermPublicKey = longTermPublicKey
-        self.oneTimePublicKey = oneTimePublicKey
+        super.init()
     }
 }

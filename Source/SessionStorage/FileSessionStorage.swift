@@ -36,27 +36,37 @@
 
 import Foundation
 
+/// FileSessionStorage using files
+/// This class is thread-safe
 @objc(VSRFileSessionStorage) open class FileSessionStorage: NSObject, SessionStorage {
     private let fileSystem: FileSystem
+    private let queue = DispatchQueue(label: "FileSessionStorageQueue")
 
-    @objc convenience init(identity: String) {
-        let fileSystem = FileSystem(identity: identity)
-
-        self.init(fileSystem: fileSystem)
-    }
-
-    @objc public init(fileSystem: FileSystem) {
-        self.fileSystem = fileSystem
+    /// Initializer
+    ///
+    /// - Parameter identity: identity of this user
+    @objc public init(identity: String) {
+        self.fileSystem = FileSystem(identity: identity)
 
         super.init()
     }
 
+    /// Stores session
+    ///
+    /// - Parameter session: session to store
+    /// - Throws: Rethrows from FileSystem
     public func storeSession(_ session: SecureSession) throws {
-        let data = session.serialize()
+        try self.queue.sync {
+            let data = session.serialize()
 
-        try self.fileSystem.writeSessionFile(identity: session.participantIdentity, data: data)
+            try self.fileSystem.writeSessionFile(identity: session.participantIdentity, data: data)
+        }
     }
 
+    /// Retrieves session
+    ///
+    /// - Parameter participantIdentity: participant identity
+    /// - Throws: Rethrows from FileSystem
     public func retrieveSession(participantIdentity: String) -> SecureSession? {
         guard let data = try? self.fileSystem.readSession(identity: participantIdentity), !data.isEmpty else {
             return nil
@@ -65,7 +75,22 @@ import Foundation
         return try? SecureSession(data: data, participantIdentity: participantIdentity, sessionStorage: self)
     }
 
+    /// Deletes session
+    ///
+    /// - Parameter participantIdentity: participantIdentity: participant identity
+    /// - Throws: Rethrows from FileSystem
     public func deleteSession(participantIdentity: String) throws {
-        try self.fileSystem.deleteSessionFile(identity: participantIdentity)
+        try self.queue.sync {
+            try self.fileSystem.deleteSessionFile(identity: participantIdentity)
+        }
+    }
+
+    /// Removes all sessions
+    ///
+    /// - Throws: Rethrows from FileSystem
+    public func reset() throws {
+        try self.queue.sync {
+            try self.fileSystem.resetSessions()
+        }
     }
 }

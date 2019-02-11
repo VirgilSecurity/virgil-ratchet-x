@@ -36,9 +36,13 @@
 
 import Foundation
 
-public final class ValidatePublicKeysResponse: NSObject, Decodable {
-    public let usedLongTermKeyId: Data?
-    public let usedOneTimeKeysIds: [Data]
+/// Response for public key validation
+@objc(VSRValidatePublicKeysResponse) public final class ValidatePublicKeysResponse: NSObject, Decodable {
+    /// Used long-term public key id
+    @objc public let usedLongTermKeyId: Data?
+
+    /// Used one-time keys ids
+    @objc public let usedOneTimeKeysIds: [Data]
 
     /// Defines coding keys for encoding and decoding
     private enum CodingKeys: String, CodingKey {

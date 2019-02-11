@@ -37,18 +37,21 @@
 import Foundation
 import VirgilSDK
 
-// TODO: Add logging
-// TODO: Make thread-safe?
-@objc(VSRFileSystem) open class FileSystem: NSObject {
-    @objc public let fileManager = FileManager()
-    @objc public let identity: String
+/// Class for saving Sessions and One-time keys to the filesystem
+/// NOTE: This class is not thread-safe
+internal class FileSystem {
+    private let fileManager = FileManager()
+    private let identity: String
 
-    @objc public init(identity: String) {
+    internal init(identity: String) {
         self.identity = identity
     }
 
     private func createRatchetTempDir() throws -> URL {
-        var dirUrl = try self.fileManager.url(for: .itemReplacementDirectory, in: .userDomainMask, appropriateFor: try self.createOneTimeKeysUrl(), create: true)
+        var dirUrl = try self.fileManager.url(for: .itemReplacementDirectory,
+                                              in: .userDomainMask,
+                                              appropriateFor: try self.createOneTimeKeysUrl(),
+                                              create: true)
 
         dirUrl.appendPathComponent("VIRGIL-RATCHET")
 
@@ -68,7 +71,10 @@ import VirgilSDK
     }
 
     private func createRatchetSuppDir() throws -> URL {
-        var dirUrl = try self.fileManager.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+        var dirUrl = try self.fileManager.url(for: .applicationSupportDirectory,
+                                              in: .userDomainMask,
+                                              appropriateFor: nil,
+                                              create: true)
 
         dirUrl.appendPathComponent("VIRGIL-RATCHET")
 
@@ -96,9 +102,15 @@ import VirgilSDK
         let tempFileUrl = try self.createTempFileUrl()
 
         try? self.fileManager.removeItem(at: tempFileUrl)
-        self.fileManager.createFile(atPath: tempFileUrl.path, contents: data, attributes: nil)
+        self.fileManager.createFile(atPath: tempFileUrl.path,
+                                    contents: data,
+                                    attributes: [FileAttributeKey.protectionKey: FileProtectionType.complete])
 
-        try self.fileManager.replaceItem(at: url, withItemAt: tempFileUrl, backupItemName: "BACKUP", options: [], resultingItemURL: nil)
+        try self.fileManager.replaceItem(at: url,
+                                         withItemAt: tempFileUrl,
+                                         backupItemName: UUID().uuidString,
+                                         options: [],
+                                         resultingItemURL: nil)
         Log.debug("Replaced \(url.absoluteString) with \(tempFileUrl.absoluteString)")
     }
 
@@ -108,6 +120,20 @@ import VirgilSDK
         url.appendPathComponent("OTK")
 
         return url
+    }
+
+    private func deleteSessionDir() throws {
+        var dirUrl = try self.createRatchetSuppDir()
+
+        dirUrl.appendPathComponent("SESSION")
+
+        if !self.fileManager.fileExists(atPath: dirUrl.path) {
+            try self.fileManager.removeItem(atPath: dirUrl.path)
+            Log.debug("Deleted \(dirUrl.absoluteString) folder")
+        }
+        else {
+            Log.debug("Nothing to delete at \(dirUrl.absoluteString)")
+        }
     }
 
     private func createSessionDir() throws -> URL {
@@ -131,7 +157,15 @@ import VirgilSDK
         return url
     }
 
-    @objc open func writeOneTimeKeysFile(data: Data) throws {
+    internal func deleteOneTimeKeysFile() throws {
+        Log.debug("deleteOneTimeKeysFile")
+
+        let url = try self.createOneTimeKeysUrl()
+
+        try self.fileManager.removeItem(atPath: url.path)
+    }
+
+    internal func writeOneTimeKeysFile(data: Data) throws {
         Log.debug("createOneTimeKeysFile")
 
         let url = try self.createOneTimeKeysUrl()
@@ -139,9 +173,7 @@ import VirgilSDK
         try self.writeFile(url: url, data: data)
     }
 
-    @objc open func readOneTimeKeysFile() throws -> Data {
-        // TODO: Add encryption
-
+    internal func readOneTimeKeysFile() throws -> Data {
         Log.debug("readOneTimeKeysFile")
 
         let url = try self.createOneTimeKeysUrl()
@@ -155,7 +187,7 @@ import VirgilSDK
         return dirUrl.appendingPathComponent(NSUUID().uuidString)
     }
 
-    @objc open func readSession(identity: String) throws -> Data {
+    internal func readSession(identity: String) throws -> Data {
         Log.debug("readSession with \(identity)")
 
         let url = try self.createSessionUrl(identity: identity)
@@ -165,14 +197,16 @@ import VirgilSDK
 
     private func writeFile(url: URL, data: Data) throws {
         if !self.fileManager.fileExists(atPath: url.path) {
-            self.fileManager.createFile(atPath: url.path, contents: data, attributes: nil)
+            self.fileManager.createFile(atPath: url.path,
+                                        contents: data,
+                                        attributes: [FileAttributeKey.protectionKey: FileProtectionType.complete])
         }
         else {
             try self.replaceFile(url: url, data: data)
         }
     }
 
-    @objc open func writeSessionFile(identity: String, data: Data) throws {
+    internal func writeSessionFile(identity: String, data: Data) throws {
         Log.debug("writeSessionFile \(identity)")
 
         let url = try self.createSessionUrl(identity: identity)
@@ -180,11 +214,19 @@ import VirgilSDK
         try self.writeFile(url: url, data: data)
     }
 
-    @objc open func deleteSessionFile(identity: String) throws {
+    internal func deleteSessionFile(identity: String) throws {
         Log.debug("deleteSessionFile \(identity)")
 
         let url = try self.createSessionUrl(identity: identity)
 
         try self.fileManager.removeItem(at: url)
+    }
+
+    internal func resetSessions() throws {
+        try self.deleteSessionDir()
+    }
+
+    internal func resetOneTimeKeys() throws {
+        try self.deleteOneTimeKeysFile()
     }
 }

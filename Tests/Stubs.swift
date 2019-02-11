@@ -55,6 +55,10 @@ class RamSessionStorage: SessionStorage {
             throw NSError()
         }
     }
+    
+    func reset() throws {
+        self.db = [:]
+    }
 }
 
 class RamLongTermKeysStorage: LongTermKeysStorage {
@@ -94,6 +98,10 @@ class RamLongTermKeysStorage: LongTermKeysStorage {
         }
         
         self.db[keyId] = LongTermKey(identifier: keyId, key: key.key, creationDate: key.creationDate, outdatedFrom: date)
+    }
+    
+    func reset() throws {
+        self.db = [:]
     }
 }
 
@@ -138,6 +146,10 @@ class RamOneTimeKeysStorage: OneTimeKeysStorage {
         }
         
         self.db[keyId] = OneTimeKey(identifier: keyId, key: key.key, orphanedFrom: date)
+    }
+    
+    func reset() throws {
+        self.db = [:]
     }
 }
 

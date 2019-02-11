@@ -36,10 +36,28 @@
 
 import Foundation
 
+/// Protocol for session storage
 @objc(VSRSessionStorage) public protocol SessionStorage: class {
+    /// Stores session
+    ///
+    /// - Parameter session: session to store
+    /// - Throws: Depends on implementation
     @objc func storeSession(_ session: SecureSession) throws
+
+    /// Retrieves session
+    ///
+    /// - Parameter participantIdentity: participant identity
+    /// - Returns: Stored session if found, nil otherwise
     @objc func retrieveSession(participantIdentity: String) -> SecureSession?
+
+    /// Deletes session
+    ///
+    /// - Parameter participantIdentity: participantIdentity: participant identity
+    /// - Throws: Depends on implementation
     @objc func deleteSession(participantIdentity: String) throws
 
-    // TODO: Add reset
+    /// Removes all sessions
+    ///
+    /// - Throws: Depends on implementation
+    @objc func reset() throws
 }

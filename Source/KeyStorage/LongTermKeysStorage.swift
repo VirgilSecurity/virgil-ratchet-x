@@ -36,26 +36,46 @@
 
 import Foundation
 
-@objc(VSRLongTermKey) public final class LongTermKey: NSObject, Codable {
-    @objc public let identifier: Data
-    @objc public let key: Data
-    @objc public let creationDate: Date
-    @objc public let outdatedFrom: Date?
-
-    @objc public init(identifier: Data, key: Data, creationDate: Date, outdatedFrom: Date?) {
-        self.identifier = identifier
-        self.key = key
-        self.creationDate = creationDate
-        self.outdatedFrom = outdatedFrom
-
-        super.init()
-    }
-}
-
+/// Protocol for Long-term private keys storage
 @objc(VSRLongTermKeysStorage) public protocol LongTermKeysStorage: class {
+    /// Stores key
+    ///
+    /// - Parameters:
+    ///   - key: private key
+    ///   - id: key id
+    /// - Returns: LongTermKey
+    /// - Throws: Depends on implementation
     @objc func storeKey(_ key: Data, withId id: Data) throws -> LongTermKey
+
+    /// Retrieves key
+    ///
+    /// - Parameter id: key id
+    /// - Returns: Long-term key
+    /// - Throws: Depends on implementation
     @objc func retrieveKey(withId id: Data) throws -> LongTermKey
+
+    /// Deletes key
+    ///
+    /// - Parameter id: key id
+    /// - Throws: Depends on implementation
     @objc func deleteKey(withId id: Data) throws
+
+    /// Retrieves all persistent long-term keys
+    ///
+    /// - Returns: Long-term keys list
+    /// - Throws: Depends on implementation
     @objc func retrieveAllKeys() throws -> [LongTermKey]
+
+    /// Marks key as outdated
+    ///
+    /// - Parameters:
+    ///   - date: date from which this key started to be outdated
+    ///   - keyId: key id
+    /// - Throws: Depends on implementation
     @objc func markKeyOutdated(startingFrom date: Date, keyId: Data) throws
+
+    /// Deletes all long-term keys
+    ///
+    /// - Throws: Depends on implementation
+    @objc func reset() throws
 }

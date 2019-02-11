@@ -38,14 +38,29 @@ import Foundation
 import VirgilCryptoRatchet
 import VirgilCryptoApiImpl
 
+/// SecureSession errors
+///
+/// - invalidUtf8String: invalid convesion to/from utf-8 string
+@objc(VSCRSecureSessionError) public enum SecureSessionError: Int, Error {
+    case invalidUtf8String = 1
+}
+
+/// SecureSession
+/// NOTE: This class is thread-safe
 @objc(VSRSecureSession) public final class SecureSession: NSObject {
+    /// Participant identity
+    @objc public let participantIdentity: String
+
+    /// Crypto
     @objc public let crypto = VirgilCrypto()
+
+    /// SessionStorage
     @objc public let sessionStorage: SessionStorage
 
     private let ratchetSession: RatchetSession
     private let queue = DispatchQueue(label: "SecureSessionQueue")
-    @objc public let participantIdentity: String
 
+    // As receiver
     internal init(sessionStorage: SessionStorage,
                   participantIdentity: String,
                   receiverIdentityPrivateKey: VirgilPrivateKey,
@@ -59,7 +74,11 @@ import VirgilCryptoApiImpl
         let ratchetSession = RatchetSession()
         ratchetSession.setupDefaults()
 
-        try ratchetSession.respond(senderIdentityPublicKey: senderIdentityPublicKey, receiverIdentityPrivateKey: self.crypto.exportPrivateKey(receiverIdentityPrivateKey), receiverLongTermPrivateKey: receiverLongTermPrivateKey.key, receiverOneTimePrivateKey: receiverOneTimePrivateKey?.key ?? Data(), message: ratchetMessage)
+        try ratchetSession.respond(senderIdentityPublicKey: senderIdentityPublicKey,
+                                   receiverIdentityPrivateKey: self.crypto.exportPrivateKey(receiverIdentityPrivateKey),
+                                   receiverLongTermPrivateKey: receiverLongTermPrivateKey.key,
+                                   receiverOneTimePrivateKey: receiverOneTimePrivateKey?.key ?? Data(),
+                                   message: ratchetMessage)
 
         self.ratchetSession = ratchetSession
 
@@ -79,17 +98,32 @@ import VirgilCryptoApiImpl
         let ratchetSession = RatchetSession()
         ratchetSession.setupDefaults()
 
-        try ratchetSession.initiate(senderIdentityPrivateKey: senderIdentityPrivateKey, receiverIdentityPublicKey: receiverIdentityPublicKey, receiverLongTermPublicKey: receiverLongTermPublicKey, receiverOneTimePublicKey: receiverOneTimePublicKey ?? Data())
+        try ratchetSession.initiate(senderIdentityPrivateKey: senderIdentityPrivateKey,
+                                    receiverIdentityPublicKey: receiverIdentityPublicKey,
+                                    receiverLongTermPublicKey: receiverLongTermPublicKey,
+                                    receiverOneTimePublicKey: receiverOneTimePublicKey ?? Data())
 
         self.ratchetSession = ratchetSession
 
         super.init()
     }
 
-    public func encrypt(message: Data) throws -> RatchetMessage {
+    /// Encrypts string. Updates session in storage
+    ///
+    /// - Parameter message: message to encrypt
+    /// - Returns: RatchetMessage
+    /// - Throws:
+    ///         - SecureSessionError.invalidUtf8String if given string is not correct utf-8 string
+    ///         - Rethrows from crypto RatchetSession
+    ///         - Rethrows from SessionStorage
+    public func encrypt(string: String) throws -> RatchetMessage {
         return try self.queue.sync {
+            guard let data = string.data(using: .utf8) else {
+                throw SecureSessionError.invalidUtf8String
+            }
+
             let errCtx = ErrorCtx()
-            let msg = self.ratchetSession.encrypt(plainText: message, errCtx: errCtx)
+            let msg = self.ratchetSession.encrypt(plainText: data, errCtx: errCtx)
 
             try errCtx.error()
 
@@ -99,7 +133,34 @@ import VirgilCryptoApiImpl
         }
     }
 
-    public func decrypt(message: RatchetMessage) throws -> Data {
+    /// Encrypts data. Updates session in storage
+    ///
+    /// - Parameter message: message to encrypt
+    /// - Returns: RatchetMessage
+    /// - Throws:
+    ///         - Rethrows from crypto RatchetSession
+    ///         - Rethrows from SessionStorage
+    public func encrypt(data: Data) throws -> RatchetMessage {
+        return try self.queue.sync {
+            let errCtx = ErrorCtx()
+            let msg = self.ratchetSession.encrypt(plainText: data, errCtx: errCtx)
+
+            try errCtx.error()
+
+            try self.sessionStorage.storeSession(self)
+
+            return msg
+        }
+    }
+
+    /// Decrypts data from RatchetMessage. Updates session in storage
+    ///
+    /// - Parameter message: RatchetMessage
+    /// - Returns: Decrypted data
+    /// - Throws:
+    ///         - Rethrows from crypto RatchetSession
+    ///         - Rethrows from SessionStorage
+    public func decryptData(from message: RatchetMessage) throws -> Data {
         return try self.queue.sync {
             let data = try self.ratchetSession.decrypt(message: message)
 
@@ -109,6 +170,35 @@ import VirgilCryptoApiImpl
         }
     }
 
+    /// Decrypts utf-8 string from RatchetMessage. Updates session in storage
+    ///
+    /// - Parameter message: RatchetMessage
+    /// - Returns: Decrypted utf-8 string
+    /// - Throws:
+    ///         - SecureSessionError.invalidUtf8String if decrypted data is not correct utf-8 string
+    ///         - Rethrows from crypto RatchetSession
+    ///         - Rethrows from SessionStorage
+    public func decryptString(from message: RatchetMessage) throws -> String {
+        return try self.queue.sync {
+            let data = try self.ratchetSession.decrypt(message: message)
+
+            try self.sessionStorage.storeSession(self)
+
+            guard let string = String(data: data, encoding: .utf8) else {
+                throw SecureSessionError.invalidUtf8String
+            }
+
+            return string
+        }
+    }
+
+    /// Init session from serialized representation
+    ///
+    /// - Parameters:
+    ///   - data: Serialized session
+    ///   - participantIdentity: participant identity
+    ///   - sessionStorage: SessionStorage
+    /// - Throws: Rethrows from SessionStorage
     public init(data: Data, participantIdentity: String, sessionStorage: SessionStorage) throws {
         let errCtx = ErrorCtx()
 
@@ -123,6 +213,9 @@ import VirgilCryptoApiImpl
         super.init()
     }
 
+    /// Serialize session
+    ///
+    /// - Returns: Serialized data
     public func serialize() -> Data {
         return self.ratchetSession.serialize()
     }

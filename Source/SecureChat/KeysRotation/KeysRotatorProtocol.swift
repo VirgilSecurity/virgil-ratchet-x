@@ -35,28 +35,12 @@
 //
 
 import Foundation
+import VirgilSDK
 
-/// Set of public keys for some receiver
-@objc(VSRPublicKeySet) public final class PublicKeySet: NSObject, Decodable {
-    /// Identity public key
-    @objc public let identityPublicKey: Data
-
-    /// Long-term public key
-    @objc public let longTermPublicKey: SignedPublicKey
-
-    /// One-time public key
-    @objc public let oneTimePublicKey: Data?
-
-    /// Defines coding keys for encoding and decoding
-    private enum CodingKeys: String, CodingKey {
-        case identityPublicKey = "identity_key"
-        case longTermPublicKey = "long_term_key"
-        case oneTimePublicKey = "one_time_key"
-    }
-
-    internal init(identityPublicKey: Data, longTermPublicKey: SignedPublicKey, oneTimePublicKey: Data?) {
-        self.identityPublicKey = identityPublicKey
-        self.longTermPublicKey = longTermPublicKey
-        self.oneTimePublicKey = oneTimePublicKey
-    }
+/// Protocol for keys rotation
+public protocol KeysRotatorProtocol: class {
+    /// Rotates keys
+    ///
+    /// - Returns: GenericOperation
+    func rotateKeysOperation() -> GenericOperation<Void>
 }

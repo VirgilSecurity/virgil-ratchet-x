@@ -37,15 +37,29 @@
 import Foundation
 import VirgilSDK
 
+/// KeychainLongTermKeysStorage errors
+///
+/// - invalidKeyId: Invalid key id
+/// - invalidMeta: Invalid key meta
+@objc public enum KeychainLongTermKeysStorageError: Int, Error {
+    case invalidKeyId = 1
+    case invalidMeta = 2
+}
+
+/// Long-term keys storage
 @objc(VSRKeychainLongTermKeysStorage) open class KeychainLongTermKeysStorage: NSObject, LongTermKeysStorage {
     private let keychain: SandboxedKeychainStorage
 
+    /// Initializer
+    ///
+    /// - Parameter identity: identity of this user
+    /// - Throws: Rethrows from KeychainStorageParams
     @objc public init(identity: String) throws {
         let params = try KeychainStorageParams.makeKeychainStorageParams()
         let keychainStorage = KeychainStorage(storageParams: params)
         self.keychain = SandboxedKeychainStorage(identity: identity,
-                                                      prefix: "LTK",
-                                                      keychainStorage: keychainStorage)
+                                                 prefix: "LTK",
+                                                 keychainStorage: keychainStorage)
 
         super.init()
     }
@@ -68,7 +82,7 @@ import VirgilSDK
 
     private func mapEntry(_ entry: KeychainEntry) throws -> LongTermKey {
         guard let id = Data(base64Encoded: entry.name) else {
-            throw NSError()
+            throw KeychainLongTermKeysStorageError.invalidKeyId
         }
 
         return LongTermKey(identifier: id,
@@ -77,35 +91,80 @@ import VirgilSDK
                            outdatedFrom: self.parseMeta(entry.meta))
     }
 
+    /// Stores key
+    ///
+    /// - Parameters:
+    ///   - key: private key
+    ///   - id: key id
+    /// - Returns: LongTermKey
+    /// - Throws:
+    ///         - KeychainLongTermKeysStorageError.invalidKeyId
+    ///         - Rethrows from SandboxedKeychainStorage
     public func storeKey(_ key: Data, withId id: Data) throws -> LongTermKey {
         let entry = try self.keychain.store(data: key, withName: id.base64EncodedString(), meta: [:])
 
         return try self.mapEntry(entry)
     }
 
+    /// Retrieves key
+    ///
+    /// - Parameter id: key id
+    /// - Returns: Long-term key
+    /// - Throws:
+    ///         - KeychainLongTermKeysStorageError.invalidKeyId
+    ///         - Rethrows from SandboxedKeychainStorage
     public func retrieveKey(withId id: Data) throws -> LongTermKey {
         let entry = try self.keychain.retrieveEntry(withName: id.base64EncodedString())
 
         return try self.mapEntry(entry)
     }
 
+    /// Deletes key
+    ///
+    /// - Parameter id: key id
+    /// - Throws: Rethrows from SandboxedKeychainStorage
     public func deleteKey(withId id: Data) throws {
         try self.keychain.deleteEntry(withName: id.base64EncodedString())
     }
 
+    /// Retrieves all persistent long-term keys
+    ///
+    /// - Returns: Long-term keys list
+    /// - Throws:
+    ///         - KeychainLongTermKeysStorageError.invalidKeyId
+    ///         - Rethrows from SandboxedKeychainStorage
     public func retrieveAllKeys() throws -> [LongTermKey] {
         return try self.keychain.retrieveAllEntries().map(self.mapEntry)
     }
 
+    /// Marks key as outdated
+    ///
+    /// - Parameters:
+    ///   - date: date from which this key started to be outdated
+    ///   - keyId: key id
+    /// - Throws:
+    ///         - KeychainLongTermKeysStorageError.invalidMeta
+    ///         - Rethrows from SandboxedKeychainStorage
     public func markKeyOutdated(startingFrom date: Date, keyId: Data) throws {
         let entry = try self.keychain.retrieveEntry(withName: keyId.base64EncodedString())
 
         guard self.parseMeta(entry.meta) == nil else {
-            throw NSError()
+            throw KeychainLongTermKeysStorageError.invalidMeta
         }
 
         try self.keychain.updateEntry(withName: keyId.base64EncodedString(),
-                                             data: entry.data,
-                                             meta: self.makeMeta(outdated: date))
+                                      data: entry.data,
+                                      meta: self.makeMeta(outdated: date))
+    }
+
+    /// Deletes all long-term keys
+    ///
+    /// - Throws: Rethrows from SandboxedKeychainStorage
+    public func reset() throws {
+        let keys = try self.keychain.retrieveAllEntries().map(self.mapEntry)
+
+        for key in keys {
+            try self.keychain.deleteEntry(withName: key.identifier.base64EncodedString())
+        }
     }
 }

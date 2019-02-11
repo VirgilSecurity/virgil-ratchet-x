@@ -43,30 +43,34 @@ import VirgilSDK
     case constructingUrl = 1
 }
 
-/// Class representing operations with Virgil Cards service
+/// Implemetation of RatchetClientProtocol
 @objc(VSRRatchetClient) open class RatchetClient: BaseClient {
+    // swiftlint:disable force_unwrapping
     /// Default URL for service
     @objc public static let defaultURL = URL(string: "https://api.virgilsecurity.com")!
+    // swiftlint:enable force_unwrapping
 
     /// Initializes a new `RatchetClient` instance
     ///
     /// - Parameters:
     ///   - serviceUrl: URL of service client will use
     ///   - connection: custom HTTPConnection
-    public override init(serviceUrl: URL = RatchetClient.defaultURL, connection: HttpConnectionProtocol) {
+    override public init(serviceUrl: URL = RatchetClient.defaultURL, connection: HttpConnectionProtocol) {
         super.init(serviceUrl: serviceUrl, connection: connection)
     }
 
     /// Initializes a new `RatchetClient` instance
-    @objc convenience public init() {
+    @objc public convenience init() {
         self.init(serviceUrl: RatchetClient.defaultURL)
     }
 
     /// Initializes a new `RatchetClient` instance
     ///
     /// - Parameter serviceUrl: URL of service client will use
-    @objc convenience public init(serviceUrl: URL) {
-        let adapter = VirgilAgentAdapter(product: "ratchet", version: VersionUtils.getVersion(bundleIdentitifer: "com.virgilsecurity.VirgilSDKRatchet"))
+    @objc public convenience init(serviceUrl: URL) {
+        let version = VersionUtils.getVersion(bundleIdentitifer: "com.virgilsecurity.VirgilSDKRatchet")
+        let adapter = VirgilAgentAdapter(product: "ratchet",
+                                         version: version)
         let connection = HttpConnection(adapters: [adapter])
 
         self.init(serviceUrl: serviceUrl, connection: connection)
