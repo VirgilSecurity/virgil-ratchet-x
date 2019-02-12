@@ -431,12 +431,18 @@ import VirgilCryptoApiImpl
         return session
     }
 
+    /// Removes all data corresponding to this user: session and keys.
+    ///
+    /// - Parameter completion: completion handler
     @objc public func reset(completion: @escaping (Error?) -> Void) {
         self.reset().start { _, error in
             completion(error)
         }
     }
 
+    /// Removes all data corresponding to this user: session and keys.
+    ///
+    /// - Returns: GenericOperation
     public func reset() -> GenericOperation<Void> {
         Log.debug("Reset queued")
 
