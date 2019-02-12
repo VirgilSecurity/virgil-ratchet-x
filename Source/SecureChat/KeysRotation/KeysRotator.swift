@@ -47,7 +47,7 @@ public enum KeysRotatorError: Int, Error {
 }
 
 /// Default implementation of KeysRotatorProtocol
-public class KeysRotator {
+public class KeysRotator: KeysRotatorProtocol {
     private let crypto = VirgilCrypto(defaultKeyType: .FAST_EC_X25519, useSHA256Fingerprints: false)
     private let identityPrivateKey: VirgilPrivateKey
     private let identityCardId: String
@@ -273,6 +273,3 @@ public class KeysRotator {
         }
     }
 }
-
-// MARK: - KeysRotatorProtocol
-extension KeysRotator: KeysRotatorProtocol { }
