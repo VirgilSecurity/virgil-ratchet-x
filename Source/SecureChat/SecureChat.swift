@@ -93,6 +93,10 @@ import VirgilCryptoApiImpl
         let sessionStorage = FileSessionStorage(identity: context.identity)
         let keysRotator = KeysRotator(identityPrivateKey: context.identityPrivateKey,
                                       identityCardId: context.identityCardId,
+                                      orphanedOneTimeKeyTtl: context.orphanedOneTimeKeyTtl,
+                                      longTermKeyTtl: context.longTermKeyTtl,
+                                      outdatedLongTermKeyTtl: context.outdatedLongTermKeyTtl,
+                                      desiredNumberOfOneTimeKeys: context.desiredNumberOfOneTimeKeys,
                                       longTermKeysStorage: longTermKeysStorage,
                                       oneTimeKeysStorage: oneTimeKeysStorage,
                                       client: client)

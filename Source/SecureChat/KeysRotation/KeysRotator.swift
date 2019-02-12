@@ -75,10 +75,10 @@ public class KeysRotator {
     ///   - client: RatchetClient
     public init(identityPrivateKey: VirgilPrivateKey,
                 identityCardId: String,
-                orphanedOneTimeKeyTtl: TimeInterval = 24 * 60 * 60,
-                longTermKeyTtl: TimeInterval = 5 * 24 * 60 * 60,
-                outdatedLongTermKeyTtl: TimeInterval = 24 * 60 * 60,
-                desiredNumberOfOneTimeKeys: Int = 100,
+                orphanedOneTimeKeyTtl: TimeInterval,
+                longTermKeyTtl: TimeInterval,
+                outdatedLongTermKeyTtl: TimeInterval,
+                desiredNumberOfOneTimeKeys: Int,
                 longTermKeysStorage: LongTermKeysStorage,
                 oneTimeKeysStorage: OneTimeKeysStorage,
                 client: RatchetClientProtocol) {
