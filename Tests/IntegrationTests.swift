@@ -223,6 +223,8 @@ class IntegrationTests: XCTestCase {
         
         // Check that reset haven't affecter receivers
         XCTAssert(receiverSecureChat.existingSession(withParticpantIdentity: senderCard.identity) != nil)
+        
+        sleep(5)
     
         try! receiverSecureChat.reset().startSync().getResult()
         
