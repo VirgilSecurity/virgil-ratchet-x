@@ -221,16 +221,6 @@ class RamClient: RatchetClientProtocol {
         self.users[jwt.identity()] = userStore
     }
     
-    func getNumberOfActiveOneTimePublicKeys(token: String) throws -> Int {
-        guard let jwt = try? Jwt(stringRepresentation: token) else {
-            throw NSError()
-        }
-        
-        let userStore = self.users[jwt.identity()] ?? UserStore()
-        
-        return userStore.oneTimePublicKeys.count
-    }
-    
     func validatePublicKeys(longTermKeyId: Data?, oneTimeKeysIds: [Data], token: String) throws -> ValidatePublicKeysResponse {
         guard let jwt = try? Jwt(stringRepresentation: token) else {
             throw NSError()

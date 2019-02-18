@@ -118,7 +118,7 @@ class SecureSessionTests: XCTestCase {
         return (senderCard, receiverCard, senderSecureChat, receiverSecureChat)
     }
 
-    func test1__encrypt_decrypt__random_uuid_messages_ram_client__should_decrypt() {
+    func test__encrypt_decrypt__random_uuid_messages_ram_client__should_decrypt() {
         let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = self.initChat()
         
         _ = try! receiverSecureChat.rotateKeys().startSync().getResult()
@@ -134,30 +134,10 @@ class SecureSessionTests: XCTestCase {
         
         XCTAssert(decryptedMessage == plainText)
         
-        for _ in 0..<100 {
-            let sender: SecureSession
-            let receiver: SecureSession
-            
-            if Bool.random() {
-                sender = senderSession
-                receiver = receiverSession
-            }
-            else {
-                sender = receiverSession
-                receiver = senderSession
-            }
-            
-            let plainText = UUID().uuidString
-            
-            let message = try! sender.encrypt(string: plainText)
-            
-            let decryptedMessage = try! receiver.decryptString(from: message)
-            
-            XCTAssert(decryptedMessage == plainText)
-        }
+        Utils.encryptDecrypt100Times(senderSession: senderSession, receiverSession: receiverSession)
     }
     
-    func test2__session_persistence__random_uuid_messages_ram_client__should_decrypt() {
+    func test__session_persistence__random_uuid_messages_ram_client__should_decrypt() {
         let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = self.initChat()
         
         _ = try! receiverSecureChat.rotateKeys().startSync().getResult()
@@ -177,26 +157,6 @@ class SecureSessionTests: XCTestCase {
         
         XCTAssert(decryptedMessage == plainText)
         
-        for _ in 0..<100 {
-            let sender: SecureSession
-            let receiver: SecureSession
-            
-            if Bool.random() {
-                sender = senderSecureChat.existingSession(withParticpantIdentity: receiverCard.identity)!
-                receiver = receiverSecureChat.existingSession(withParticpantIdentity: senderCard.identity)!
-            }
-            else {
-                sender = receiverSecureChat.existingSession(withParticpantIdentity: senderCard.identity)!
-                receiver = senderSecureChat.existingSession(withParticpantIdentity: receiverCard.identity)!
-            }
-            
-            let plainText = UUID().uuidString
-            
-            let message = try! sender.encrypt(string: plainText)
-            
-            let decryptedMessage = try! receiver.decryptString(from: message)
-            
-            XCTAssert(decryptedMessage == plainText)
-        }
+        Utils.encryptDecrypt100TimesRestored(senderSecureChat: senderSecureChat, senderIdentity: senderCard.identity, receiverSecureChat: receiverSecureChat, receiverIdentity: receiverCard.identity)
     }
 }

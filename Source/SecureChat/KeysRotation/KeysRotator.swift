@@ -117,7 +117,7 @@ public class KeysRotator: KeysRotatorProtocol {
                 return
             }
 
-            Log.debug("Started keys' rotation")
+            Log.debug("Started keys' rotation operation")
 
             let completionWrapper: (Void?, Error?) -> Void = {
                 do {

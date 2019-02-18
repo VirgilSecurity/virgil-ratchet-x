@@ -47,29 +47,6 @@ internal class FileSystem {
         self.identity = identity
     }
 
-    private func createRatchetTempDir() throws -> URL {
-        var dirUrl = try self.fileManager.url(for: .itemReplacementDirectory,
-                                              in: .userDomainMask,
-                                              appropriateFor: try self.createOneTimeKeysUrl(),
-                                              create: true)
-
-        dirUrl.appendPathComponent("VIRGIL-RATCHET")
-
-        if !self.fileManager.fileExists(atPath: dirUrl.path) {
-            try self.fileManager.createDirectory(at: dirUrl, withIntermediateDirectories: true, attributes: nil)
-            Log.debug("Created \(dirUrl.absoluteString) folder")
-        }
-
-        dirUrl.appendPathComponent("\(self.identity)")
-
-        if !self.fileManager.fileExists(atPath: dirUrl.path) {
-            try self.fileManager.createDirectory(at: dirUrl, withIntermediateDirectories: true, attributes: nil)
-            Log.debug("Created \(dirUrl.absoluteString) folder")
-        }
-
-        return dirUrl
-    }
-
     private func createRatchetSuppDir() throws -> URL {
         var dirUrl = try self.fileManager.url(for: .applicationSupportDirectory,
                                               in: .userDomainMask,
@@ -77,82 +54,40 @@ internal class FileSystem {
                                               create: true)
 
         dirUrl.appendPathComponent("VIRGIL-RATCHET")
-
-        if !self.fileManager.fileExists(atPath: dirUrl.path) {
-            try self.fileManager.createDirectory(at: dirUrl, withIntermediateDirectories: true, attributes: nil)
-            Log.debug("Created \(dirUrl.absoluteString) folder")
-
-            var values = URLResourceValues()
-            values.isExcludedFromBackup = true
-
-            try dirUrl.setResourceValues(values)
-        }
-
         dirUrl.appendPathComponent("\(self.identity)")
 
-        if !self.fileManager.fileExists(atPath: dirUrl.path) {
+        do {
             try self.fileManager.createDirectory(at: dirUrl, withIntermediateDirectories: true, attributes: nil)
             Log.debug("Created \(dirUrl.absoluteString) folder")
         }
+        catch {
+            Log.error("Error creating \(dirUrl.absoluteString) folder")
+            throw error
+        }
+
+        var values = URLResourceValues()
+        values.isExcludedFromBackup = true
+
+        try dirUrl.setResourceValues(values)
 
         return dirUrl
     }
 
-    private func replaceFile(url: URL, data: Data) throws {
-        let tempFileUrl = try self.createTempFileUrl()
-
-        try? self.fileManager.removeItem(at: tempFileUrl)
-        self.fileManager.createFile(atPath: tempFileUrl.path,
-                                    contents: data,
-                                    attributes: [FileAttributeKey.protectionKey: FileProtectionType.complete])
-
-        try self.fileManager.replaceItem(at: url,
-                                         withItemAt: tempFileUrl,
-                                         backupItemName: UUID().uuidString,
-                                         options: [],
-                                         resultingItemURL: nil)
-        Log.debug("Replaced \(url.absoluteString) with \(tempFileUrl.absoluteString)")
+    private func writeFile(url: URL, data: Data) throws {
+        try data.write(to: url, options: [.completeFileProtection, .atomic])
     }
 
+    private func readFile(url: URL) -> Data {
+        return (try? Data(contentsOf: url)) ?? Data()
+    }
+}
+
+// One-time keys
+extension FileSystem {
     private func createOneTimeKeysUrl() throws -> URL {
         var url = try self.createRatchetSuppDir()
 
         url.appendPathComponent("OTK")
-
-        return url
-    }
-
-    private func deleteSessionDir() throws {
-        var dirUrl = try self.createRatchetSuppDir()
-
-        dirUrl.appendPathComponent("SESSION")
-
-        if !self.fileManager.fileExists(atPath: dirUrl.path) {
-            try self.fileManager.removeItem(atPath: dirUrl.path)
-            Log.debug("Deleted \(dirUrl.absoluteString) folder")
-        }
-        else {
-            Log.debug("Nothing to delete at \(dirUrl.absoluteString)")
-        }
-    }
-
-    private func createSessionDir() throws -> URL {
-        var dirUrl = try self.createRatchetSuppDir()
-
-        dirUrl.appendPathComponent("SESSION")
-
-        if !self.fileManager.fileExists(atPath: dirUrl.path) {
-            try self.fileManager.createDirectory(at: dirUrl, withIntermediateDirectories: true, attributes: nil)
-            Log.debug("Created \(dirUrl.absoluteString) folder")
-        }
-
-        return dirUrl
-    }
-
-    private func createSessionUrl(identity: String) throws -> URL {
-        var url = try self.createSessionDir()
-
-        url.appendPathComponent(identity)
 
         return url
     }
@@ -162,7 +97,7 @@ internal class FileSystem {
 
         let url = try self.createOneTimeKeysUrl()
 
-        try self.fileManager.removeItem(atPath: url.path)
+        try self.fileManager.removeItem(at: url)
     }
 
     internal func writeOneTimeKeysFile(data: Data) throws {
@@ -178,13 +113,58 @@ internal class FileSystem {
 
         let url = try self.createOneTimeKeysUrl()
 
-        return self.fileManager.contents(atPath: url.path) ?? Data()
+        return self.readFile(url: url)
     }
 
-    private func createTempFileUrl() throws -> URL {
-        let dirUrl = try self.createRatchetTempDir()
+    internal func resetOneTimeKeys() throws {
+        try self.deleteOneTimeKeysFile()
+    }
+}
 
-        return dirUrl.appendingPathComponent(NSUUID().uuidString)
+// Sessions
+extension FileSystem {
+    private func createSessionUrl() throws -> URL {
+        var dirUrl = try self.createRatchetSuppDir()
+
+        dirUrl.appendPathComponent("SESSION")
+
+        return dirUrl
+    }
+
+    private func deleteSessionDir() throws {
+        let dirUrl = try self.createSessionUrl()
+
+        do {
+            try self.fileManager.removeItem(at: dirUrl)
+            Log.debug("Deleted \(dirUrl.absoluteString) folder")
+        }
+        catch {
+            Log.debug("Nothing to delete at \(dirUrl.absoluteString)")
+            throw error
+        }
+    }
+
+    private func createSessionDir() throws -> URL {
+        let dirUrl = try self.createSessionUrl()
+
+        do {
+            try self.fileManager.createDirectory(at: dirUrl, withIntermediateDirectories: true, attributes: nil)
+            Log.debug("Created \(dirUrl.absoluteString) folder")
+        }
+        catch {
+            Log.debug("Error creating \(dirUrl.absoluteString) folder")
+            throw error
+        }
+
+        return dirUrl
+    }
+
+    private func createSessionUrl(identity: String) throws -> URL {
+        var url = try self.createSessionDir()
+
+        url.appendPathComponent(identity)
+
+        return url
     }
 
     internal func readSession(identity: String) throws -> Data {
@@ -192,18 +172,7 @@ internal class FileSystem {
 
         let url = try self.createSessionUrl(identity: identity)
 
-        return self.fileManager.contents(atPath: url.path) ?? Data()
-    }
-
-    private func writeFile(url: URL, data: Data) throws {
-        if !self.fileManager.fileExists(atPath: url.path) {
-            self.fileManager.createFile(atPath: url.path,
-                                        contents: data,
-                                        attributes: [FileAttributeKey.protectionKey: FileProtectionType.complete])
-        }
-        else {
-            try self.replaceFile(url: url, data: data)
-        }
+        return self.readFile(url: url)
     }
 
     internal func writeSessionFile(identity: String, data: Data) throws {
@@ -224,9 +193,5 @@ internal class FileSystem {
 
     internal func resetSessions() throws {
         try self.deleteSessionDir()
-    }
-
-    internal func resetOneTimeKeys() throws {
-        try self.deleteOneTimeKeysFile()
     }
 }
