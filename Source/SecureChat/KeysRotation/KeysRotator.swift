@@ -155,7 +155,7 @@ public class KeysRotator: KeysRotatorProtocol {
                 let token: AccessToken = try operation.findDependencyResult()
 
                 let now = Date()
-                
+
                 let rotationLog = RotationLog()
 
                 try self.oneTimeKeysStorage.startInteraction()
@@ -207,7 +207,7 @@ public class KeysRotator: KeysRotatorProtocol {
                             if lastLongTermKey == nil {
                                 lastLongTermKey = longTermKey
                             }
-                            
+
                             numOfRelevantLongTermKeys += 1
                         }
                     }
@@ -281,7 +281,7 @@ public class KeysRotator: KeysRotatorProtocol {
                                                  longTermPublicKey: longTermSignedPublicKey,
                                                  oneTimePublicKeys: oneTimePublicKeys,
                                                  token: token.stringRepresentation())
-                
+
                 rotationLog.oneTimeKeysAdded = oneTimePublicKeys.count
                 rotationLog.oneTimeKeysRelevant = numOfRelevantOneTimeKeys + oneTimePublicKeys.count
                 rotationLog.longTermKeysRelevant = numOfRelevantLongTermKeys + (longTermSignedPublicKey == nil ? 0 : 1)
