@@ -17,6 +17,9 @@
 		421B43F52190AF5B00D4F496 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 421B43F32190AF5B00D4F496 /* LaunchScreen.storyboard */; };
 		421B440021912CA100D4F496 /* FileOneTimeKeysStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421B43FF21912CA100D4F496 /* FileOneTimeKeysStorage.swift */; };
 		42352433221AAB710079DD2A /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42352432221AAB710079DD2A /* Utils.swift */; };
+		4235243D221AEA5E0079DD2A /* KeysRotatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4235243C221AEA5E0079DD2A /* KeysRotatorTests.swift */; };
+		42352440221C59130079DD2A /* ClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4235243E221C58F70079DD2A /* ClientTests.swift */; };
+		42352442221D78B80079DD2A /* RotationLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42352441221D78B80079DD2A /* RotationLog.swift */; };
 		42499F6E21EE3B3F0076851C /* VirgilCryptoAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 429D799E217791A2003B56F8 /* VirgilCryptoAPI.framework */; };
 		42499F6F21EE3B3F0076851C /* VirgilCryptoApiImpl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 429D79A2217791A2003B56F8 /* VirgilCryptoApiImpl.framework */; };
 		42499F7021EE3B3F0076851C /* VirgilSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 429D79A0217791A2003B56F8 /* VirgilSDK.framework */; };
@@ -137,6 +140,9 @@
 		421B43F62190AF5B00D4F496 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		421B43FF21912CA100D4F496 /* FileOneTimeKeysStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileOneTimeKeysStorage.swift; sourceTree = "<group>"; };
 		42352432221AAB710079DD2A /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		4235243C221AEA5E0079DD2A /* KeysRotatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysRotatorTests.swift; sourceTree = "<group>"; };
+		4235243E221C58F70079DD2A /* ClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientTests.swift; sourceTree = "<group>"; };
+		42352441221D78B80079DD2A /* RotationLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RotationLog.swift; sourceTree = "<group>"; };
 		42499F6721EE36AE0076851C /* VSCCommon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VSCCommon.framework; path = Carthage/Build/iOS/VSCCommon.framework; sourceTree = "<group>"; };
 		42499F6821EE36AE0076851C /* VSCRatchet.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VSCRatchet.framework; path = Carthage/Build/iOS/VSCRatchet.framework; sourceTree = "<group>"; };
 		42499F6921EE36AE0076851C /* VSCFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VSCFoundation.framework; path = Carthage/Build/iOS/VSCFoundation.framework; sourceTree = "<group>"; };
@@ -273,8 +279,10 @@
 				429D79C62178B71F003B56F8 /* Data */,
 				429D79C92178B7B2003B56F8 /* TestConfig.swift */,
 				42AB658E21810D6C00AC4631 /* Stubs.swift */,
+				4235243C221AEA5E0079DD2A /* KeysRotatorTests.swift */,
 				42AB65A42183340A00AC4631 /* SecureSessionTests.swift */,
 				42AB65E82185095700AC4631 /* IntegrationTests.swift */,
+				4235243E221C58F70079DD2A /* ClientTests.swift */,
 				42352432221AAB710079DD2A /* Utils.swift */,
 			);
 			name = Test;
@@ -333,6 +341,7 @@
 		42AB65AB21834EA100AC4631 /* KeysRotation */ = {
 			isa = PBXGroup;
 			children = (
+				42352441221D78B80079DD2A /* RotationLog.swift */,
 				42C837642211B283008AFFD9 /* KeysRotatorProtocol.swift */,
 				42AB65AC21834F0A00AC4631 /* KeysRotator.swift */,
 			);
@@ -558,6 +567,7 @@
 				424FAAB02177520200622A3B /* SecureSession.swift in Sources */,
 				42AB65E32184F31F00AC4631 /* OneTimeKeysStorage.swift in Sources */,
 				42C837652211B283008AFFD9 /* KeysRotatorProtocol.swift in Sources */,
+				42352442221D78B80079DD2A /* RotationLog.swift in Sources */,
 				42C837632211B017008AFFD9 /* SecureChatContext.swift in Sources */,
 				421B43CD2190650500D4F496 /* KeychainLongTermKeyStorage.swift in Sources */,
 				42AB65BE218350F700AC4631 /* RatchetClientProtocol.swift in Sources */,
@@ -571,11 +581,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				42352440221C59130079DD2A /* ClientTests.swift in Sources */,
 				42352433221AAB710079DD2A /* Utils.swift in Sources */,
 				42AB65EA2185097800AC4631 /* IntegrationTests.swift in Sources */,
 				42CBE2AB21E656BE000F99E6 /* SecureSessionTests.swift in Sources */,
 				42AB659021810D6F00AC4631 /* Stubs.swift in Sources */,
 				429D79CA2178B7B2003B56F8 /* TestConfig.swift in Sources */,
+				4235243D221AEA5E0079DD2A /* KeysRotatorTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

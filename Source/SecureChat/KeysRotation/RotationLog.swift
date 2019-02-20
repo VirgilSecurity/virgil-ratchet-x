@@ -36,24 +36,51 @@
 
 import Foundation
 
-/// Response for public key validation
-@objc(VSRValidatePublicKeysResponse) public final class ValidatePublicKeysResponse: NSObject, Decodable {
-    /// Used long-term public key id
-    @objc public let usedLongTermKeyId: Data?
-
-    /// Used one-time keys ids
-    @objc public let usedOneTimeKeysIds: [Data]
-
-    /// Defines coding keys for encoding and decoding
-    private enum CodingKeys: String, CodingKey {
-        case usedLongTermKeyId = "used_long_term_key_id"
-        case usedOneTimeKeysIds = "used_one_time_keys_ids"
-    }
-
-    internal init(usedLongTermKeyId: Data?, usedOneTimeKeysIds: [Data]) {
-        self.usedLongTermKeyId = usedLongTermKeyId
-        self.usedOneTimeKeysIds = usedOneTimeKeysIds
-
-        super.init()
+/// This class shows the result of rotateKeys operation
+@objc(VSRRotationLog) public class RotationLog: NSObject, Encodable {
+    /// Number of unused one-time keys
+    public var oneTimeKeysRelevant = 0
+    
+    /// NUmber of one-time keys that were generated and uploaded to the cloud during this operation
+    public var oneTimeKeysAdded = 0
+    
+    /// Number of one-time keys that were deleted during this rotation
+    public var oneTimeKeysDeleted = 0
+    
+    /// Number of one-time keys that were marked orphaned during this operation
+    public var oneTimeKeysMarkedOrphaned = 0
+    
+    /// Number of one-time keys that were marked orphaned
+    public var oneTimeKeysOrphaned = 0
+    
+    /// Number of relevant long-term keys
+    public var longTermKeysRelevant = 0
+    
+    /// Number of long-term keys that were generated and uploaded to the cloud during this operation
+    public var longTermKeysAdded = 0
+    
+    /// Number of long-term keys that were deleted during this rotation
+    public var longTermKeysDeleted = 0
+    
+    /// Number of long-term keys that were marked orphaned outdated this operation
+    public var longTermKeysMarkedOutdated = 0
+    
+    /// Number of long-term keys that were marked orphaned
+    public var longTermKeysOutdated = 0
+    
+    /// Pretty print JSON
+    public override var description: String {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .prettyPrinted
+        
+        guard let data = try? encoder.encode(self) else {
+            return ""
+        }
+        
+        guard let str = String(data: data, encoding: .utf8) else {
+            return ""
+        }
+        
+        return str
     }
 }

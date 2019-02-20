@@ -138,13 +138,11 @@ import VirgilCryptoApiImpl
         super.init()
     }
 
-    /// Rotates keys. See rotateKeys() -> GenericOperation<Void> for details
+    /// Rotates keys. See rotateKeys() -> GenericOperation<RotationLog> for details
     ///
     /// - Parameter completion: completion handler
-    @objc public func rotateKeys(completion: @escaping (Error?) -> Void) {
-        self.rotateKeys().start { _, error in
-            completion(error)
-        }
+    @objc public func rotateKeys(completion: @escaping (RotationLog?, Error?) -> Void) {
+        self.rotateKeys().start(completion: completion)
     }
 
     /// Rotates keys
@@ -162,7 +160,7 @@ import VirgilCryptoApiImpl
     ///         - Upload keys to the cloud
     ///
     /// - Returns: GenericOperation
-    public func rotateKeys() -> GenericOperation<Void> {
+    public func rotateKeys() -> GenericOperation<RotationLog> {
         Log.debug("Keys rotation queued")
 
         return CallbackOperation { _, completion in

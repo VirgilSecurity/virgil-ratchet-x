@@ -118,7 +118,7 @@ class SecureSessionTests: XCTestCase {
         return (senderCard, receiverCard, senderSecureChat, receiverSecureChat)
     }
 
-    func test__encrypt_decrypt__random_uuid_messages_ram_client__should_decrypt() {
+    func test1__encrypt_decrypt__random_uuid_messages_ram_client__should_decrypt() {
         let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = self.initChat()
         
         _ = try! receiverSecureChat.rotateKeys().startSync().getResult()
@@ -137,7 +137,7 @@ class SecureSessionTests: XCTestCase {
         Utils.encryptDecrypt100Times(senderSession: senderSession, receiverSession: receiverSession)
     }
     
-    func test__session_persistence__random_uuid_messages_ram_client__should_decrypt() {
+    func test2__session_persistence__random_uuid_messages_ram_client__should_decrypt() {
         let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = self.initChat()
         
         _ = try! receiverSecureChat.rotateKeys().startSync().getResult()

@@ -108,7 +108,7 @@ public class KeysRotator: KeysRotatorProtocol {
     ///         - Upload keys to the cloud
     ///
     /// - Returns: GenericOperation
-    public func rotateKeysOperation() -> GenericOperation<Void> {
+    public func rotateKeysOperation() -> GenericOperation<RotationLog> {
         return CallbackOperation { operation, completion in
             guard self.mutex.trylock() else {
                 Log.debug("Interrupted concurrent keys' rotation")
@@ -119,7 +119,7 @@ public class KeysRotator: KeysRotatorProtocol {
 
             Log.debug("Started keys' rotation operation")
 
-            let completionWrapper: (Void?, Error?) -> Void = {
+            let completionWrapper: (RotationLog?, Error?) -> Void = {
                 do {
                     try self.mutex.unlock()
                 }
@@ -132,29 +132,31 @@ public class KeysRotator: KeysRotatorProtocol {
                     try self.oneTimeKeysStorage.stopInteraction()
                 }
                 catch {
-                    Log.debug("Completed keys' rotation with error")
+                    Log.debug("Completed keys' rotation with storage error")
                     completion(nil, error)
                     return
                 }
 
                 if let error = $1 {
-                    Log.debug("Completed keys' rotation with error")
+                    Log.debug("Completed keys' rotation with error \(error.localizedDescription)")
                     completion(nil, error)
                     return
                 }
                 else if let res = $0 {
-                    Log.debug("Completed keys' rotation successfully")
+                    Log.debug("Completed keys' rotation successfully with stats: \(res)")
                     completion(res, nil)
                     return
                 }
 
-                completion(nil, nil)
+                fatalError("completionWrapper did not call completion handler")
             }
 
             do {
                 let token: AccessToken = try operation.findDependencyResult()
 
                 let now = Date()
+                
+                let rotationLog = RotationLog()
 
                 try self.oneTimeKeysStorage.startInteraction()
                 let oneTimeKeys = try self.oneTimeKeysStorage.retrieveAllKeys()
@@ -165,6 +167,10 @@ public class KeysRotator: KeysRotatorProtocol {
                         if orphanedFrom + self.orphanedOneTimeKeyTtl < now {
                             Log.debug("Removing orphaned one-time key \(oneTimeKey.identifier.hexEncodedString())")
                             try self.oneTimeKeysStorage.deleteKey(withId: oneTimeKey.identifier)
+                            rotationLog.oneTimeKeysDeleted += 1
+                        }
+                        else {
+                            rotationLog.oneTimeKeysOrphaned += 1
                         }
                     }
                     else {
@@ -172,6 +178,7 @@ public class KeysRotator: KeysRotatorProtocol {
                     }
                 }
 
+                var numOfRelevantLongTermKeys = 0
                 let longTermKeys = try self.longTermKeysStorage.retrieveAllKeys()
                 var lastLongTermKey: LongTermKey? = nil
                 for longTermKey in longTermKeys {
@@ -179,6 +186,10 @@ public class KeysRotator: KeysRotatorProtocol {
                         if oudatedFrom + self.outdatedLongTermKeyTtl < now {
                             Log.debug("Removing outdated long-term key \(longTermKey.identifier.hexEncodedString())")
                             try self.longTermKeysStorage.deleteKey(withId: longTermKey.identifier)
+                            rotationLog.longTermKeysDeleted += 1
+                        }
+                        else {
+                            rotationLog.longTermKeysOutdated += 1
                         }
                     }
                     else {
@@ -186,6 +197,8 @@ public class KeysRotator: KeysRotatorProtocol {
                             Log.debug("Marking long-term key as outdated \(longTermKey.identifier.hexEncodedString())")
                             try self.longTermKeysStorage.markKeyOutdated(startingFrom: now,
                                                                          keyId: longTermKey.identifier)
+                            rotationLog.longTermKeysMarkedOutdated += 1
+                            rotationLog.longTermKeysOutdated += 1
                         }
                         else {
                             if let key = lastLongTermKey, key.creationDate < longTermKey.creationDate {
@@ -194,6 +207,8 @@ public class KeysRotator: KeysRotatorProtocol {
                             if lastLongTermKey == nil {
                                 lastLongTermKey = longTermKey
                             }
+                            
+                            numOfRelevantLongTermKeys += 1
                         }
                     }
                 }
@@ -206,6 +221,8 @@ public class KeysRotator: KeysRotatorProtocol {
                 for usedOneTimeKeyId in validateResponse.usedOneTimeKeysIds {
                     Log.debug("Marking one-time key as orhpaned \(usedOneTimeKeyId.hexEncodedString())")
                     try self.oneTimeKeysStorage.markKeyOrphaned(startingFrom: now, keyId: usedOneTimeKeyId)
+                    rotationLog.oneTimeKeysMarkedOrphaned += 1
+                    rotationLog.oneTimeKeysOrphaned += 1
                 }
 
                 var rotateLongTermKey = false
@@ -234,8 +251,8 @@ public class KeysRotator: KeysRotatorProtocol {
                     longTermSignedPublicKey = nil
                 }
 
-                let numOfrelevantOneTimeKeys = oneTimeKeysIds.count - validateResponse.usedOneTimeKeysIds.count
-                let numbOfOneTimeKeysToGen = UInt(max(self.desiredNumberOfOneTimeKeys - numOfrelevantOneTimeKeys, 0))
+                let numOfRelevantOneTimeKeys = oneTimeKeysIds.count - validateResponse.usedOneTimeKeysIds.count
+                let numbOfOneTimeKeysToGen = UInt(max(self.desiredNumberOfOneTimeKeys - numOfRelevantOneTimeKeys, 0))
 
                 Log.debug("Generating \(numbOfOneTimeKeysToGen) one-time keys")
                 let oneTimePublicKeys: [Data]
@@ -264,8 +281,13 @@ public class KeysRotator: KeysRotatorProtocol {
                                                  longTermPublicKey: longTermSignedPublicKey,
                                                  oneTimePublicKeys: oneTimePublicKeys,
                                                  token: token.stringRepresentation())
+                
+                rotationLog.oneTimeKeysAdded = oneTimePublicKeys.count
+                rotationLog.oneTimeKeysRelevant = numOfRelevantOneTimeKeys + oneTimePublicKeys.count
+                rotationLog.longTermKeysRelevant = numOfRelevantLongTermKeys + (longTermSignedPublicKey == nil ? 0 : 1)
+                rotationLog.longTermKeysAdded = longTermSignedPublicKey == nil ? 0 : 1
 
-                completionWrapper(Void(), nil)
+                completionWrapper(rotationLog, nil)
             }
             catch {
                 completionWrapper(nil, error)

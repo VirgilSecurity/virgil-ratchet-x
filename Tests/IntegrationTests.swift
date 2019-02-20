@@ -50,6 +50,8 @@ class IntegrationTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
     
+    static let desiredNumberOfOtKeys = 5
+    
     private func initChat() -> (Card, Card, SecureChat, SecureChat) {
         let testConfig = TestConfig.readFromBundle()
         
@@ -98,9 +100,9 @@ class IntegrationTests: XCTestCase {
 
         let client = RatchetClient(serviceUrl: URL(string: testConfig.ServiceURL)!)
         
-        let receiverKeysRotator = KeysRotator(identityPrivateKey: receiverIdentityKeyPair.privateKey, identityCardId: receiverCard.identifier, orphanedOneTimeKeyTtl: 100, longTermKeyTtl: 100, outdatedLongTermKeyTtl: 100, desiredNumberOfOneTimeKeys: 10, longTermKeysStorage: receiverLongTermKeysStorage, oneTimeKeysStorage: receiverOneTimeKeysStorage, client: client)
+        let receiverKeysRotator = KeysRotator(identityPrivateKey: receiverIdentityKeyPair.privateKey, identityCardId: receiverCard.identifier, orphanedOneTimeKeyTtl: 5, longTermKeyTtl: 100, outdatedLongTermKeyTtl: 100, desiredNumberOfOneTimeKeys: IntegrationTests.desiredNumberOfOtKeys, longTermKeysStorage: receiverLongTermKeysStorage, oneTimeKeysStorage: receiverOneTimeKeysStorage, client: client)
         
-        let senderKeysRotator = KeysRotator(identityPrivateKey: senderIdentityKeyPair.privateKey, identityCardId: senderCard.identifier, orphanedOneTimeKeyTtl: 100, longTermKeyTtl: 100, outdatedLongTermKeyTtl: 100, desiredNumberOfOneTimeKeys: 10, longTermKeysStorage: senderLongTermKeysStorage, oneTimeKeysStorage: senderOneTimeKeysStorage, client: client)
+        let senderKeysRotator = KeysRotator(identityPrivateKey: senderIdentityKeyPair.privateKey, identityCardId: senderCard.identifier, orphanedOneTimeKeyTtl: 100, longTermKeyTtl: 100, outdatedLongTermKeyTtl: 100, desiredNumberOfOneTimeKeys: IntegrationTests.desiredNumberOfOtKeys, longTermKeysStorage: senderLongTermKeysStorage, oneTimeKeysStorage: senderOneTimeKeysStorage, client: client)
         
         
         let senderSecureChat = SecureChat(identityPrivateKey: senderIdentityKeyPair.privateKey,
@@ -122,10 +124,10 @@ class IntegrationTests: XCTestCase {
         return (senderCard, receiverCard, senderSecureChat, receiverSecureChat)
     }
     
-    func test__encrypt_decrypt__random_uuid_messages__should_decrypt() {
+    func test1__encrypt_decrypt__random_uuid_messages__should_decrypt() {
         let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = self.initChat()
         
-        try! receiverSecureChat.rotateKeys().startSync().getResult()
+        _ = try! receiverSecureChat.rotateKeys().startSync().getResult()
         
         let senderSession = try! senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().getResult()
         
@@ -141,7 +143,7 @@ class IntegrationTests: XCTestCase {
         Utils.encryptDecrypt100Times(senderSession: senderSession, receiverSession: receiverSession)
     }
     
-    func test__session_persistence__random_uuid_messages__should_decrypt() {
+    func test2__session_persistence__random_uuid_messages__should_decrypt() {
         let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = self.initChat()
         
         _ = try! receiverSecureChat.rotateKeys().startSync().getResult()
@@ -164,7 +166,7 @@ class IntegrationTests: XCTestCase {
         Utils.encryptDecrypt100TimesRestored(senderSecureChat: senderSecureChat, senderIdentity: senderCard.identity, receiverSecureChat: receiverSecureChat, receiverIdentity: receiverCard.identity)
     }
     
-    func test__session_removal__one_session_per_participant__should_delete_session() {
+    func test3__session_removal__one_session_per_participant__should_delete_session() {
         let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = self.initChat()
         
         _ = try! receiverSecureChat.rotateKeys().startSync().getResult()
@@ -193,7 +195,7 @@ class IntegrationTests: XCTestCase {
         XCTAssert(receiverSecureChat.existingSession(withParticpantIdentity: senderCard.identity) == nil)
     }
     
-    func test__reset__one_session_per_participant__should_reset() {
+    func test4__reset__one_session_per_participant__should_reset() {
         let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = self.initChat()
         
         _ = try! receiverSecureChat.rotateKeys().startSync().getResult()
@@ -233,5 +235,72 @@ class IntegrationTests: XCTestCase {
         try! receiverSecureChat.oneTimeKeysStorage.startInteraction()
         XCTAssert(try! receiverSecureChat.oneTimeKeysStorage.retrieveAllKeys().isEmpty)
         try! receiverSecureChat.oneTimeKeysStorage.stopInteraction()
+    }
+    
+    func test5__start_as_receiver__one_session__should_replenish_ot_key() {
+        let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = self.initChat()
+        
+        _ = try! receiverSecureChat.rotateKeys().startSync().getResult()
+        _ = try! senderSecureChat.rotateKeys().startSync().getResult()
+        
+        try! receiverSecureChat.oneTimeKeysStorage.startInteraction()
+        
+        XCTAssert(try! receiverSecureChat.oneTimeKeysStorage.retrieveAllKeys().count == IntegrationTests.desiredNumberOfOtKeys)
+        
+        let senderSession = try! senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().getResult()
+        
+        let plainText = UUID().uuidString
+        let cipherText = try! senderSession.encrypt(string: plainText)
+        
+        _ = try! receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, ratchetMessage: cipherText)
+        
+        XCTAssert(try! receiverSecureChat.oneTimeKeysStorage.retrieveAllKeys().count == IntegrationTests.desiredNumberOfOtKeys - 1)
+        
+        sleep(5)
+        
+        XCTAssert(try! receiverSecureChat.oneTimeKeysStorage.retrieveAllKeys().count == IntegrationTests.desiredNumberOfOtKeys)
+        
+        try! receiverSecureChat.oneTimeKeysStorage.stopInteraction()
+    }
+    
+    func test6__double_rotate__no_sessions__should_complete() {
+        let (_, _, _, receiverSecureChat) = self.initChat()
+        
+        _ = try! receiverSecureChat.rotateKeys().startSync().getResult()
+        _ = try! receiverSecureChat.rotateKeys().startSync().getResult()
+    }
+    
+    func test7__rotate__one_session__should_replenish_ot_key() {
+        let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = self.initChat()
+        
+        _ = try! receiverSecureChat.rotateKeys().startSync().getResult()
+        _ = try! senderSecureChat.rotateKeys().startSync().getResult()
+        
+        try! receiverSecureChat.oneTimeKeysStorage.startInteraction()
+        
+        XCTAssert(try! receiverSecureChat.oneTimeKeysStorage.retrieveAllKeys().count == IntegrationTests.desiredNumberOfOtKeys)
+        
+        let senderSession = try! senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().getResult()
+        
+        let plainText = UUID().uuidString
+        let cipherText = try! senderSession.encrypt(string: plainText)
+        
+        _ = try! receiverSecureChat.rotateKeys().startSync().getResult()
+        
+        XCTAssert(try! receiverSecureChat.oneTimeKeysStorage.retrieveAllKeys().count == IntegrationTests.desiredNumberOfOtKeys)
+        
+        sleep(6)
+        
+        _ = try! receiverSecureChat.rotateKeys().startSync().getResult()
+        
+        XCTAssert(try! receiverSecureChat.oneTimeKeysStorage.retrieveAllKeys().count == IntegrationTests.desiredNumberOfOtKeys)
+        
+        try! receiverSecureChat.oneTimeKeysStorage.stopInteraction()
+        
+        do {
+            _ = try receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, ratchetMessage: cipherText)
+            XCTAssert(false)
+        }
+        catch { }
     }
 }

@@ -37,6 +37,8 @@
 import Foundation
 import VirgilSDK
 import VirgilCryptoApiImpl
+import VirgilCryptoRatchet
+import VirgilCryptoFoundation
 @testable import VirgilSDKRatchet
 
 class RamSessionStorage: SessionStorage {
@@ -157,14 +159,13 @@ class RamClient: RatchetClientProtocol {
     struct UserStore {
         var identityPublicKey: (VirgilPublicKey, Data)?
         var longTermPublicKey: SignedPublicKey?
-        var usedLongtermPublicKeys: Set<SignedPublicKey> = []
         var oneTimePublicKeys: Set<Data> = []
-        var usedOnetimePublicKeys: Set<Data> = []
     }
     
+    private let keyUtils = RatchetKeyUtils()
     private let cardManager: CardManager
     private let crypto = VirgilCrypto()
-    private var users: [String: UserStore] = [:]
+    var users: [String: UserStore] = [:]
     
     init(cardManager: CardManager) {
         self.cardManager = cardManager
@@ -194,10 +195,6 @@ class RamClient: RatchetClientProtocol {
         if let longTermPublicKey = longTermPublicKey {
             guard crypto.verifySignature(longTermPublicKey.signature, of: longTermPublicKey.publicKey, with: publicKey) else {
                 throw NSError()
-            }
-
-            if let usedLongTermPublicKey = userStore.longTermPublicKey {
-                userStore.usedLongtermPublicKeys.insert(usedLongTermPublicKey)
             }
             
             userStore.longTermPublicKey = longTermPublicKey
@@ -230,18 +227,16 @@ class RamClient: RatchetClientProtocol {
         
         let usedLongTermKeyId: Data?
         
-        if let storedLongTermPublicKey = userStore.longTermPublicKey?.publicKey, let longTermKeyId = longTermKeyId {
-            let hash = self.crypto.computeHash(for: storedLongTermPublicKey, using: .SHA512).subdata(in: 0..<8)
-            
-            usedLongTermKeyId = hash == longTermKeyId ? nil : longTermKeyId
+        if let longTermKeyId = longTermKeyId,
+            let storedLongTermPublicKey = userStore.longTermPublicKey?.publicKey,
+            try! self.keyUtils.computePublicKeyId(publicKey: storedLongTermPublicKey) == longTermKeyId {
+                usedLongTermKeyId = nil
         }
         else {
-            usedLongTermKeyId = nil
+            usedLongTermKeyId = longTermKeyId
         }
         
-        let usedOneTimeKeysIds: [Data] = Array<Data>(Set<Data>(userStore.usedOnetimePublicKeys.map {
-                return self.crypto.computeHash(for: $0, using: .SHA512).subdata(in: 0..<8)
-            }).intersection(Set<Data>(oneTimeKeysIds)))
+        let usedOneTimeKeysIds: [Data] = Array<Data>(Set<Data>(oneTimeKeysIds).subtracting(userStore.oneTimePublicKeys.map{ try! self.keyUtils.computePublicKeyId(publicKey: $0) }))
         
         return ValidatePublicKeysResponse(usedLongTermKeyId: usedLongTermKeyId, usedOneTimeKeysIds: usedOneTimeKeysIds)
     }
@@ -278,9 +273,9 @@ class RamClient: RatchetClientProtocol {
 }
 
 class FakeKeysRotator: KeysRotatorProtocol {
-    func rotateKeysOperation() -> GenericOperation<Void> {
+    func rotateKeysOperation() -> GenericOperation<RotationLog> {
         return CallbackOperation { _, completion in
-            completion(Void(), nil)
+            completion(RotationLog(), nil)
         }
     }
 }

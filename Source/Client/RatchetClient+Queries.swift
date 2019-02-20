@@ -93,7 +93,7 @@ extension RatchetClient: RatchetClientProtocol {
 
     /// Checks list of keys ids and returns subset of that list with already used keys ids
     ///
-    /// keyId == SHA512(publicKey)[0..<8]
+    /// keyId == SHA512(raw 32-byte publicKey)[0..<8]
     ///
     /// - Parameters:
     ///   - longTermKeyId: long-term public key id to validate
@@ -112,7 +112,7 @@ extension RatchetClient: RatchetClientProtocol {
             return ValidatePublicKeysResponse(usedLongTermKeyId: nil, usedOneTimeKeysIds: [])
         }
 
-        guard let url = URL(string: "pfs/v2/keys/acrions/validate", relativeTo: self.serviceUrl) else {
+        guard let url = URL(string: "pfs/v2/keys/actions/validate", relativeTo: self.serviceUrl) else {
             throw RatchetClientError.constructingUrl
         }
 
