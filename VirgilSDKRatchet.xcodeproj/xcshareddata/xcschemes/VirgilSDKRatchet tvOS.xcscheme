@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "421B43E72190AF5900D4F496"
-               BuildableName = "RatchetTestApp iOS.app"
-               BlueprintName = "RatchetTestApp iOS"
+               BlueprintIdentifier = "42352457221EE9460079DD2A"
+               BuildableName = "VirgilSDKRatchet.framework"
+               BlueprintName = "VirgilSDKRatchet tvOS"
                ReferencedContainer = "container:VirgilSDKRatchet.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -32,9 +32,9 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "424FAA0E2177506100622A3B"
-               BuildableName = "VirgilSDKRatchetTests iOS.xctest"
-               BlueprintName = "VirgilSDKRatchetTests iOS"
+               BlueprintIdentifier = "4235251A221EEDCB0079DD2A"
+               BuildableName = "VirgilSDKRatchetTests tvOS.xctest"
+               BlueprintName = "VirgilSDKRatchetTests tvOS"
                ReferencedContainer = "container:VirgilSDKRatchet.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -42,9 +42,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "421B43E72190AF5900D4F496"
-            BuildableName = "RatchetTestApp iOS.app"
-            BlueprintName = "RatchetTestApp iOS"
+            BlueprintIdentifier = "42352457221EE9460079DD2A"
+            BuildableName = "VirgilSDKRatchet.framework"
+            BlueprintName = "VirgilSDKRatchet tvOS"
             ReferencedContainer = "container:VirgilSDKRatchet.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -61,16 +61,15 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "421B43E72190AF5900D4F496"
-            BuildableName = "RatchetTestApp iOS.app"
-            BlueprintName = "RatchetTestApp iOS"
+            BlueprintIdentifier = "42352457221EE9460079DD2A"
+            BuildableName = "VirgilSDKRatchet.framework"
+            BlueprintName = "VirgilSDKRatchet tvOS"
             ReferencedContainer = "container:VirgilSDKRatchet.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -80,16 +79,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "421B43E72190AF5900D4F496"
-            BuildableName = "RatchetTestApp iOS.app"
-            BlueprintName = "RatchetTestApp iOS"
+            BlueprintIdentifier = "42352457221EE9460079DD2A"
+            BuildableName = "VirgilSDKRatchet.framework"
+            BlueprintName = "VirgilSDKRatchet tvOS"
             ReferencedContainer = "container:VirgilSDKRatchet.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

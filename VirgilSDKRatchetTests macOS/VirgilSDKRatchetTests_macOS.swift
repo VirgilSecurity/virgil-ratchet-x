@@ -34,14 +34,28 @@
 // Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 //
 
-#import <UIKit/UIKit.h>
+import XCTest
 
-//! Project version number for VirgilSDKRatchet.
-FOUNDATION_EXPORT double VirgilSDKRatchetVersionNumber;
+class VirgilSDKRatchetTests_macOS: XCTestCase {
 
-//! Project version string for VirgilSDKRatchet.
-FOUNDATION_EXPORT const unsigned char VirgilSDKRatchetVersionString[];
+    override func setUp() {
+        // Put setup code here. This method is called before the invocation of each test method in the class.
+    }
 
-// In this header, you should import all the public headers of your framework using statements like #import <VirgilSDKRatchet/PublicHeader.h>
+    override func tearDown() {
+        // Put teardown code here. This method is called after the invocation of each test method in the class.
+    }
 
+    func testExample() {
+        // This is an example of a functional test case.
+        // Use XCTAssert and related functions to verify your tests produce the correct results.
+    }
 
+    func testPerformanceExample() {
+        // This is an example of a performance test case.
+        self.measure {
+            // Put the code you want to measure the time of here.
+        }
+    }
+
+}

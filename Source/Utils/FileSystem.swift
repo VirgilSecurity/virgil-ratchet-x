@@ -74,7 +74,16 @@ internal class FileSystem {
     }
 
     private func writeFile(url: URL, data: Data) throws {
-        try data.write(to: url, options: [.completeFileProtection, .atomic])
+    #if os(OSX)
+        let options: Data.WritingOptions = [.atomic]
+    #else
+        let options: Data.WritingOptions = [
+            .completeFileProtection /* Is accessing in background needed? */,
+            .atomic
+        ]
+    #endif
+        
+        try data.write(to: url, options: options)
     }
 
     private func readFile(url: URL) -> Data {

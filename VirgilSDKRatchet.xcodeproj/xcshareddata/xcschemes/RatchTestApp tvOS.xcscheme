@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "421B43E72190AF5900D4F496"
-               BuildableName = "RatchetTestApp iOS.app"
-               BlueprintName = "RatchetTestApp iOS"
+               BlueprintIdentifier = "42352507221EED260079DD2A"
+               BuildableName = "RatchTestApp tvOS.app"
+               BlueprintName = "RatchTestApp tvOS"
                ReferencedContainer = "container:VirgilSDKRatchet.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -32,9 +32,9 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "424FAA0E2177506100622A3B"
-               BuildableName = "VirgilSDKRatchetTests iOS.xctest"
-               BlueprintName = "VirgilSDKRatchetTests iOS"
+               BlueprintIdentifier = "4235251A221EEDCB0079DD2A"
+               BuildableName = "VirgilSDKRatchetTests tvOS.xctest"
+               BlueprintName = "VirgilSDKRatchetTests tvOS"
                ReferencedContainer = "container:VirgilSDKRatchet.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -42,9 +42,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "421B43E72190AF5900D4F496"
-            BuildableName = "RatchetTestApp iOS.app"
-            BlueprintName = "RatchetTestApp iOS"
+            BlueprintIdentifier = "42352507221EED260079DD2A"
+            BuildableName = "RatchTestApp tvOS.app"
+            BlueprintName = "RatchTestApp tvOS"
             ReferencedContainer = "container:VirgilSDKRatchet.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -65,9 +65,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "421B43E72190AF5900D4F496"
-            BuildableName = "RatchetTestApp iOS.app"
-            BlueprintName = "RatchetTestApp iOS"
+            BlueprintIdentifier = "42352507221EED260079DD2A"
+            BuildableName = "RatchTestApp tvOS.app"
+            BlueprintName = "RatchTestApp tvOS"
             ReferencedContainer = "container:VirgilSDKRatchet.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -84,9 +84,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "421B43E72190AF5900D4F496"
-            BuildableName = "RatchetTestApp iOS.app"
-            BlueprintName = "RatchetTestApp iOS"
+            BlueprintIdentifier = "42352507221EED260079DD2A"
+            BuildableName = "RatchTestApp tvOS.app"
+            BlueprintName = "RatchTestApp tvOS"
             ReferencedContainer = "container:VirgilSDKRatchet.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
