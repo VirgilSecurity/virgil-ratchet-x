@@ -54,9 +54,17 @@ import VirgilSDK
     ///
     /// - Parameter identity: identity of this user
     /// - Throws: Rethrows from KeychainStorageParams
-    @objc public init(identity: String) throws {
-        let params = try KeychainStorageParams.makeKeychainStorageParams()
-        let keychainStorage = KeychainStorage(storageParams: params)
+    @objc public init(identity: String, params: KeychainStorageParams? = nil) throws {
+        let storageParams: KeychainStorageParams
+
+        if let params = params {
+            storageParams = params
+        }
+        else {
+            storageParams = try KeychainStorageParams.makeKeychainStorageParams()
+        }
+
+        let keychainStorage = KeychainStorage(storageParams: storageParams)
         self.keychain = SandboxedKeychainStorage(identity: identity,
                                                  prefix: "LTK",
                                                  keychainStorage: keychainStorage)

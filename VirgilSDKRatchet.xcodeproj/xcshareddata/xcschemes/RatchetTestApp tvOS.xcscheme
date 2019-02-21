@@ -15,8 +15,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "42352507221EED260079DD2A"
-               BuildableName = "RatchTestApp tvOS.app"
-               BlueprintName = "RatchTestApp tvOS"
+               BuildableName = "RatchetTestApp tvOS.app"
+               BlueprintName = "RatchetTestApp tvOS"
                ReferencedContainer = "container:VirgilSDKRatchet.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -43,8 +43,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "42352507221EED260079DD2A"
-            BuildableName = "RatchTestApp tvOS.app"
-            BlueprintName = "RatchTestApp tvOS"
+            BuildableName = "RatchetTestApp tvOS.app"
+            BlueprintName = "RatchetTestApp tvOS"
             ReferencedContainer = "container:VirgilSDKRatchet.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -66,8 +66,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "42352507221EED260079DD2A"
-            BuildableName = "RatchTestApp tvOS.app"
-            BlueprintName = "RatchTestApp tvOS"
+            BuildableName = "RatchetTestApp tvOS.app"
+            BlueprintName = "RatchetTestApp tvOS"
             ReferencedContainer = "container:VirgilSDKRatchet.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -85,8 +85,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "42352507221EED260079DD2A"
-            BuildableName = "RatchTestApp tvOS.app"
-            BlueprintName = "RatchTestApp tvOS"
+            BuildableName = "RatchetTestApp tvOS.app"
+            BlueprintName = "RatchetTestApp tvOS"
             ReferencedContainer = "container:VirgilSDKRatchet.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

@@ -440,7 +440,7 @@
 		423524FA221EEAA00079DD2A /* VirgilCryptoApiImpl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilCryptoApiImpl.framework; path = Carthage/Build/watchOS/VirgilCryptoApiImpl.framework; sourceTree = "<group>"; };
 		423524FB221EEAA10079DD2A /* VirgilSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilSDK.framework; path = Carthage/Build/watchOS/VirgilSDK.framework; sourceTree = "<group>"; };
 		423524FC221EEAA10079DD2A /* VirgilCryptoFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilCryptoFoundation.framework; path = Carthage/Build/watchOS/VirgilCryptoFoundation.framework; sourceTree = "<group>"; };
-		42352508221EED260079DD2A /* RatchTestApp tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "RatchTestApp tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		42352508221EED260079DD2A /* RatchetTestApp tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "RatchetTestApp tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4235250A221EED260079DD2A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4235250C221EED260079DD2A /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		4235250F221EED260079DD2A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -645,7 +645,7 @@
 			path = "RatchetTestApp iOS";
 			sourceTree = "<group>";
 		};
-		42352509221EED260079DD2A /* RatchTestApp tvOS */ = {
+		42352509221EED260079DD2A /* RatchetTestApp tvOS */ = {
 			isa = PBXGroup;
 			children = (
 				4235250A221EED260079DD2A /* AppDelegate.swift */,
@@ -654,7 +654,7 @@
 				42352511221EED280079DD2A /* Assets.xcassets */,
 				42352513221EED280079DD2A /* Info.plist */,
 			);
-			path = "RatchTestApp tvOS";
+			path = "RatchetTestApp tvOS";
 			sourceTree = "<group>";
 		};
 		424FA9FC2177506100622A3B = {
@@ -664,7 +664,7 @@
 				424FAAA52177520200622A3B /* Source */,
 				424FAA132177506100622A3B /* Test */,
 				421B43E92190AF5900D4F496 /* RatchetTestApp iOS */,
-				42352509221EED260079DD2A /* RatchTestApp tvOS */,
+				42352509221EED260079DD2A /* RatchetTestApp tvOS */,
 				424FAA072177506100622A3B /* Products */,
 				424FAA972177511100622A3B /* Frameworks */,
 			);
@@ -679,7 +679,7 @@
 				4235244B221EE9360079DD2A /* VirgilSDKRatchet.framework */,
 				42352458221EE9460079DD2A /* VirgilSDKRatchet.framework */,
 				42352465221EE9530079DD2A /* VirgilSDKRatchet.framework */,
-				42352508221EED260079DD2A /* RatchTestApp tvOS.app */,
+				42352508221EED260079DD2A /* RatchetTestApp tvOS.app */,
 				4235251B221EEDCB0079DD2A /* VirgilSDKRatchetTests tvOS.xctest */,
 				42352529221EEDE70079DD2A /* VirgilSDKRatchetTests macOS.xctest */,
 			);
@@ -959,9 +959,9 @@
 			productReference = 42352465221EE9530079DD2A /* VirgilSDKRatchet.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		42352507221EED260079DD2A /* RatchTestApp tvOS */ = {
+		42352507221EED260079DD2A /* RatchetTestApp tvOS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 42352514221EED280079DD2A /* Build configuration list for PBXNativeTarget "RatchTestApp tvOS" */;
+			buildConfigurationList = 42352514221EED280079DD2A /* Build configuration list for PBXNativeTarget "RatchetTestApp tvOS" */;
 			buildPhases = (
 				42352504221EED260079DD2A /* Sources */,
 				42352505221EED260079DD2A /* Frameworks */,
@@ -971,9 +971,9 @@
 			);
 			dependencies = (
 			);
-			name = "RatchTestApp tvOS";
+			name = "RatchetTestApp tvOS";
 			productName = "RatchTestApp tvOS";
-			productReference = 42352508221EED260079DD2A /* RatchTestApp tvOS.app */;
+			productReference = 42352508221EED260079DD2A /* RatchetTestApp tvOS.app */;
 			productType = "com.apple.product-type.application";
 		};
 		4235251A221EEDCB0079DD2A /* VirgilSDKRatchetTests tvOS */ = {
@@ -1117,7 +1117,7 @@
 				4235244A221EE9360079DD2A /* VirgilSDKRatchet macOS */,
 				42352457221EE9460079DD2A /* VirgilSDKRatchet tvOS */,
 				4235251A221EEDCB0079DD2A /* VirgilSDKRatchetTests tvOS */,
-				42352507221EED260079DD2A /* RatchTestApp tvOS */,
+				42352507221EED260079DD2A /* RatchetTestApp tvOS */,
 				42352464221EE9530079DD2A /* VirgilSDKRatchet watchOS */,
 				423524AF221EE98C0079DD2A /* VirgilSDKRatchet */,
 			);
@@ -1401,7 +1401,7 @@
 		};
 		42352521221EEDCB0079DD2A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 42352507221EED260079DD2A /* RatchTestApp tvOS */;
+			target = 42352507221EED260079DD2A /* RatchetTestApp tvOS */;
 			targetProxy = 42352520221EEDCB0079DD2A /* PBXContainerItemProxy */;
 		};
 		42352530221EEDE80079DD2A /* PBXTargetDependency */ = {
@@ -1691,12 +1691,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_STYLE = Automatic;
-				INFOPLIST_FILE = "RatchTestApp tvOS/Info.plist";
+				INFOPLIST_FILE = "RatchetTestApp tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.virgilsecurity.RatchTestApp-tvOS";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.virgilsecurity.RatchetTestApp-tvOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				SWIFT_VERSION = 4.2;
@@ -1711,12 +1711,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_STYLE = Automatic;
-				INFOPLIST_FILE = "RatchTestApp tvOS/Info.plist";
+				INFOPLIST_FILE = "RatchetTestApp tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.virgilsecurity.RatchTestApp-tvOS";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.virgilsecurity.RatchetTestApp-tvOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				SWIFT_VERSION = 4.2;
@@ -1733,7 +1733,6 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/tvOS",
 				);
-				INFOPLIST_FILE = "VirgilSDKRatchetTests tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1744,7 +1743,7 @@
 				SDKROOT = appletvos;
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = 3;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RatchTestApp tvOS.app/RatchTestApp tvOS";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RatchetTestApp tvOS.app/RatchetTestApp tvOS";
 				TVOS_DEPLOYMENT_TARGET = 12.1;
 			};
 			name = Debug;
@@ -1757,7 +1756,6 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/tvOS",
 				);
-				INFOPLIST_FILE = "VirgilSDKRatchetTests tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1768,7 +1766,7 @@
 				SDKROOT = appletvos;
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = 3;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RatchTestApp tvOS.app/RatchTestApp tvOS";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RatchetTestApp tvOS.app/RatchetTestApp tvOS";
 				TVOS_DEPLOYMENT_TARGET = 12.1;
 			};
 			name = Release;
@@ -1783,7 +1781,6 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/Mac",
 				);
-				INFOPLIST_FILE = "VirgilSDKRatchetTests macOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -1807,7 +1804,6 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/Mac",
 				);
-				INFOPLIST_FILE = "VirgilSDKRatchetTests macOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -2093,7 +2089,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		42352514221EED280079DD2A /* Build configuration list for PBXNativeTarget "RatchTestApp tvOS" */ = {
+		42352514221EED280079DD2A /* Build configuration list for PBXNativeTarget "RatchetTestApp tvOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				42352515221EED280079DD2A /* Debug */,

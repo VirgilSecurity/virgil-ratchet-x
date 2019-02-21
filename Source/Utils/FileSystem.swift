@@ -82,7 +82,7 @@ internal class FileSystem {
             .atomic
         ]
     #endif
-        
+
         try data.write(to: url, options: options)
     }
 

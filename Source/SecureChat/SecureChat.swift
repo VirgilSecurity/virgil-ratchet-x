@@ -88,7 +88,16 @@ import VirgilCryptoApiImpl
     ///         - Rethrows from KeychainLongTermKeysStorage
     @objc public convenience init(context: SecureChatContext) throws {
         let client = RatchetClient()
-        let longTermKeysStorage = try KeychainLongTermKeysStorage(identity: context.identity)
+
+        let params: KeychainStorageParams?
+        if let appName = context.appName {
+            params = try KeychainStorageParams.makeKeychainStorageParams(appName: appName)
+        }
+        else {
+            params = nil
+        }
+
+        let longTermKeysStorage = try KeychainLongTermKeysStorage(identity: context.identity, params: params)
         let oneTimeKeysStorage = FileOneTimeKeysStorage(identity: context.identity)
         let sessionStorage = FileSessionStorage(identity: context.identity)
         let keysRotator = KeysRotator(identityPrivateKey: context.identityPrivateKey,

@@ -92,8 +92,9 @@ class IntegrationTests: XCTestCase {
         let receiverCard = try! receiverCardManager.publishCard(privateKey: receiverIdentityKeyPair.privateKey, publicKey: receiverIdentityKeyPair.publicKey).startSync().getResult()
         let senderCard = try! senderCardManager.publishCard(privateKey: senderIdentityKeyPair.privateKey, publicKey: senderIdentityKeyPair.publicKey).startSync().getResult()
         
-        let receiverLongTermKeysStorage = try! KeychainLongTermKeysStorage(identity: receiverIdentity)
-        let senderLongTermKeysStorage = try! KeychainLongTermKeysStorage(identity: senderIdentity)
+        let params = try! KeychainStorageParams.makeKeychainStorageParams(appName: "test")
+        let receiverLongTermKeysStorage = try! KeychainLongTermKeysStorage(identity: receiverIdentity, params: params)
+        let senderLongTermKeysStorage = try! KeychainLongTermKeysStorage(identity: senderIdentity, params: params)
         
         let receiverOneTimeKeysStorage = FileOneTimeKeysStorage(identity: receiverIdentity)
         let senderOneTimeKeysStorage = FileOneTimeKeysStorage(identity: senderIdentity)
