@@ -136,15 +136,15 @@ class ClientTests: XCTestCase {
         XCTAssert(response2.longTermPublicKey.publicKey == signedLongTermKey.publicKey)
         XCTAssert(response2.longTermPublicKey.signature == signedLongTermKey.signature)
         
-        let anotherKey: Data
+        let usedKeyId: Data
         if (response2.oneTimePublicKey == oneTimeKey1) {
-            anotherKey = oneTimeKey2
+            usedKeyId = oneTimeKeyId1
         }
         else if (response2.oneTimePublicKey == oneTimeKey2) {
-            anotherKey = oneTimeKey1
+            usedKeyId = oneTimeKeyId2
         }
         else {
-            anotherKey = Data()
+            usedKeyId = Data()
             XCTFail()
         }
         
@@ -152,7 +152,7 @@ class ClientTests: XCTestCase {
         
         XCTAssert(response3.usedLongTermKeyId == nil)
         XCTAssert(response3.usedOneTimeKeysIds.count == 1)
-        XCTAssert(response3.usedOneTimeKeysIds[0] == anotherKey)
+        XCTAssert(response3.usedOneTimeKeysIds[0] == usedKeyId)
     }
     
     func test3__reset__all_keys__should_succeed() {

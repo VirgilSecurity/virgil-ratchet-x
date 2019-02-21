@@ -117,20 +117,11 @@ import VirgilCryptoApiImpl
     ///         - Rethrows from crypto RatchetSession
     ///         - Rethrows from SessionStorage
     public func encrypt(string: String) throws -> RatchetMessage {
-        return try self.queue.sync {
-            guard let data = string.data(using: .utf8) else {
-                throw SecureSessionError.invalidUtf8String
-            }
-
-            let errCtx = ErrorCtx()
-            let msg = self.ratchetSession.encrypt(plainText: data, errCtx: errCtx)
-
-            try errCtx.error()
-
-            try self.sessionStorage.storeSession(self)
-
-            return msg
+        guard let data = string.data(using: .utf8) else {
+            throw SecureSessionError.invalidUtf8String
         }
+
+        return try self.encrypt(data: data)
     }
 
     /// Encrypts data. Updates session in storage
@@ -179,17 +170,13 @@ import VirgilCryptoApiImpl
     ///         - Rethrows from crypto RatchetSession
     ///         - Rethrows from SessionStorage
     public func decryptString(from message: RatchetMessage) throws -> String {
-        return try self.queue.sync {
-            let data = try self.ratchetSession.decrypt(message: message)
+        let data = try self.decryptData(from: message)
 
-            try self.sessionStorage.storeSession(self)
-
-            guard let string = String(data: data, encoding: .utf8) else {
-                throw SecureSessionError.invalidUtf8String
-            }
-
-            return string
+        guard let string = String(data: data, encoding: .utf8) else {
+            throw SecureSessionError.invalidUtf8String
         }
+
+        return string
     }
 
     /// Init session from serialized representation

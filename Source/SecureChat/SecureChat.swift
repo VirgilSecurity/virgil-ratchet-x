@@ -252,11 +252,9 @@ import VirgilCryptoApiImpl
 
                 let token = try getTokenOperation.startSync().getResult()
 
-                // TODO: Check long-term and one-time public keys are X25519
                 let publicKeySet = try self.client.getPublicKeySet(forRecipientIdentity: receiverCard.identity,
                                                                    token: token.stringRepresentation())
 
-                // TODO: Check identityPublicKey is ED25519
                 guard let identityPublicKey = receiverCard.publicKey as? VirgilPublicKey else {
                     throw SecureChatError.wrongIdentityPublicKeyCrypto
                 }
@@ -296,10 +294,11 @@ import VirgilCryptoApiImpl
 
     private let queue = DispatchQueue(label: "VSRSecureChat", qos: .background)
 
-    private func replaceOneTimeKey() {
+    private func scheduleOneTimeKeyReplacement() {
         Log.debug("Adding one time key queued")
 
-        self.queue.async {
+        // Replace one-time key after 1 seconds when chat is fully initialized
+        self.queue.asyncAfter(deadline: DispatchTime.now() + DispatchTimeInterval.seconds(1)) {
             Log.debug("Adding one time started")
 
             let oneTimePublicKey: Data
@@ -367,7 +366,6 @@ import VirgilCryptoApiImpl
             throw SecureChatError.sessionAlreadyExists
         }
 
-        // TODO: Check senderIdentityPublicKey should be ED25519
         guard let senderIdentityPublicKey = senderCard.publicKey as? VirgilPublicKey else {
             throw SecureChatError.wrongIdentityPublicKeyCrypto
         }
@@ -401,31 +399,24 @@ import VirgilCryptoApiImpl
             receiverOneTimePrivateKey = nil
         }
 
-        let session: SecureSession
+        defer {
+            if receiverOneTimeKeyId != nil {
+                try? self.oneTimeKeysStorage.stopInteraction()
+            }
+        }
 
-        do {
-            session = try SecureSession(sessionStorage: self.sessionStorage,
+        let session = try SecureSession(sessionStorage: self.sessionStorage,
                                         participantIdentity: senderCard.identity,
                                         receiverIdentityPrivateKey: self.identityPrivateKey,
                                         receiverLongTermPrivateKey: receiverLongTermPrivateKey,
                                         receiverOneTimePrivateKey: receiverOneTimePrivateKey,
                                         senderIdentityPublicKey: self.crypto.exportPublicKey(senderIdentityPublicKey),
                                         ratchetMessage: ratchetMessage)
-        }
-        catch {
-            try self.oneTimeKeysStorage.stopInteraction()
-
-            throw error
-        }
 
         if let receiverOneTimeKeyId = receiverOneTimeKeyId {
-            defer {
-                try? self.oneTimeKeysStorage.stopInteraction()
-            }
-
             try self.oneTimeKeysStorage.deleteKey(withId: receiverOneTimeKeyId)
 
-            self.replaceOneTimeKey()
+            self.scheduleOneTimeKeyReplacement()
         }
 
         try self.sessionStorage.storeSession(session)

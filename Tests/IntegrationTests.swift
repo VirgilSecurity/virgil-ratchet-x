@@ -100,7 +100,7 @@ class IntegrationTests: XCTestCase {
 
         let client = RatchetClient(serviceUrl: URL(string: testConfig.ServiceURL)!)
         
-        let receiverKeysRotator = KeysRotator(identityPrivateKey: receiverIdentityKeyPair.privateKey, identityCardId: receiverCard.identifier, orphanedOneTimeKeyTtl: 5, longTermKeyTtl: 100, outdatedLongTermKeyTtl: 100, desiredNumberOfOneTimeKeys: IntegrationTests.desiredNumberOfOtKeys, longTermKeysStorage: receiverLongTermKeysStorage, oneTimeKeysStorage: receiverOneTimeKeysStorage, client: client)
+        let receiverKeysRotator = KeysRotator(identityPrivateKey: receiverIdentityKeyPair.privateKey, identityCardId: receiverCard.identifier, orphanedOneTimeKeyTtl: 5, longTermKeyTtl: 10, outdatedLongTermKeyTtl: 5, desiredNumberOfOneTimeKeys: IntegrationTests.desiredNumberOfOtKeys, longTermKeysStorage: receiverLongTermKeysStorage, oneTimeKeysStorage: receiverOneTimeKeysStorage, client: client)
         
         let senderKeysRotator = KeysRotator(identityPrivateKey: senderIdentityKeyPair.privateKey, identityCardId: senderCard.identifier, orphanedOneTimeKeyTtl: 100, longTermKeyTtl: 100, outdatedLongTermKeyTtl: 100, desiredNumberOfOneTimeKeys: IntegrationTests.desiredNumberOfOtKeys, longTermKeysStorage: senderLongTermKeysStorage, oneTimeKeysStorage: senderOneTimeKeysStorage, client: client)
         
@@ -214,6 +214,8 @@ class IntegrationTests: XCTestCase {
         
         Utils.encryptDecrypt100Times(senderSession: senderSession, receiverSession: receiverSession)
         
+        sleep(3)
+        
         try! senderSecureChat.reset().startSync().getResult()
         
         XCTAssert(senderSecureChat.existingSession(withParticpantIdentity: receiverCard.identity) == nil)
@@ -263,7 +265,7 @@ class IntegrationTests: XCTestCase {
         try! receiverSecureChat.oneTimeKeysStorage.stopInteraction()
     }
     
-    func test6__double_rotate__no_sessions__should_complete() {
+    func test6__rotate__double_rotate_empty_storage__should_complete() {
         let (_, _, _, receiverSecureChat) = self.initChat()
         
         _ = try! receiverSecureChat.rotateKeys().startSync().getResult()
@@ -287,7 +289,7 @@ class IntegrationTests: XCTestCase {
         
         _ = try! receiverSecureChat.rotateKeys().startSync().getResult()
         
-        XCTAssert(try! receiverSecureChat.oneTimeKeysStorage.retrieveAllKeys().count == IntegrationTests.desiredNumberOfOtKeys)
+        XCTAssert(try! receiverSecureChat.oneTimeKeysStorage.retrieveAllKeys().count == IntegrationTests.desiredNumberOfOtKeys + 1)
         
         sleep(6)
         
@@ -302,5 +304,25 @@ class IntegrationTests: XCTestCase {
             XCTAssert(false)
         }
         catch { }
+    }
+    
+    func test8__rotate__ltk_outdated__should_outdate_and_delete_ltk() {
+        let (_, _, _, receiverSecureChat) = self.initChat()
+        
+        _ = try! receiverSecureChat.rotateKeys().startSync().getResult()
+        
+        XCTAssert(try! receiverSecureChat.longTermKeysStorage.retrieveAllKeys().count == 1)
+        
+        sleep(11)
+        
+        _ = try! receiverSecureChat.rotateKeys().startSync().getResult()
+        
+        XCTAssert(try! receiverSecureChat.longTermKeysStorage.retrieveAllKeys().count == 2)
+        
+        sleep(5)
+        
+        _ = try! receiverSecureChat.rotateKeys().startSync().getResult()
+        
+        XCTAssert(try! receiverSecureChat.longTermKeysStorage.retrieveAllKeys().count == 1)
     }
 }

@@ -82,7 +82,7 @@ import Foundation
             }
 
             guard self.oneTimeKeys == nil else {
-                return
+                fatalError("oneTimeKeys should be nil")
             }
 
             let data = try self.fileSystem.readOneTimeKeysFile()

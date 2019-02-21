@@ -38,10 +38,12 @@ import Foundation
 import XCTest
 import VirgilSDK
 import VirgilCryptoApiImpl
-import VSCRatchet
+import VirgilCryptoRatchet
 @testable import VirgilSDKRatchet
 
 class KeysRotatorTests: XCTestCase {
+    private let keyUtils = RatchetKeyUtils()
+    private let crypto = VirgilCrypto()
     
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -51,8 +53,30 @@ class KeysRotatorTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
     
-    private func compareCloudAndStorage(cloud: RamClient, longTermStorage: RamLongTermKeysStorage, oneTimeStorage: RamOneTimeKeysStorage) -> Bool {
-        // TODO: Implement
+    private func compareCloudAndStorage(userStore: RamClient.UserStore, longTermStorage: RamLongTermKeysStorage, oneTimeStorage: RamOneTimeKeysStorage) -> Bool {
+        
+        do {
+            if let longTermKey = userStore.longTermPublicKey?.publicKey {
+                let keyId = try self.keyUtils.computePublicKeyId(publicKey: longTermKey)
+                
+                guard try longTermStorage.retrieveKey(withId: keyId).identifier == keyId else {
+                    return false
+                }
+            }
+            
+            let storedOneTimeKeysIds = Set<Data>(try oneTimeStorage.retrieveAllKeys().map { $0.identifier })
+            
+            let cloudOneTimeKeysIds = Set<Data>(try userStore.oneTimePublicKeys.map {
+                try self.keyUtils.computePublicKeyId(publicKey: $0)
+            })
+            
+            guard storedOneTimeKeysIds == cloudOneTimeKeysIds else {
+                return false
+            }
+        }
+        catch {
+            return false
+        }
         
         return true
     }
@@ -130,7 +154,7 @@ class KeysRotatorTests: XCTestCase {
         let user = fakeClient.users.first!
         XCTAssert(user.key == identity)
         
-        XCTAssert(self.compareCloudAndStorage(cloud: fakeClient, longTermStorage: fakeLongTermKeysStorage, oneTimeStorage: fakeOneTimeKeysStorage))
+        XCTAssert(self.compareCloudAndStorage(userStore: user.value, longTermStorage: fakeLongTermKeysStorage, oneTimeStorage: fakeOneTimeKeysStorage))
     }
     
     func test2__rotate__old_long_term_key__should_recreate_key() {
@@ -163,7 +187,7 @@ class KeysRotatorTests: XCTestCase {
         let user = fakeClient.users.first!
         XCTAssert(user.key == identity)
         
-        XCTAssert(self.compareCloudAndStorage(cloud: fakeClient, longTermStorage: fakeLongTermKeysStorage, oneTimeStorage: fakeOneTimeKeysStorage))
+        XCTAssert(self.compareCloudAndStorage(userStore: user.value, longTermStorage: fakeLongTermKeysStorage, oneTimeStorage: fakeOneTimeKeysStorage))
         
         sleep(2)
         
@@ -179,7 +203,7 @@ class KeysRotatorTests: XCTestCase {
         XCTAssert(fakeLongTermKeysStorage.db.count == 1)
         XCTAssert(fakeClient.users.count == 1)
         
-        XCTAssert(self.compareCloudAndStorage(cloud: fakeClient, longTermStorage: fakeLongTermKeysStorage, oneTimeStorage: fakeOneTimeKeysStorage))
+        XCTAssert(self.compareCloudAndStorage(userStore: user.value, longTermStorage: fakeLongTermKeysStorage, oneTimeStorage: fakeOneTimeKeysStorage))
     }
     
     func test3__rotate__used_one_time_key___should_recreate_key() {
@@ -227,6 +251,6 @@ class KeysRotatorTests: XCTestCase {
         let user = fakeClient.users.first!
         XCTAssert(user.key == identity)
         
-        XCTAssert(self.compareCloudAndStorage(cloud: fakeClient, longTermStorage: fakeLongTermKeysStorage, oneTimeStorage: fakeOneTimeKeysStorage))
+        XCTAssert(self.compareCloudAndStorage(userStore: user.value, longTermStorage: fakeLongTermKeysStorage, oneTimeStorage: fakeOneTimeKeysStorage))
     }
 }
