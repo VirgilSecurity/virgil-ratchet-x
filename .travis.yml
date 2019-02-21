@@ -24,7 +24,7 @@ before_install:
   - xcodebuild -showsdks
 
 script:
-  - openssl aes-256-cbc -K $encrypted_eb82f295c747_key -iv $encrypted_eb82f295c747_iv -in config.tar.enc -out config.tar -d
+  - openssl aes-256-cbc -K $encrypted_37cfd9246873_key -iv $encrypted_37cfd9246873_iv -in config.tar.enc -out config.tar -d
   - tar xvf config.tar
 
   - |
