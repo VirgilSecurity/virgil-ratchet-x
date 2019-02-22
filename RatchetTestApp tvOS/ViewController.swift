@@ -34,14 +34,15 @@
 // Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 //
 
-#import <UIKit/UIKit.h>
+import UIKit
 
-//! Project version number for VirgilSDKRatchet.
-FOUNDATION_EXPORT double VirgilSDKRatchetVersionNumber;
+class ViewController: UIViewController {
 
-//! Project version string for VirgilSDKRatchet.
-FOUNDATION_EXPORT const unsigned char VirgilSDKRatchetVersionString[];
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        // Do any additional setup after loading the view, typically from a nib.
+    }
 
-// In this header, you should import all the public headers of your framework using statements like #import <VirgilSDKRatchet/PublicHeader.h>
 
+}
 

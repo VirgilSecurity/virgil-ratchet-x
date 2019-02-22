@@ -64,6 +64,9 @@ import VirgilSDK
     /// Desired number of one-time keys
     @objc public var desiredNumberOfOneTimeKeys: Int = 100
 
+    /// App name, defaults to Bundle.main.bundleIdentifier
+    @objc public var appName: String? = nil
+
     /// Initializer
     ///
     /// - Parameters:

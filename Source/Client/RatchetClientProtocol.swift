@@ -59,16 +59,9 @@ public protocol RatchetClientProtocol: class {
                           oneTimePublicKeys: [Data],
                           token: String) throws
 
-    /// Returns number of active one-time public keys (0..<=150)
-    ///
-    /// - Parameter token: auth token (JWT)
-    /// - Returns: Number of active one-time public keys (0..<=150)
-    /// - Throws: Depends on implementation
-    func getNumberOfActiveOneTimePublicKeys(token: String) throws -> Int
-
     /// Checks list of keys ids and returns subset of that list with already used keys ids
     ///
-    /// keyId == SHA512(publicKey)[0..<8]
+    /// keyId == SHA512(raw 32-byte publicKey)[0..<8]
     ///
     /// - Parameters:
     ///   - longTermKeyId: long-term public key id to validate

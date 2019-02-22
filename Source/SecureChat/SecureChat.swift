@@ -88,7 +88,16 @@ import VirgilCryptoApiImpl
     ///         - Rethrows from KeychainLongTermKeysStorage
     @objc public convenience init(context: SecureChatContext) throws {
         let client = RatchetClient()
-        let longTermKeysStorage = try KeychainLongTermKeysStorage(identity: context.identity)
+
+        let params: KeychainStorageParams?
+        if let appName = context.appName {
+            params = try KeychainStorageParams.makeKeychainStorageParams(appName: appName)
+        }
+        else {
+            params = nil
+        }
+
+        let longTermKeysStorage = try KeychainLongTermKeysStorage(identity: context.identity, params: params)
         let oneTimeKeysStorage = FileOneTimeKeysStorage(identity: context.identity)
         let sessionStorage = FileSessionStorage(identity: context.identity)
         let keysRotator = KeysRotator(identityPrivateKey: context.identityPrivateKey,
@@ -138,13 +147,11 @@ import VirgilCryptoApiImpl
         super.init()
     }
 
-    /// Rotates keys. See rotateKeys() -> GenericOperation<Void> for details
+    /// Rotates keys. See rotateKeys() -> GenericOperation<RotationLog> for details
     ///
     /// - Parameter completion: completion handler
-    @objc public func rotateKeys(completion: @escaping (Error?) -> Void) {
-        self.rotateKeys().start { _, error in
-            completion(error)
-        }
+    @objc public func rotateKeys(completion: @escaping (RotationLog?, Error?) -> Void) {
+        self.rotateKeys().start(completion: completion)
     }
 
     /// Rotates keys
@@ -162,7 +169,7 @@ import VirgilCryptoApiImpl
     ///         - Upload keys to the cloud
     ///
     /// - Returns: GenericOperation
-    public func rotateKeys() -> GenericOperation<Void> {
+    public func rotateKeys() -> GenericOperation<RotationLog> {
         Log.debug("Keys rotation queued")
 
         return CallbackOperation { _, completion in
@@ -254,11 +261,9 @@ import VirgilCryptoApiImpl
 
                 let token = try getTokenOperation.startSync().getResult()
 
-                // TODO: Check long-term and one-time public keys are X25519
                 let publicKeySet = try self.client.getPublicKeySet(forRecipientIdentity: receiverCard.identity,
                                                                    token: token.stringRepresentation())
 
-                // TODO: Check identityPublicKey is ED25519
                 guard let identityPublicKey = receiverCard.publicKey as? VirgilPublicKey else {
                     throw SecureChatError.wrongIdentityPublicKeyCrypto
                 }
@@ -298,10 +303,11 @@ import VirgilCryptoApiImpl
 
     private let queue = DispatchQueue(label: "VSRSecureChat", qos: .background)
 
-    private func replaceOneTimeKey() {
+    private func scheduleOneTimeKeyReplacement() {
         Log.debug("Adding one time key queued")
 
-        self.queue.async {
+        // Replace one-time key after 1 seconds when chat is fully initialized
+        self.queue.asyncAfter(deadline: DispatchTime.now() + DispatchTimeInterval.seconds(1)) {
             Log.debug("Adding one time started")
 
             let oneTimePublicKey: Data
@@ -369,7 +375,6 @@ import VirgilCryptoApiImpl
             throw SecureChatError.sessionAlreadyExists
         }
 
-        // TODO: Check senderIdentityPublicKey should be ED25519
         guard let senderIdentityPublicKey = senderCard.publicKey as? VirgilPublicKey else {
             throw SecureChatError.wrongIdentityPublicKeyCrypto
         }
@@ -403,31 +408,24 @@ import VirgilCryptoApiImpl
             receiverOneTimePrivateKey = nil
         }
 
-        let session: SecureSession
+        defer {
+            if receiverOneTimeKeyId != nil {
+                try? self.oneTimeKeysStorage.stopInteraction()
+            }
+        }
 
-        do {
-            session = try SecureSession(sessionStorage: self.sessionStorage,
+        let session = try SecureSession(sessionStorage: self.sessionStorage,
                                         participantIdentity: senderCard.identity,
                                         receiverIdentityPrivateKey: self.identityPrivateKey,
                                         receiverLongTermPrivateKey: receiverLongTermPrivateKey,
                                         receiverOneTimePrivateKey: receiverOneTimePrivateKey,
                                         senderIdentityPublicKey: self.crypto.exportPublicKey(senderIdentityPublicKey),
                                         ratchetMessage: ratchetMessage)
-        }
-        catch {
-            try self.oneTimeKeysStorage.stopInteraction()
-
-            throw error
-        }
 
         if let receiverOneTimeKeyId = receiverOneTimeKeyId {
-            defer {
-                try? self.oneTimeKeysStorage.stopInteraction()
-            }
-
             try self.oneTimeKeysStorage.deleteKey(withId: receiverOneTimeKeyId)
 
-            self.replaceOneTimeKey()
+            self.scheduleOneTimeKeyReplacement()
         }
 
         try self.sessionStorage.storeSession(session)

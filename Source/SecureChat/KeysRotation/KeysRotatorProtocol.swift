@@ -42,5 +42,5 @@ public protocol KeysRotatorProtocol: class {
     /// Rotates keys
     ///
     /// - Returns: GenericOperation
-    func rotateKeysOperation() -> GenericOperation<Void>
+    func rotateKeysOperation() -> GenericOperation<RotationLog>
 }

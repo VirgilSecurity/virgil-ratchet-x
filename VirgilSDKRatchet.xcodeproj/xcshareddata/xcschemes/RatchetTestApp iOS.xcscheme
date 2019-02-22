@@ -33,8 +33,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "424FAA0E2177506100622A3B"
-               BuildableName = "VirgilSDKRatchetTests.xctest"
-               BlueprintName = "VirgilSDKRatchetTests"
+               BuildableName = "VirgilSDKRatchetTests iOS.xctest"
+               BlueprintName = "VirgilSDKRatchetTests iOS"
                ReferencedContainer = "container:VirgilSDKRatchet.xcodeproj">
             </BuildableReference>
          </TestableReference>

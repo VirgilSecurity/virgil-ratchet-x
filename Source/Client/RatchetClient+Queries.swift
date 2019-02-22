@@ -91,37 +91,9 @@ extension RatchetClient: RatchetClientProtocol {
         try self.validateResponse(response)
     }
 
-    /// Returns number of active one-time public keys (0..<=150)
-    ///
-    /// - Parameter token: auth token (JWT)
-    /// - Returns: Number of active one-time public keys (0..<=150)
-    /// - Throws:
-    ///         - RatchetClientError.constructingUrl
-    ///         - Rethrows from ServiceRequest
-    ///         - Rethrows from HttpConnectionProtocol
-    ///         - Rethrows from JSONDecoder
-    ///         - Rethrows from BaseClient
-    public func getNumberOfActiveOneTimePublicKeys(token: String) throws -> Int {
-        guard let url = URL(string: "pfs/v2/keys/actions/count-otk", relativeTo: self.serviceUrl) else {
-            throw RatchetClientError.constructingUrl
-        }
-
-        let request = try ServiceRequest(url: url, method: .post, accessToken: token)
-
-        let response = try self.connection.send(request)
-
-        class NumberOTKResponse: Decodable {
-            let active: Int
-        }
-
-        let numberOTKResponse: NumberOTKResponse = try self.processResponse(response)
-
-        return numberOTKResponse.active
-    }
-
     /// Checks list of keys ids and returns subset of that list with already used keys ids
     ///
-    /// keyId == SHA512(publicKey)[0..<8]
+    /// keyId == SHA512(raw 32-byte publicKey)[0..<8]
     ///
     /// - Parameters:
     ///   - longTermKeyId: long-term public key id to validate
@@ -140,7 +112,7 @@ extension RatchetClient: RatchetClientProtocol {
             return ValidatePublicKeysResponse(usedLongTermKeyId: nil, usedOneTimeKeysIds: [])
         }
 
-        guard let url = URL(string: "pfs/v2/keys/acrions/validate", relativeTo: self.serviceUrl) else {
+        guard let url = URL(string: "pfs/v2/keys/actions/validate", relativeTo: self.serviceUrl) else {
             throw RatchetClientError.constructingUrl
         }
 

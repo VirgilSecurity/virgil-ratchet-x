@@ -130,6 +130,7 @@ excluded:
   - Carthage
   - Tests
   - RatchetTestApp iOS
+  - RatchetTestApp tvOS
 
 warning_threshold: 15
 

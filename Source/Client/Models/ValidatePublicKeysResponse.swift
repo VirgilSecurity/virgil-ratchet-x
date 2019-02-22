@@ -46,8 +46,8 @@ import Foundation
 
     /// Defines coding keys for encoding and decoding
     private enum CodingKeys: String, CodingKey {
-        case usedLongTermKeyId = "long_term_key_id"
-        case usedOneTimeKeysIds = "one_time_keys_ids"
+        case usedLongTermKeyId = "used_long_term_key_id"
+        case usedOneTimeKeysIds = "used_one_time_keys_ids"
     }
 
     internal init(usedLongTermKeyId: Data?, usedOneTimeKeysIds: [Data]) {
