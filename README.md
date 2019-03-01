@@ -12,10 +12,10 @@
 
 <a href="https://developer.virgilsecurity.com/docs"><img width="230px" src="https://cdn.virgilsecurity.com/assets/images/github/logos/virgil-logo-red.png" align="left" hspace="10" vspace="6"></a> [Virgil Security](https://virgilsecurity.com) provides a set of APIs for adding security to any application.
 
-The Virgil Ratchet SDK allows developers to 
+The Virgil Ratchet SDK allows developers to get up and running with the [Virgil PFS Service][_pfs_service] and add the [Perfect Forward Secrecy][_pfs_reference_api] (PFS) technologies to their digital solutions to protect previously intercepted traffic from being decrypted even if the main Private Key is compromised.
 
 # SDK Features
-- communicate with [Virgil ____ Service][]
+- communicate with [Virgil PFS Service][_pfs_service]
 - manage users' OTC and LTC cards
 - use Virgil [Crypto library][_virgil_crypto]
 
@@ -36,7 +36,7 @@ $ gem install cocoapods
 To integrate Virgil Ratchet SDK into your Xcode project using CocoaPods, specify it in your *Podfile*:
 
 ```bash
--
+*snippet required*
 ```
 
 Then, run the following command:
@@ -58,7 +58,7 @@ To integrate Virgil Ratchet SDK (?) into your Xcode project using Carthage, perf
 * Add the following line to your Cartfile:
 
 ```
--
+*snippet required*
 ```
 
 * Run carthage update. This will fetch dependencies into a Carthage/Checkouts folder inside your project's folder, then build each one or download a pre-compiled framework.
@@ -72,7 +72,7 @@ To integrate Virgil Ratchet SDK (?) into your Xcode project using Carthage, perf
 and add the paths to the frameworks you want to use under “Input Files”, e.g.:
 
 ```
--
+*snippet required*
 ```
 
 ## Initialization
@@ -85,7 +85,7 @@ To initialize the SWIFT Ratchet SDK at the __Client Side__, you need only the __
 The Access Token helps to authenticate client's requests.
 
 ```swift
-let virgil = VSSVirgilApi(token: "[YOUR_ACCESS_TOKEN_HERE]")
+*snippet required*
 ```
 
 
@@ -97,138 +97,37 @@ If you have no Virgil Card yet, you can easily create it with our [guide](#regis
 To begin communicating with PFS technology, every user must run the initialization:
 
 ```swift
-// initialize Virgil crypto instance
-// enter User's credentials to create OTC and LTC Cards
-let secureChatPreferences = SecureChatPreferences (
-    crypto: "[CRYPTO]", // (e.g. VSSCrypto())
-    identityPrivateKey: bobKey.privateKey,
-    identityCard: bobCard.card!,
-    accessToken: "[YOUR_ACCESS_TOKEN_HERE]")
-
-// this class performs all PFS-technology logic: creates LTC and OTL Cards, publishes them, etc.
-self.secureChat = SecureChat(preferences: secureChatPreferences)
-
-try self.secureChat.initialize()
-
-// the method is periodically called to:
-// - check availability of user's OTC Cards on the service
-// - add new Cards till their quantity reaches the number (100) noted in current method
-self.secureChat.rotateKeys(desiredNumberOfCards: 100) { error in
-    //...
-}
+*snippet required*
 ```
 
 Then Sender establishes a secure PFS conversation with Receiver, encrypts and sends the message:
 
 ```swift
-func sendMessage(forReceiver receiver: User, message: String) {
-    guard let session = self.chat.activeSession(
-        withParticipantWithCardId: receiver.card.identifier) else {
-        // start new session with recipient if session wasn't initialized yet
-        self.chat.startNewSession(
-            withRecipientWithCard: receiver.card) { session, error in
-
-            guard error == nil, let session = session else {
-                // Error handling
-                return
-            }
-
-            // get an active session by recipient's Card ID
-            self.sendMessage(forReceiver: receiver,
-                usingSession: session, message: message)
-        }
-        return
-    }
-
-    self.sendMessage(forReceiver: receiver,
-        usingSession: session, message: message)
-}
-
-func sendMessage(forReceiver receiver: User,
-    usingSession session: SecureSession, message: String) {
-    let ciphertext: String
-    do {
-        // encrypt the message using previously initialized session
-        ciphertext = try session.encrypt(message)
-    }
-    catch {
-        // Error handling
-        return
-    }
-
-    // send a cipher message to recipient using your messaging service
-    self.messenger.sendMessage(
-        forReceiverWithName: receiver.name, text: ciphertext)
-}
+*snippet required*
 ```
 
 Receiver decrypts the incoming message using the conversation he has just created:
 
 ```swift
-func messageReceived(fromSenderWithName senderName: String, message: String) {
-    guard let sender = self.users.first(where: { $0.name == senderName }) else {
-        // User not found
-        return
-    }
-
-    self.receiveMessage(fromSender: sender, message: message)
-}
-
-func receiveMessage(fromSender sender: User, message: String) {
-    do {
-        let session = try self.chat.loadUpSession(
-            withParticipantWithCard: sender.card, message: message)
-
-        // decrypt message using established session
-        let plaintext = try session.decrypt(message)
-
-        // show a message to the user
-        print(plaintext)
-    }
-    catch {
-        // Error handling
-    }
-}
+*snippet required*
 ```
 
 With the open session, which works in both directions, Sender and Receiver can continue PFS-encrypted communication.
-
-Take a look at our [Use Case][_use_case_pfs] to see the whole scenario of the PFS-encrypted communication.
-
 
 ## Register Users
 
 In Virgil every user has a **Private Key** and represented with a **Virgil Card (Identity Card)**, which contains a Public Key and user's identity.
 
 Using Identity Cards, we generate special Cards that have their own life-time:
-* **One-time Card (OTC)**
-* **Long-time Card (LTC)**
+* **One-time Key (OTK)**
+* **Long-time Key (LTK)**
 
-For each session you can use new OTC and delete it after session is finished.
+For each session you can use new OTK and delete it after session is finished.
 
 To create user's Identity Virgil Cards, use the following code:
 
 ```swift
-// generate a new Virgil Key
-let aliceKey = virgil.keys.generateKey()
-
-// save the Virgil Key into storage
-try! aliceKey.store(withName: @"[KEY_NAME]",
-  password: @"[KEY_PASSWORD]")
-
-// create identity for Alice
-let aliceIdentity = virgil.identities.
-  createUserIdentity(withValue: "alice", type: "name")
-
-// create a Virgil Card
-var aliceCard = try! virgil.cards.
-  createCard(with: aliceIdentity, ownerKey:aliceKey)
-
-// export a Virgil Card to string
-let exportedCard = aliceCard.exportData()
-
-// transmit the Virgil Card to the server and receive response
-let cardData = TransmitToServer(exportedCard)
+*snippet required*
 ```
 
 When Virgil Card created, sign and publish it with Application Private Virgil Key at the server side.
@@ -240,8 +139,7 @@ We recommend using one of the supported languages with this [guide](https://deve
 
 Virgil Security has a powerful set of APIs and the documentation to help you get started:
 
-* -
-* -
+* [Perfect Forwad Secrecy][_use_case_pfs]
 
 To find more examples how to use Virgil Products, take a look at [SWIFT SDK documentation](https://github.com/VirgilSecurity/virgil-sdk-x/blob/v5/README.md).
 
@@ -257,7 +155,7 @@ You can find us on [Twitter](https://twitter.com/VirgilSecurity) or send us emai
 Also, get extra help from our support team on [Slack](https://virgilsecurity.com/join-community).
 
 
-
+[_pfs_service]: https://developer.virgilsecurity.com/docs/api-reference/pfs-service/v4
 [_sdk_x]: https://github.com/VirgilSecurity/virgil-sdk-x/tree/v5
 
 [_dashboard]: https://dashboard.virgilsecurity.com/
