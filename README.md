@@ -10,13 +10,17 @@
 
 ## Introduction
 
-<a href="https://developer.virgilsecurity.com/docs"><img width="230px" src="https://cdn.virgilsecurity.com/assets/images/github/logos/virgil-logo-red.png" align="left" hspace="10" vspace="6"></a> [Virgil Security](https://virgilsecurity.com) provides a set of APIs for adding security to any application.
+<a href="https://developer.virgilsecurity.com/docs"><img width="230px" src="https://cdn.virgilsecurity.com/assets/images/github/logos/virgil-logo-red.png" align="left" hspace="10" vspace="6"></a> [Virgil Security](https://virgilsecurity.com) provides a set of services and open source libraries for adding security to any application.
+Virgil Security is presenting an implementation of the [Double Ratchet](https://signal.org/docs/specifications/doubleratchet/) algorithm, which is used by parties to exchange encrypted messages based on a shared secret key. The implementation includes:
+- **[Virgil Perfect Forward Secrecy (PFS) service][_pfs_service]** – a standalone web-service that is dedicated to managing one-time keys and long-time keys that are based on their Identity Public Keys (public keys that are contained in user cards published on Virgil Cards service);
+- **Ratchet SDK** – interacts with PFS service for publishing and managing one-time keys and long-time keys and interacts with Virgil Cards service for retrieving user's indentity cards which the OTK and LTK are based on. The parties derive new keys for every Double Ratchet message so that previous private keys cannot be calculated from new ones. The parties that participate in the communication also send Diffie-Hellman public values attached to their messages. The results of Diffie-Hellman calculations are mixed into the derived keys so that the new private keys cannot be calculated from the previous ones.
 
-The Virgil Ratchet SDK allows developers to get up and running with the [Virgil PFS Service][_pfs_service] and add the [Perfect Forward Secrecy][_pfs_reference_api] (PFS) technologies to their digital solutions to protect previously intercepted traffic from being decrypted even if the main Private Key is compromised.
+Following this, the parties will use the Double Ratchet SDK to initialize chat session and send and receive encrypted messages. And as a result, by adding Virgil Perfect Forward Secrecy (PFS) to your encrypted communication you prevent a possibly compromised user's long time private key (private key) from affecting the confidentiality of past communications.
+
 
 # SDK Features
 - communicate with [Virgil PFS Service][_pfs_service]
-- manage users' OTC and LTC cards
+- manage users' OTK and LTK keys
 - use Virgil [Crypto library][_virgil_crypto]
 
 ## Installation
@@ -79,20 +83,20 @@ and add the paths to the frameworks you want to use under “Input Files”, e.g
 
 > Virgil SWIFT Ratchet SDK is suitable only for Client Side. 
 
-Make sure that you have already registered at the [Developer Dashboard][_dashboard] and created your application.
+Make sure that you have already registered at the [Virgil Dashboard][_dashboard] and created an E2EE V5 application.
 
-To initialize the SWIFT Ratchet SDK at the __Client Side__, you need only the __Access Token__ created for a client at [Dashboard][_dashboard].
-The Access Token helps to authenticate client's requests.
+To initialize the SWIFT Ratchet SDK at the __Client Side__, you need only the __JWT Token__ created for a client at [Dashboard][_dashboard].
+The JWT Token helps to authenticate client's requests.
 
 ```swift
 *snippet required*
 ```
 
+Before the chat initialization, each user must have a Virgil Card on Virgil Card Service.
+If you have no Virgil Card yet, you can easily create it with our [guide](#register-users).
+
 
 ## Chat Example
-
-Before chat initialization, each user must have a Virgil Card on Virgil Card Service.
-If you have no Virgil Card yet, you can easily create it with our [guide](#register-users).
 
 To begin communicating with PFS technology, every user must run the initialization:
 
@@ -124,22 +128,19 @@ Using Identity Cards, we generate special Cards that have their own life-time:
 
 For each session you can use new OTK and delete it after session is finished.
 
-To create user's Identity Virgil Cards, use the following code:
-
-```swift
-*snippet required*
-```
+To create user's Identity Virgil Cards, you can use the following code from [this guide](https://developer.virgilsecurity.com/docs/how-to).
 
 When Virgil Card created, sign and publish it with Application Private Virgil Key at the server side.
 
 SWIFT is not supported for publishing Virgil Cards on Virgil Services.
-We recommend using one of the supported languages with this [guide](https://developer.virgilsecurity.com/docs/go/how-to/public-key-management/v4/create-card).
+We recommend using one of the supported languages with this [guide](https://developer.virgilsecurity.com/docs/how-to/public-key-management/v5/create-card).
 
 ## Docs
 
 Virgil Security has a powerful set of APIs and the documentation to help you get started:
 
 * [Perfect Forwad Secrecy][_use_case_pfs]
+* [How to publish user's cards](https://developer.virgilsecurity.com/docs/how-to)
 
 To find more examples how to use Virgil Products, take a look at [SWIFT SDK documentation](https://github.com/VirgilSecurity/virgil-sdk-x/blob/v5/README.md).
 
