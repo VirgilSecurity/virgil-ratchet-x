@@ -35,9 +35,9 @@
 //
 
 import Foundation
-import VirgilCryptoApiImpl
 import VirgilSDK
 import VirgilCryptoRatchet
+import VirgilCrypto
 
 /// KeysRotator errors
 ///
@@ -48,7 +48,7 @@ public enum KeysRotatorError: Int, Error {
 
 /// Default implementation of KeysRotatorProtocol
 public class KeysRotator: KeysRotatorProtocol {
-    private let crypto = VirgilCrypto(defaultKeyType: .FAST_EC_X25519, useSHA256Fingerprints: false)
+    private let crypto: VirgilCrypto
     private let identityPrivateKey: VirgilPrivateKey
     private let identityCardId: String
     private let orphanedOneTimeKeyTtl: TimeInterval
@@ -64,6 +64,7 @@ public class KeysRotator: KeysRotatorProtocol {
     /// Initializer
     ///
     /// - Parameters:
+    ///   - crypto: VirgilCrypto instance
     ///   - identityPrivateKey: identity private key
     ///   - identityCardId: identity card id
     ///   - orphanedOneTimeKeyTtl: time that one-time key lives in the storage after been marked as orphaned. Seconds
@@ -73,7 +74,8 @@ public class KeysRotator: KeysRotatorProtocol {
     ///   - longTermKeysStorage: long-term keys storage
     ///   - oneTimeKeysStorage: one-time keys storage
     ///   - client: RatchetClient
-    public init(identityPrivateKey: VirgilPrivateKey,
+    public init(crypto: VirgilCrypto,
+                identityPrivateKey: VirgilPrivateKey,
                 identityCardId: String,
                 orphanedOneTimeKeyTtl: TimeInterval,
                 longTermKeyTtl: TimeInterval,
@@ -82,6 +84,7 @@ public class KeysRotator: KeysRotatorProtocol {
                 longTermKeysStorage: LongTermKeysStorage,
                 oneTimeKeysStorage: OneTimeKeysStorage,
                 client: RatchetClientProtocol) {
+        self.crypto = crypto
         self.identityPrivateKey = identityPrivateKey
         self.identityCardId = identityCardId
         self.orphanedOneTimeKeyTtl = orphanedOneTimeKeyTtl
@@ -236,9 +239,9 @@ public class KeysRotator: KeysRotatorProtocol {
                 let longTermSignedPublicKey: SignedPublicKey?
                 if rotateLongTermKey {
                     Log.debug("Rotating long-term key")
-                    let longTermKeyPair = try self.crypto.generateKeyPair()
-                    let longTermPrivateKey = self.crypto.exportPrivateKey(longTermKeyPair.privateKey)
-                    let longTermPublicKey = self.crypto.exportPublicKey(longTermKeyPair.publicKey)
+                    let longTermKeyPair = try self.crypto.generateKeyPair(ofType: .curve25519)
+                    let longTermPrivateKey = try self.crypto.exportPrivateKey(longTermKeyPair.privateKey)
+                    let longTermPublicKey = try self.crypto.exportPublicKey(longTermKeyPair.publicKey)
                     let longTermKeyId = try self.keyUtils.computePublicKeyId(publicKey: longTermPublicKey)
                     _ = try self.longTermKeysStorage.storeKey(longTermPrivateKey,
                                                               withId: longTermKeyId)
@@ -257,13 +260,12 @@ public class KeysRotator: KeysRotatorProtocol {
                 Log.debug("Generating \(numbOfOneTimeKeysToGen) one-time keys")
                 let oneTimePublicKeys: [Data]
                 if numbOfOneTimeKeysToGen > 0 {
-                    let keyPairs = try self.crypto.generateMultipleKeyPairs(numberOfKeyPairs: numbOfOneTimeKeysToGen)
-
                     var publicKeys = [Data]()
                     publicKeys.reserveCapacity(Int(numbOfOneTimeKeysToGen))
-                    for keyPair in keyPairs {
-                        let oneTimePrivateKey = self.crypto.exportPrivateKey(keyPair.privateKey)
-                        let oneTimePublicKey = self.crypto.exportPublicKey(keyPair.publicKey)
+                    for _ in 0..<numbOfOneTimeKeysToGen {
+                        let keyPair = try self.crypto.generateKeyPair(ofType: .curve25519)
+                        let oneTimePrivateKey = try self.crypto.exportPrivateKey(keyPair.privateKey)
+                        let oneTimePublicKey = try self.crypto.exportPublicKey(keyPair.publicKey)
                         let keyId = try self.keyUtils.computePublicKeyId(publicKey: oneTimePublicKey)
                         _ = try self.oneTimeKeysStorage.storeKey(oneTimePrivateKey, withId: keyId)
 

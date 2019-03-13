@@ -36,7 +36,7 @@
 
 import XCTest
 import VirgilSDK
-import VirgilCryptoApiImpl
+import VirgilCrypto
 import VSCRatchet
 @testable import VirgilSDKRatchet
 
@@ -53,25 +53,25 @@ class SecureSessionTests: XCTestCase {
     private func initChat() -> (Card, Card, SecureChat, SecureChat) {
         let testConfig = TestConfig.readFromBundle()
         
-        let crypto = VirgilCrypto()
-        let receiverIdentityKeyPair = try! crypto.generateKeyPair(ofType: .FAST_EC_ED25519)
-        let senderIdentityKeyPair = try! crypto.generateKeyPair(ofType: .FAST_EC_ED25519)
+        let crypto = try! VirgilCrypto()
+        let receiverIdentityKeyPair = try! crypto.generateKeyPair(ofType: .ed25519)
+        let senderIdentityKeyPair = try! crypto.generateKeyPair(ofType: .ed25519)
         
         let senderIdentity = NSUUID().uuidString
         let receiverIdentity = NSUUID().uuidString
         
         let receiverTokenProvider = CallbackJwtProvider(getJwtCallback: { context, completion in
-            let privateKey = try! crypto.importPrivateKey(from: Data(base64Encoded: testConfig.ApiPrivateKey)!)
+            let privateKey = try! crypto.importPrivateKey(from: Data(base64Encoded: testConfig.ApiPrivateKey)!).privateKey
             
-            let generator = JwtGenerator(apiKey: privateKey, apiPublicKeyIdentifier: testConfig.ApiPublicKeyId, accessTokenSigner: VirgilAccessTokenSigner(), appId: testConfig.AppId, ttl: 10050)
+            let generator = JwtGenerator(apiKey: privateKey, apiPublicKeyIdentifier: testConfig.ApiPublicKeyId, accessTokenSigner: VirgilAccessTokenSigner(virgilCrypto: crypto), appId: testConfig.AppId, ttl: 10050)
             
             completion(try! generator.generateToken(identity: receiverIdentity), nil)
         })
         
         let senderTokenProvider = CallbackJwtProvider(getJwtCallback: { context, completion in
-            let privateKey = try! crypto.importPrivateKey(from: Data(base64Encoded: testConfig.ApiPrivateKey)!)
+            let privateKey = try! crypto.importPrivateKey(from: Data(base64Encoded: testConfig.ApiPrivateKey)!).privateKey
             
-            let generator = JwtGenerator(apiKey: privateKey, apiPublicKeyIdentifier: testConfig.ApiPublicKeyId, accessTokenSigner: VirgilAccessTokenSigner(), appId: testConfig.AppId, ttl: 10050)
+            let generator = JwtGenerator(apiKey: privateKey, apiPublicKeyIdentifier: testConfig.ApiPublicKeyId, accessTokenSigner: VirgilAccessTokenSigner(virgilCrypto: crypto), appId: testConfig.AppId, ttl: 10050)
             
             completion(try! generator.generateToken(identity: senderIdentity), nil)
         })
@@ -79,12 +79,12 @@ class SecureSessionTests: XCTestCase {
         let cardVerifier = PositiveCardVerifier()
         let ramCardClient = RamCardClient()
         
-        let senderCardManagerParams = CardManagerParams(cardCrypto: VirgilCardCrypto(), accessTokenProvider: senderTokenProvider, cardVerifier: cardVerifier)
+        let senderCardManagerParams = CardManagerParams(cardCrypto: VirgilCardCrypto(virgilCrypto: crypto), accessTokenProvider: senderTokenProvider, cardVerifier: cardVerifier)
         senderCardManagerParams.cardClient = ramCardClient
         
         let senderCardManager = CardManager(params: senderCardManagerParams)
         
-        let receiverCardManagerParams = CardManagerParams(cardCrypto: VirgilCardCrypto(), accessTokenProvider: receiverTokenProvider, cardVerifier: cardVerifier)
+        let receiverCardManagerParams = CardManagerParams(cardCrypto: VirgilCardCrypto(virgilCrypto: crypto), accessTokenProvider: receiverTokenProvider, cardVerifier: cardVerifier)
         receiverCardManagerParams.cardClient = ramCardClient
         
         let receiverCardManager = CardManager(params: receiverCardManagerParams)
@@ -97,7 +97,8 @@ class SecureSessionTests: XCTestCase {
         
         let fakeClient = RamClient(cardManager: receiverCardManager)
         
-        let senderSecureChat = SecureChat(identityPrivateKey: senderIdentityKeyPair.privateKey,
+        let senderSecureChat = SecureChat(crypto: crypto,
+                                          identityPrivateKey: senderIdentityKeyPair.privateKey,
                                           accessTokenProvider: senderTokenProvider,
                                           client: fakeClient,
                                           longTermKeysStorage: RamLongTermKeysStorage(db: [:]),
@@ -105,9 +106,10 @@ class SecureSessionTests: XCTestCase {
                                           sessionStorage: RamSessionStorage(),
                                           keysRotator: FakeKeysRotator())
         
-        let receiverKeysRotator = KeysRotator(identityPrivateKey: receiverIdentityKeyPair.privateKey, identityCardId: receiverCard.identifier, orphanedOneTimeKeyTtl: 100, longTermKeyTtl: 100, outdatedLongTermKeyTtl: 100, desiredNumberOfOneTimeKeys: 10, longTermKeysStorage: receiverLongTermKeysStorage, oneTimeKeysStorage: receiverOneTimeKeysStorage, client: fakeClient)
+        let receiverKeysRotator = KeysRotator(crypto: crypto, identityPrivateKey: receiverIdentityKeyPair.privateKey, identityCardId: receiverCard.identifier, orphanedOneTimeKeyTtl: 100, longTermKeyTtl: 100, outdatedLongTermKeyTtl: 100, desiredNumberOfOneTimeKeys: 10, longTermKeysStorage: receiverLongTermKeysStorage, oneTimeKeysStorage: receiverOneTimeKeysStorage, client: fakeClient)
         
-        let receiverSecureChat = SecureChat(identityPrivateKey: receiverIdentityKeyPair.privateKey,
+        let receiverSecureChat = SecureChat(crypto: crypto,
+                                            identityPrivateKey: receiverIdentityKeyPair.privateKey,
                                             accessTokenProvider: receiverTokenProvider,
                                             client: fakeClient,
                                             longTermKeysStorage: receiverLongTermKeysStorage,
@@ -158,5 +160,54 @@ class SecureSessionTests: XCTestCase {
         XCTAssert(decryptedMessage == plainText)
         
         Utils.encryptDecrypt100TimesRestored(senderSecureChat: senderSecureChat, senderIdentity: senderCard.identity, receiverSecureChat: receiverSecureChat, receiverIdentity: receiverCard.identity)
+    }
+    
+    func test3__session_persistence__recreate_session__should_throw_error() {
+        let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = self.initChat()
+        
+        _ = try! receiverSecureChat.rotateKeys().startSync().getResult()
+        
+        let senderSession = try! senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().getResult()
+        
+        let plainText = UUID().uuidString
+        let cipherText = try! senderSession.encrypt(string: plainText)
+        
+        _ = try! receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, ratchetMessage: cipherText)
+        
+        do {
+            _ = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().getResult()
+            XCTFail()
+        }
+        catch SecureChatError.sessionAlreadyExists { }
+        catch {
+            XCTFail()
+        }
+        
+        do {
+            _ = try senderSecureChat.startNewSessionAsReceiver(senderCard: receiverCard, ratchetMessage: cipherText)
+            XCTFail()
+        }
+        catch SecureChatError.sessionAlreadyExists { }
+        catch {
+            XCTFail()
+        }
+        
+        do {
+            _ = try receiverSecureChat.startNewSessionAsSender(receiverCard: senderCard).startSync().getResult()
+            XCTFail()
+        }
+        catch SecureChatError.sessionAlreadyExists { }
+        catch {
+            XCTFail()
+        }
+        
+        do {
+            _ = try receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, ratchetMessage: cipherText)
+            XCTFail()
+        }
+        catch SecureChatError.sessionAlreadyExists { }
+        catch {
+            XCTFail()
+        }
     }
 }

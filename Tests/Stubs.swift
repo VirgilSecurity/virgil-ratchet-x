@@ -36,7 +36,7 @@
 
 import Foundation
 import VirgilSDK
-import VirgilCryptoApiImpl
+import VirgilCrypto
 import VirgilCryptoRatchet
 import VirgilCryptoFoundation
 @testable import VirgilSDKRatchet
@@ -164,7 +164,7 @@ class RamClient: RatchetClientProtocol {
     
     private let keyUtils = RatchetKeyUtils()
     private let cardManager: CardManager
-    private let crypto = VirgilCrypto()
+    private let crypto = try! VirgilCrypto()
     var users: [String: UserStore] = [:]
     
     init(cardManager: CardManager) {
@@ -182,7 +182,7 @@ class RamClient: RatchetClientProtocol {
         if let identityCardId = identityCardId {
             let card = try self.cardManager.getCard(withId: identityCardId).startSync().getResult()
             publicKey = card.publicKey as! VirgilPublicKey
-            userStore.identityPublicKey = (publicKey, self.crypto.exportPublicKey(publicKey))
+            userStore.identityPublicKey = (publicKey, try! self.crypto.exportPublicKey(publicKey))
         }
         else {
             guard let existingIdentityPublicKey = userStore.identityPublicKey else {
@@ -193,7 +193,7 @@ class RamClient: RatchetClientProtocol {
         }
         
         if let longTermPublicKey = longTermPublicKey {
-            guard crypto.verifySignature(longTermPublicKey.signature, of: longTermPublicKey.publicKey, with: publicKey) else {
+            guard try! crypto.verifySignature(longTermPublicKey.signature, of: longTermPublicKey.publicKey, with: publicKey) else {
                 throw NSError()
             }
             
@@ -281,7 +281,7 @@ class FakeKeysRotator: KeysRotatorProtocol {
 }
 
 class RamCardClient: CardClientProtocol {
-    let crypto = VirgilCrypto()
+    let crypto = try! VirgilCrypto()
     private var cards: [String: RawSignedModel] = [:]
     
     func getCard(withId cardId: String, token: String) throws -> GetCardResponse {
@@ -293,7 +293,7 @@ class RamCardClient: CardClientProtocol {
     }
     
     func publishCard(model: RawSignedModel, token: String) throws -> RawSignedModel {
-        let cardId = self.crypto.computeHash(for: model.contentSnapshot, using: .SHA512).subdata(in: 0..<32).hexEncodedString()
+        let cardId = self.crypto.computeHash(for: model.contentSnapshot, using: .sha512).subdata(in: 0..<32).hexEncodedString()
         
         self.cards[cardId] = model
         

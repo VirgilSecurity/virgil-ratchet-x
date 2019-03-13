@@ -38,7 +38,7 @@ import Foundation
 import VirgilSDK
 import VirgilCryptoRatchet
 import VirgilCryptoFoundation
-import VirgilCryptoApiImpl
+import VirgilCrypto
 
 /// SecureChat errors
 ///
@@ -64,7 +64,7 @@ import VirgilCryptoApiImpl
     @objc public let identityPrivateKey: VirgilPrivateKey
 
     /// Crypto
-    @objc public let crypto = VirgilCrypto()
+    @objc public let crypto: VirgilCrypto
 
     /// Long-term keys storage
     @objc public let longTermKeysStorage: LongTermKeysStorage
@@ -87,6 +87,7 @@ import VirgilCryptoApiImpl
     /// - Throws:
     ///         - Rethrows from KeychainLongTermKeysStorage
     @objc public convenience init(context: SecureChatContext) throws {
+        let crypto = try VirgilCrypto()
         let client = RatchetClient()
 
         let params: KeychainStorageParams?
@@ -100,7 +101,8 @@ import VirgilCryptoApiImpl
         let longTermKeysStorage = try KeychainLongTermKeysStorage(identity: context.identity, params: params)
         let oneTimeKeysStorage = FileOneTimeKeysStorage(identity: context.identity)
         let sessionStorage = FileSessionStorage(identity: context.identity)
-        let keysRotator = KeysRotator(identityPrivateKey: context.identityPrivateKey,
+        let keysRotator = KeysRotator(crypto: crypto,
+                                      identityPrivateKey: context.identityPrivateKey,
                                       identityCardId: context.identityCardId,
                                       orphanedOneTimeKeyTtl: context.orphanedOneTimeKeyTtl,
                                       longTermKeyTtl: context.longTermKeyTtl,
@@ -110,7 +112,8 @@ import VirgilCryptoApiImpl
                                       oneTimeKeysStorage: oneTimeKeysStorage,
                                       client: client)
 
-        self.init(identityPrivateKey: context.identityPrivateKey,
+        self.init(crypto: crypto,
+                  identityPrivateKey: context.identityPrivateKey,
                   accessTokenProvider: context.accessTokenProvider,
                   client: client,
                   longTermKeysStorage: longTermKeysStorage,
@@ -129,13 +132,15 @@ import VirgilCryptoApiImpl
     ///   - oneTimeKeysStorage: one-time keys storage
     ///   - sessionStorage: session storage
     ///   - keysRotator: keys rotation
-    public init(identityPrivateKey: VirgilPrivateKey,
+    public init(crypto: VirgilCrypto,
+                identityPrivateKey: VirgilPrivateKey,
                 accessTokenProvider: AccessTokenProvider,
                 client: RatchetClientProtocol,
                 longTermKeysStorage: LongTermKeysStorage,
                 oneTimeKeysStorage: OneTimeKeysStorage,
                 sessionStorage: SessionStorage,
                 keysRotator: KeysRotatorProtocol) {
+        self.crypto = crypto
         self.identityPrivateKey = identityPrivateKey
         self.accessTokenProvider = accessTokenProvider
         self.client = client
@@ -268,11 +273,11 @@ import VirgilCryptoApiImpl
                     throw SecureChatError.wrongIdentityPublicKeyCrypto
                 }
 
-                guard self.crypto.exportPublicKey(identityPublicKey) == publicKeySet.identityPublicKey else {
+                guard try self.crypto.exportPublicKey(identityPublicKey) == publicKeySet.identityPublicKey else {
                     throw SecureChatError.identityKeyDoesntMatch
                 }
 
-                guard self.crypto.verifySignature(publicKeySet.longTermPublicKey.signature,
+                guard try self.crypto.verifySignature(publicKeySet.longTermPublicKey.signature,
                                                   of: publicKeySet.longTermPublicKey.publicKey,
                                                   with: identityPublicKey) else {
                     throw SecureChatError.invalidLongTermKeySignature
@@ -282,9 +287,10 @@ import VirgilCryptoApiImpl
                     Log.error("Creating weak session with \(receiverCard.identity)")
                 }
 
-                let privateKeyData = self.crypto.exportPrivateKey(self.identityPrivateKey)
+                let privateKeyData = try self.crypto.exportPrivateKey(self.identityPrivateKey)
 
-                let session = try SecureSession(sessionStorage: self.sessionStorage,
+                let session = try SecureSession(crypto: self.crypto,
+                                                sessionStorage: self.sessionStorage,
                                                 participantIdentity: receiverCard.identity,
                                                 senderIdentityPrivateKey: privateKeyData,
                                                 receiverIdentityPublicKey: publicKeySet.identityPublicKey,
@@ -319,10 +325,10 @@ import VirgilCryptoApiImpl
                     try? self.oneTimeKeysStorage.stopInteraction()
                 }
 
-                let keyPair = try self.crypto.generateKeyPair(ofType: .FAST_EC_X25519)
+                let keyPair = try self.crypto.generateKeyPair(ofType: .curve25519)
 
-                let oneTimePrivateKey = self.crypto.exportPrivateKey(keyPair.privateKey)
-                oneTimePublicKey = self.crypto.exportPublicKey(keyPair.publicKey)
+                let oneTimePrivateKey = try self.crypto.exportPrivateKey(keyPair.privateKey)
+                oneTimePublicKey = try self.crypto.exportPublicKey(keyPair.publicKey)
                 let keyId = try self.keyUtils.computePublicKeyId(publicKey: oneTimePublicKey)
 
                 _ = try self.oneTimeKeysStorage.storeKey(oneTimePrivateKey, withId: keyId)
@@ -414,7 +420,8 @@ import VirgilCryptoApiImpl
             }
         }
 
-        let session = try SecureSession(sessionStorage: self.sessionStorage,
+        let session = try SecureSession(crypto: self.crypto,
+                                        sessionStorage: self.sessionStorage,
                                         participantIdentity: senderCard.identity,
                                         receiverIdentityPrivateKey: self.identityPrivateKey,
                                         receiverLongTermPrivateKey: receiverLongTermPrivateKey,

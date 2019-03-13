@@ -35,7 +35,7 @@
 //
 
 import Foundation
-import VirgilCryptoApiImpl
+import VirgilCrypto
 import VirgilSDK
 
 /// SecureChat context

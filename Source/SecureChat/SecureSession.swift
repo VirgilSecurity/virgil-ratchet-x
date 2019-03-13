@@ -35,8 +35,8 @@
 //
 
 import Foundation
+import VirgilCrypto
 import VirgilCryptoRatchet
-import VirgilCryptoApiImpl
 
 /// SecureSession errors
 ///
@@ -52,7 +52,7 @@ import VirgilCryptoApiImpl
     @objc public let participantIdentity: String
 
     /// Crypto
-    @objc public let crypto = VirgilCrypto()
+    @objc public let crypto: VirgilCrypto
 
     /// SessionStorage
     @objc public let sessionStorage: SessionStorage
@@ -61,13 +61,15 @@ import VirgilCryptoApiImpl
     private let queue = DispatchQueue(label: "SecureSessionQueue")
 
     // As receiver
-    internal init(sessionStorage: SessionStorage,
+    internal init(crypto: VirgilCrypto,
+                  sessionStorage: SessionStorage,
                   participantIdentity: String,
                   receiverIdentityPrivateKey: VirgilPrivateKey,
                   receiverLongTermPrivateKey: LongTermKey,
                   receiverOneTimePrivateKey: OneTimeKey?,
                   senderIdentityPublicKey: Data,
                   ratchetMessage: RatchetMessage) throws {
+        self.crypto = crypto
         self.sessionStorage = sessionStorage
         self.participantIdentity = participantIdentity
 
@@ -86,12 +88,14 @@ import VirgilCryptoApiImpl
     }
 
     // As sender
-    internal init(sessionStorage: SessionStorage,
+    internal init(crypto: VirgilCrypto,
+                  sessionStorage: SessionStorage,
                   participantIdentity: String,
                   senderIdentityPrivateKey: Data,
                   receiverIdentityPublicKey: Data,
                   receiverLongTermPublicKey: Data,
                   receiverOneTimePublicKey: Data?) throws {
+        self.crypto = crypto
         self.sessionStorage = sessionStorage
         self.participantIdentity = participantIdentity
 
@@ -133,10 +137,7 @@ import VirgilCryptoApiImpl
     ///         - Rethrows from SessionStorage
     public func encrypt(data: Data) throws -> RatchetMessage {
         return try self.queue.sync {
-            let errCtx = ErrorCtx()
-            let msg = self.ratchetSession.encrypt(plainText: data, errCtx: errCtx)
-
-            try errCtx.error()
+            let msg = try self.ratchetSession.encrypt(plainText: data)
 
             try self.sessionStorage.storeSession(self)
 
@@ -187,12 +188,9 @@ import VirgilCryptoApiImpl
     ///   - sessionStorage: SessionStorage
     /// - Throws: Rethrows from SessionStorage
     public init(data: Data, participantIdentity: String, sessionStorage: SessionStorage) throws {
-        let errCtx = ErrorCtx()
-
-        self.ratchetSession = RatchetSession.deserialize(input: data, errCtx: errCtx)
+        self.crypto = try VirgilCrypto()
+        self.ratchetSession = try RatchetSession.deserialize(input: data)
         self.ratchetSession.setupDefaults()
-
-        try errCtx.error()
 
         self.sessionStorage = sessionStorage
         self.participantIdentity = participantIdentity

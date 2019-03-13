@@ -37,7 +37,7 @@
 import Foundation
 import XCTest
 import VirgilSDK
-import VirgilCryptoApiImpl
+import VirgilCrypto
 import VirgilCryptoRatchet
 import VirgilCryptoFoundation
 @testable import VirgilSDKRatchet
@@ -50,23 +50,23 @@ class ClientTests: XCTestCase {
         
         let client = RatchetClient(serviceUrl: URL(string: testConfig.ServiceURL)!)
         
-        let crypto = VirgilCrypto()
-        let identityKeyPair = try! crypto.generateKeyPair(ofType: .FAST_EC_ED25519)
+        let crypto = try! VirgilCrypto()
+        let identityKeyPair = try! crypto.generateKeyPair(ofType: .ed25519)
         
         let identity = NSUUID().uuidString
         
-        let privateKey = try! crypto.importPrivateKey(from: Data(base64Encoded: testConfig.ApiPrivateKey)!)
+        let privateKey = try! crypto.importPrivateKey(from: Data(base64Encoded: testConfig.ApiPrivateKey)!).privateKey
         
-        let generator = JwtGenerator(apiKey: privateKey, apiPublicKeyIdentifier: testConfig.ApiPublicKeyId, accessTokenSigner: VirgilAccessTokenSigner(), appId: testConfig.AppId, ttl: 10050)
+        let generator = JwtGenerator(apiKey: privateKey, apiPublicKeyIdentifier: testConfig.ApiPublicKeyId, accessTokenSigner: VirgilAccessTokenSigner(virgilCrypto: crypto), appId: testConfig.AppId, ttl: 10050)
         
         let tokenProvider = CachingJwtProvider(renewJwtCallback: { context, completion in
             completion(try! generator.generateToken(identity: identity), nil)
         })
         
-        let cardVerifier = VirgilCardVerifier(cardCrypto: VirgilCardCrypto())!
+        let cardVerifier = VirgilCardVerifier(cardCrypto: VirgilCardCrypto(virgilCrypto: crypto))!
         cardVerifier.verifyVirgilSignature = false
         
-        let cardManagerParams = CardManagerParams(cardCrypto: VirgilCardCrypto(), accessTokenProvider: tokenProvider, cardVerifier: cardVerifier)
+        let cardManagerParams = CardManagerParams(cardCrypto: VirgilCardCrypto(virgilCrypto: crypto), accessTokenProvider: tokenProvider, cardVerifier: cardVerifier)
         cardManagerParams.cardClient = CardClient(serviceUrl: URL(string: testConfig.ServiceURL)!)
         
         let cardManager = CardManager(params: cardManagerParams)
@@ -79,11 +79,11 @@ class ClientTests: XCTestCase {
     func test1__full_cycle__long_term_key__should_succeed() {
         let (generator, identity, privateKey, card, client) = self.initialize()
         
-        let crypto = VirgilCrypto()
+        let crypto = try! VirgilCrypto()
         
-        let longTermKey = try! crypto.generateKeyPair(ofType: .FAST_EC_X25519)
+        let longTermKey = try! crypto.generateKeyPair(ofType: .curve25519)
         
-        let longTermPublicKey = crypto.exportPublicKey(longTermKey.publicKey)
+        let longTermPublicKey = try! crypto.exportPublicKey(longTermKey.publicKey)
         let longTermKeyId = try! self.keyUtils.computePublicKeyId(publicKey: longTermPublicKey)
         let signature = try! crypto.generateSignature(of: longTermPublicKey, using: privateKey)
         
@@ -107,16 +107,16 @@ class ClientTests: XCTestCase {
     func test2__full_cycle__all_keys__should_succeed() {
         let (generator, identity, privateKey, card, client) = self.initialize()
         
-        let crypto = VirgilCrypto()
+        let crypto = try! VirgilCrypto()
         
-        let longTermKey = try! crypto.generateKeyPair(ofType: .FAST_EC_X25519)
-        let oneTimeKey1 = crypto.exportPublicKey(try! crypto.generateKeyPair(ofType: .FAST_EC_X25519).publicKey)
-        let oneTimeKey2 = crypto.exportPublicKey(try! crypto.generateKeyPair(ofType: .FAST_EC_X25519).publicKey)
+        let longTermKey = try! crypto.generateKeyPair(ofType: .curve25519)
+        let oneTimeKey1 = try! crypto.exportPublicKey(try! crypto.generateKeyPair(ofType: .curve25519).publicKey)
+        let oneTimeKey2 = try! crypto.exportPublicKey(try! crypto.generateKeyPair(ofType: .curve25519).publicKey)
         
         let oneTimeKeyId1 = try! self.keyUtils.computePublicKeyId(publicKey: oneTimeKey1)
         let oneTimeKeyId2 = try! self.keyUtils.computePublicKeyId(publicKey: oneTimeKey2)
         
-        let longTermPublicKey = crypto.exportPublicKey(longTermKey.publicKey)
+        let longTermPublicKey = try! crypto.exportPublicKey(longTermKey.publicKey)
         let longTermKeyId = try! self.keyUtils.computePublicKeyId(publicKey: longTermPublicKey)
         let signature = try! crypto.generateSignature(of: longTermPublicKey, using: privateKey)
         
@@ -158,12 +158,12 @@ class ClientTests: XCTestCase {
     func test3__reset__all_keys__should_succeed() {
         let (generator, identity, privateKey, card, client) = self.initialize()
         
-        let crypto = VirgilCrypto()
+        let crypto = try! VirgilCrypto()
         
-        let longTermKey = try! crypto.generateKeyPair(ofType: .FAST_EC_X25519)
-        let oneTimeKey = crypto.exportPublicKey(try! crypto.generateKeyPair(ofType: .FAST_EC_X25519).publicKey)
+        let longTermKey = try! crypto.generateKeyPair(ofType: .curve25519)
+        let oneTimeKey = try! crypto.exportPublicKey(try! crypto.generateKeyPair(ofType: .curve25519).publicKey)
         
-        let longTermPublicKey = crypto.exportPublicKey(longTermKey.publicKey)
+        let longTermPublicKey = try! crypto.exportPublicKey(longTermKey.publicKey)
         let signature = try! crypto.generateSignature(of: longTermPublicKey, using: privateKey)
         
         let signedLongTermKey = SignedPublicKey(publicKey: longTermPublicKey, signature: signature)
