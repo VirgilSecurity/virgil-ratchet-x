@@ -34,7 +34,7 @@ script:
     fi
 
   - carthage version
-  - carthage bootstrap --platform $CARTHAGE_PLATFORM="Mac"
+  - carthage bootstrap --platform $CARTHAGE_PLATFORM
 
   - |
     if [ $SWIFT_LINT == "YES" ]; then
