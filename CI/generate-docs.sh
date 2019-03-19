@@ -1,10 +1,10 @@
-SCHEME="${PROJ} macOS"
+gem install jazzy
 
 jazzy \
 --author "Virgil Security" \
 --author_url "https://virgilsecurity.com/" \
---xcodebuild-arguments -scheme,"${SCHEME}" \
---module "${PROJ}" \
+--xcodebuild-arguments -scheme,"VirgilSDKRatchet macOS" \
+--module "VirgilSDKRatchet" \
 --output "${OUTPUT}" \
 --hide-documentation-coverage \
 --theme apple
