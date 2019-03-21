@@ -74,7 +74,7 @@ import VirgilCryptoRatchet
         self.participantIdentity = participantIdentity
 
         let ratchetSession = RatchetSession()
-        ratchetSession.setupDefaults()
+        ratchetSession.setRng(rng: crypto.rng)
 
         try ratchetSession.respond(senderIdentityPublicKey: senderIdentityPublicKey,
                                    receiverIdentityPrivateKey: self.crypto.exportPrivateKey(receiverIdentityPrivateKey),
@@ -100,7 +100,7 @@ import VirgilCryptoRatchet
         self.participantIdentity = participantIdentity
 
         let ratchetSession = RatchetSession()
-        ratchetSession.setupDefaults()
+        ratchetSession.setRng(rng: crypto.rng)
 
         try ratchetSession.initiate(senderIdentityPrivateKey: senderIdentityPrivateKey,
                                     receiverIdentityPublicKey: receiverIdentityPublicKey,
@@ -186,12 +186,14 @@ import VirgilCryptoRatchet
     ///   - data: Serialized session
     ///   - participantIdentity: participant identity
     ///   - sessionStorage: SessionStorage
+    ///   - crypto: VirgilCrypto
     /// - Throws: Rethrows from SessionStorage
-    public init(data: Data, participantIdentity: String, sessionStorage: SessionStorage) throws {
-        self.crypto = try VirgilCrypto()
-        self.ratchetSession = try RatchetSession.deserialize(input: data)
-        self.ratchetSession.setupDefaults()
-
+    public init(data: Data, participantIdentity: String, sessionStorage: SessionStorage, crypto: VirgilCrypto) throws {
+        self.crypto = crypto
+        let ratchetSession = try RatchetSession.deserialize(input: data)
+        ratchetSession.setRng(rng: crypto.rng)
+        
+        self.ratchetSession = ratchetSession
         self.sessionStorage = sessionStorage
         self.participantIdentity = participantIdentity
 

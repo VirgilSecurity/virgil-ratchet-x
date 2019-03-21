@@ -35,18 +35,23 @@
 //
 
 import Foundation
+import VirgilCrypto
 
 /// FileSessionStorage using files
 /// This class is thread-safe
 @objc(VSRFileSessionStorage) open class FileSessionStorage: NSObject, SessionStorage {
     private let fileSystem: FileSystem
     private let queue = DispatchQueue(label: "FileSessionStorageQueue")
+    private let crypto: VirgilCrypto
 
     /// Initializer
     ///
-    /// - Parameter identity: identity of this user
-    @objc public init(identity: String) {
+    /// - Parameters:
+    ///   - identity: identity of this user
+    ///   - crypto: VirgilCrypto that will be forwarded to SecureSession
+    @objc public init(identity: String, crypto: VirgilCrypto) {
         self.fileSystem = FileSystem(identity: identity)
+        self.crypto = crypto
 
         super.init()
     }
@@ -72,7 +77,7 @@ import Foundation
             return nil
         }
 
-        return try? SecureSession(data: data, participantIdentity: participantIdentity, sessionStorage: self)
+        return try? SecureSession(data: data, participantIdentity: participantIdentity, sessionStorage: self, crypto: self.crypto)
     }
 
     /// Deletes session
