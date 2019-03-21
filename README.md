@@ -215,7 +215,7 @@ Using Identity Cards, we generate special Cards that have their own life-time:
 
 For each session you can use new OTK and delete it after session is finished.
 
-To create user's Virgil Cards, you can use the following code from [this guide](https://developer.virgilsecurity.com/docs/use-cases/v5/encrypted-communication#register-users-on-virgil-cloud).
+To create user's Virgil Cards, you can use the following code from [this guide](https://developer.virgilsecurity.com/docs/how-to/public-key-management/v5/create-card).
 
 ## Docs
 
