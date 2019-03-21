@@ -3,7 +3,7 @@
 [![Build Status](https://api.travis-ci.com/VirgilSecurity/virgil-ratchet-x.svg?branch=master)](https://travis-ci.com/VirgilSecurity/virgil-ratchet-x)
 [![CocoaPods Compatible](https://img.shields.io/cocoapods/v/VirgilSDKRatchet.svg)](https://cocoapods.org/pods/VirgilSDKRatchet)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
-[![Platform](https://img.shields.io/cocoapods/p/VirgilSDKRatchet.svg?style=flat)](http://cocoadocs.org/docsets/VirgilSDKRatchet)
+[![Platform](https://img.shields.io/cocoapods/p/VirgilSDKRatchet.svg?style=flat)](https://cocoapods.org/pods/VirgilSDKRatchet)
 [![GitHub license](https://img.shields.io/badge/license-BSD%203--Clause-blue.svg)](https://github.com/VirgilSecurity/virgil/blob/master/LICENSE)
 
 [Introduction](#introduction) | [SDK Features](#sdk-features) | [Installation](#installation) | [Initialization](#initialization) | [Chat Example](#chat-example) | [Register Users](#register-users) | [Docs](#docs) | [Support](#support)
@@ -38,7 +38,11 @@ $ gem install cocoapods
 To integrate Virgil Ratchet SDK into your Xcode project using CocoaPods, specify it in your *Podfile*:
 
 ```bash
-*snippet required*
+target '<Your Target Name>' do
+use_frameworks!
+
+pod 'VirgilSDKRatchet', '~> 0.1.0'
+end
 ```
 
 Then, run the following command:
@@ -49,33 +53,81 @@ $ pod install
 
 ### Carthage
 
-Carthage is a decentralized dependency manager that builds your dependencies and provides you with binary frameworks.
-You can install Carthage with Homebrew using the following command:
-```
+[Carthage](https://github.com/Carthage/Carthage) is a decentralized dependency manager that builds your dependencies and provides you with binary frameworks.
+
+You can install Carthage with [Homebrew](http://brew.sh/) using the following command:
+
+```bash
 $ brew update
 $ brew install carthage
 ```
-To integrate Virgil Ratchet SDK (?) into your Xcode project using Carthage, perform following steps:
-* Create an empty file with name Cartfile in your project's root folder, that lists the frameworks you’d like to use in your project.
-* Add the following line to your Cartfile:
+
+To integrate VirgilSDKRatchet into your Xcode project using Carthage, create an empty file with name *Cartfile* in your project's root folder and add following lines to your *Cartfile*
 
 ```
-*snippet required*
+github "VirgilSecurity/virgil-ratchet-x" ~> 0.1.0
 ```
 
-* Run carthage update. This will fetch dependencies into a Carthage/Checkouts folder inside your project's folder, then build each one or download a pre-compiled framework.
-* On your application targets’ “General” settings tab, in the “Linked Frameworks and Libraries” section, add each framework you want to use from the Carthage/Build folder inside your project's folder.
-* On your application targets’ “Build Phases” settings tab, click the “+” icon and choose “New Run Script Phase”. Create a Run Script in which you specify your shell (ex: /bin/sh), add the following contents to the script area below the shell:
+#### Linking against prebuilt binaries
 
+To link prebuilt frameworks to your app, run following command:
+
+```bash
+$ carthage update
 ```
+
+This will build each dependency or download a pre-compiled framework from github Releases.
+
+##### Building for iOS/tvOS/watchOS
+
+On your application targets’ “General” settings tab, in the “Linked Frameworks and Libraries” section, add following frameworks from the *Carthage/Build* folder inside your project's folder:
+ - VirgilSDKRatchet
+ - VirgilSDK
+ - VirgilCryptoAPI
+ - VirgilCrypto
+ - VirgilCryptoFoundation
+ - VirgilCryptoRatchet
+ - VSCCommon
+ - VSCFoundation
+ - VSCRatchet
+
+On your application targets’ “Build Phases” settings tab, click the “+” icon and choose “New Run Script Phase.” Create a Run Script in which you specify your shell (ex: */bin/sh*), add the following contents to the script area below the shell:
+
+```bash
 /usr/local/bin/carthage copy-frameworks
 ```
 
 and add the paths to the frameworks you want to use under “Input Files”, e.g.:
 
 ```
-*snippet required*
+$(SRCROOT)/Carthage/Build/iOS/VirgilSDKRatchet.framework
+$(SRCROOT)/Carthage/Build/iOS/VirgilSDK.framework
+$(SRCROOT)/Carthage/Build/iOS/VirgilCryptoAPI.framework
+$(SRCROOT)/Carthage/Build/iOS/VirgilCrypto.framework
+$(SRCROOT)/Carthage/Build/iOS/VirgilCryptoFoundation.framework
+$(SRCROOT)/Carthage/Build/iOS/VirgilCryptoRatchet.framework
+$(SRCROOT)/Carthage/Build/iOS/VSCCommon.framework
+$(SRCROOT)/Carthage/Build/iOS/VSCFoundation.framework
+$(SRCROOT)/Carthage/Build/iOS/VSCRatchet.framework
 ```
+
+##### Building for macOS
+
+On your application target's “General” settings tab, in the “Embedded Binaries” section, drag and drop following frameworks from the Carthage/Build folder on disk:
+ - VirgilSDKRatchet
+ - VirgilSDK
+ - VirgilCryptoAPI
+ - VirgilCrypto
+ - VirgilCryptoFoundation
+ - VirgilCryptoRatchet
+ - VSCCommon
+ - VSCFoundation
+ - VSCRatchet
+
+Additionally, you'll need to copy debug symbols for debugging and crash reporting on macOS.
+
+On your application target’s “Build Phases” settings tab, click the “+” icon and choose “New Copy Files Phase”.
+Click the “Destination” drop-down menu and select “Products Directory”. For each framework, drag and drop corresponding dSYM file.
 
 ## Initialization
 
