@@ -36,7 +36,7 @@
 
 import VirgilSDK
 
-// MARK: - queries
+// MARK: - Queries
 extension RatchetClient: RatchetClientProtocol {
     /// Uploads public keys
     ///
@@ -54,13 +54,15 @@ extension RatchetClient: RatchetClientProtocol {
     ///             Should be X25518 in PKCS#8
     ///   - token: auth token (JWT)
     /// - Throws:
-    ///         - RatchetClientError.constructingUrl
-    ///         - Rethrows from ServiceRequest
-    ///         - Rethrows from HttpConnectionProtocol
-    ///         - Rethrows from JSONDecoder
-    ///         - Rethrows from BaseClient
-    public func uploadPublicKeys(identityCardId: String?, longTermPublicKey: SignedPublicKey?,
-                                 oneTimePublicKeys: [Data], token: String) throws {
+    ///   - RatchetClientError.constructingUrl
+    ///   - Rethrows from `ServiceRequest`
+    ///   - Rethrows from `HttpConnectionProtocol`
+    ///   - Rethrows from `JSONDecoder`
+    ///   - Rethrows from `BaseClient`
+    public func uploadPublicKeys(identityCardId: String?,
+                                 longTermPublicKey: SignedPublicKey?,
+                                 oneTimePublicKeys: [Data],
+                                 token: String) throws {
         guard let url = URL(string: "pfs/v2/keys", relativeTo: self.serviceUrl) else {
             throw RatchetClientError.constructingUrl
         }
@@ -101,12 +103,13 @@ extension RatchetClient: RatchetClientProtocol {
     ///   - token: auth token (JWT)
     /// - Returns: Object with used keys ids
     /// - Throws:
-    ///         - RatchetClientError.constructingUrl
-    ///         - Rethrows from ServiceRequest
-    ///         - Rethrows from HttpConnectionProtocol
-    ///         - Rethrows from JSONDecoder
-    ///         - Rethrows from BaseClient
-    public func validatePublicKeys(longTermKeyId: Data?, oneTimeKeysIds: [Data],
+    ///   - RatchetClientError.constructingUrl
+    ///   - Rethrows from `ServiceRequest`
+    ///   - Rethrows from `HttpConnectionProtocol`
+    ///   - Rethrows from `JSONDecoder`
+    ///   - Rethrows from `BaseClient`
+    public func validatePublicKeys(longTermKeyId: Data?,
+                                   oneTimeKeysIds: [Data],
                                    token: String) throws -> ValidatePublicKeysResponse {
         guard longTermKeyId != nil || !oneTimeKeysIds.isEmpty else {
             return ValidatePublicKeysResponse(usedLongTermKeyId: nil, usedOneTimeKeysIds: [])
@@ -140,12 +143,13 @@ extension RatchetClient: RatchetClientProtocol {
     ///   - token: auth token (JWT)
     /// - Returns: Set of public keys
     /// - Throws:
-    ///         - RatchetClientError.constructingUrl
-    ///         - Rethrows from ServiceRequest
-    ///         - Rethrows from HttpConnectionProtocol
-    ///         - Rethrows from JSONDecoder
-    ///         - Rethrows from BaseClient
-    public func getPublicKeySet(forRecipientIdentity identity: String, token: String) throws -> PublicKeySet {
+    ///   - `RatchetClientError.constructingUrl`
+    ///   - Rethrows from `ServiceRequest`
+    ///   - Rethrows from `HttpConnectionProtocol`
+    ///   - Rethrows from `JSONDecoder`
+    ///   - Rethrows from `BaseClient`
+    public func getPublicKeySet(forRecipientIdentity identity: String,
+                                token: String) throws -> PublicKeySet {
         guard let url = URL(string: "pfs/v2/keys/actions/get", relativeTo: self.serviceUrl) else {
             throw RatchetClientError.constructingUrl
         }
@@ -162,10 +166,12 @@ extension RatchetClient: RatchetClientProtocol {
     /// Deletes keys entity
     ///
     /// - Parameter token: auth token (JWT)
-    /// Deletes keys entity
-    ///
-    /// - Parameter token: auth token (JWT)
-    /// - Throws: Depends on implementation
+    /// - Throws:
+    ///   - `RatchetClientError.constructingUrl`
+    ///   - Rethrows from `ServiceRequest`
+    ///   - Rethrows from `HttpConnectionProtocol`
+    ///   - Rethrows from `JSONDecoder`
+    ///   - Rethrows from `BaseClient`
     public func deleteKeysEntity(token: String) throws {
         guard let url = URL(string: "pfs/v2/keys", relativeTo: self.serviceUrl) else {
             throw RatchetClientError.constructingUrl

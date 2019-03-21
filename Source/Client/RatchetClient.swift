@@ -44,6 +44,7 @@ import VirgilSDK
 }
 
 /// Implemetation of RatchetClientProtocol
+/// - Tag: RatchetClient
 @objc(VSRRatchetClient) open class RatchetClient: BaseClient {
     // swiftlint:disable force_unwrapping
     /// Default URL for service

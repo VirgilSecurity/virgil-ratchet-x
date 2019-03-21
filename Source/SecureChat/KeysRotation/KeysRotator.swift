@@ -45,7 +45,7 @@ public enum KeysRotatorError: Int, Error {
     case concurrentRotation = 1
 }
 
-/// Default implementation of KeysRotatorProtocol
+/// Default implementation of `KeysRotatorProtocol`
 public class KeysRotator: KeysRotatorProtocol {
     private let crypto: VirgilCrypto
     private let identityPrivateKey: VirgilPrivateKey
@@ -98,16 +98,16 @@ public class KeysRotator: KeysRotatorProtocol {
     /// Rotates keys
     ///
     /// Rotation process:
-    ///         - Retrieve all one-time keys
-    ///         - Delete one-time keys that were marked as orphaned more than orphanedOneTimeKeyTtl seconds ago
-    ///         - Retrieve all long-term keys
-    ///         - Delete long-term keys that were marked as outdated more than outdatedLongTermKeyTtl seconds ago
-    ///         - Check that all relevant long-term and one-time keys are in the cloud
-    ///             (still persistent in the cloud and were not used)
-    ///         - Mark used one-time keys as used
-    ///         - Decide on long-term key roration
-    ///         - Generate needed number of one-time keys
-    ///         - Upload keys to the cloud
+    ///   - Retrieve all one-time keys
+    ///   - Delete one-time keys that were marked as orphaned more than orphanedOneTimeKeyTtl seconds ago
+    ///   - Retrieve all long-term keys
+    ///   - Delete long-term keys that were marked as outdated more than outdatedLongTermKeyTtl seconds ago
+    ///   - Check that all relevant long-term and one-time keys are in the cloud
+    ///     (still persistent in the cloud and were not used)
+    ///   - Mark used one-time keys as used
+    ///   - Decide on long-term key roration
+    ///   - Generate needed number of one-time keys
+    ///   - Upload keys to the cloud
     ///
     /// - Returns: GenericOperation
     public func rotateKeysOperation() -> GenericOperation<RotationLog> {

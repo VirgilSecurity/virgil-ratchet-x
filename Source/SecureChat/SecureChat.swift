@@ -240,15 +240,15 @@ import VirgilCrypto
     /// - Parameter receiverCard: receiver identity cards
     /// - Returns: GenericOperation with SecureSession
     /// - Throws:
-    ///         - SecureChatError.sessionAlreadyExists if session already exists.
-    ///             Try geting existing session or removing it
-    ///         - SecureChatError.wrongIdentityPublicKeyCrypto PublicKey is not VirgilPublicKey
-    ///         - SecureChatError.identityKeyDoesntMatch Identity key in the Card and on Ratchet Cloud doesn't match
-    ///         - SecureChatError.invalidLongTermKeySignature Long-term key signature is invalid
-    ///         - Rethrows from SessionStorage
-    ///         - Rethrows from RatchetClient
-    ///         - Rethrows form SecureSession
-    ///         - Rethrows form AccessTokenProvider
+    ///   - `SecureChatError.sessionAlreadyExists` if session already exists.
+    ///     Try geting existing session or removing it
+    ///   - `SecureChatError.wrongIdentityPublicKeyCrypto` PublicKey is not VirgilPublicKey
+    ///   - `SecureChatError.identityKeyDoesntMatch` Identity key in the Card and on Ratchet Cloud doesn't match
+    ///   - `SecureChatError.invalidLongTermKeySignature` Long-term key signature is invalid
+    ///   - Rethrows from `SessionStorage`
+    ///   - Rethrows from [RatchetClient](x-source-tag://RatchetClient)
+    ///   - Rethrows form [SecureSession](x-source-tag://SecureSession)
+    ///   - Rethrows form `AccessTokenProvider`
     open func startNewSessionAsSender(receiverCard: Card) -> GenericOperation<SecureSession> {
         Log.debug("Starting new session with \(receiverCard.identity) queued")
 
@@ -371,12 +371,12 @@ import VirgilCrypto
     ///   - ratchetMessage: Ratchet initiation message (should be prekey message)
     /// - Returns: SecureSession
     /// - Throws:
-    ///         - SecureChatError.sessionAlreadyExists if session already exists.
-    ///             Try geting existing session or removing it
-    ///         - SecureChatError.wrongIdentityPublicKeyCrypto PublicKey is not VirgilPublicKey
-    ///         - Rethrows from SessionStorage
-    ///         - Rethrows form SecureSession
-    ///         - Rethrows form AccessTokenProvider
+    ///   - `SecureChatError.sessionAlreadyExists` if session already exists.
+    ///     Try geting existing session or removing it
+    ///   - `SecureChatError.wrongIdentityPublicKeyCrypto` PublicKey is not VirgilPublicKey
+    ///   - Rethrows from `SessionStorage`
+    ///   - Rethrows form [SecureSession](x-source-tag://SecureSession)
+    ///   - Rethrows form `AccessTokenProvider`
     @objc public func startNewSessionAsReceiver(senderCard: Card,
                                                 ratchetMessage: RatchetMessage) throws -> SecureSession {
         Log.debug("Responding to session with \(senderCard.identity) queued")

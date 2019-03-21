@@ -48,7 +48,7 @@ import Foundation
 }
 
 /// One-time keys storage using file
-/// This class is thread-safe
+/// - Note: This class is thread-safe
 @objc(VSRFileOneTimeKeysStorage) open class FileOneTimeKeysStorage: NSObject, OneTimeKeysStorage {
     private var oneTimeKeys: OneTimeKeys?
     private let fileSystem: FileSystem
@@ -73,7 +73,9 @@ import Foundation
     /// This method should be called before any other interaction with storage
     /// This method can be called many times and works like a stack
     ///
-    /// - Throws: Depends on implementation
+    /// - Throws:
+    ///   - Rethrows from `PropertyListDecoder`
+    ///   - Rethrows from [FileSystem](x-source-tag://FileSystem)
     public func startInteraction() throws {
         try self.queue.sync {
             if self.interactionCounter > 0 {
@@ -103,8 +105,8 @@ import Foundation
     /// This method can be called many times and works like a stack
     ///
     /// - Throws:
-    ///         - Rethrows from PropertyListEncoder
-    ///         - Rethrows from FileSystem
+    ///   - Rethrows from `PropertyListEncoder`
+    ///   - Rethrows from [FileSystem](x-source-tag://FileSystem)
     public func stopInteraction() throws {
         try self.queue.sync {
             guard self.interactionCounter > 0 else {
@@ -136,7 +138,7 @@ import Foundation
     ///   - key: private key
     ///   - id: key id
     /// - Returns: One-time private key
-    /// - Throws: FileOneTimeKeysStorageError.keyAlreadyExists
+    /// - Throws: `FileOneTimeKeysStorageError.keyAlreadyExists`
     public func storeKey(_ key: Data, withId id: Data) throws -> OneTimeKey {
         return try self.queue.sync {
             guard var oneTimeKeys = self.oneTimeKeys else {
@@ -160,7 +162,7 @@ import Foundation
     ///
     /// - Parameter id: key id
     /// - Returns: One-time private key
-    /// - Throws: FileOneTimeKeysStorageError.keyNotFound
+    /// - Throws: `FileOneTimeKeysStorageError.keyNotFound`
     public func retrieveKey(withId id: Data) throws -> OneTimeKey {
         guard let oneTimeKeys = self.oneTimeKeys else {
             fatalError("oneTimeKeys should not be nil")
@@ -177,7 +179,7 @@ import Foundation
     /// Should be called inside startInteraction/stopInteraction scope
     ///
     /// - Parameter id: key id
-    /// - Throws: FileOneTimeKeysStorageError.keyNotFound
+    /// - Throws: `FileOneTimeKeysStorageError.keyNotFound`
     public func deleteKey(withId id: Data) throws {
         try self.queue.sync {
             guard var oneTimeKeys = self.oneTimeKeys else {
@@ -212,7 +214,9 @@ import Foundation
     /// - Parameters:
     ///   - date: date from which we found out that this key if orphaned
     ///   - keyId: key id
-    /// - Throws: Depends on implementation
+    /// - Throws:
+    ///   - `FileOneTimeKeysStorageError.keyNotFound`
+    ///   - `FileOneTimeKeysStorageError.keyAlreadyMarked`
     public func markKeyOrphaned(startingFrom date: Date, keyId: Data) throws {
         try self.queue.sync {
             guard var oneTimeKeys = self.oneTimeKeys else {
@@ -239,7 +243,7 @@ import Foundation
     /// Deletes all keys
     /// Should be called after out of startInteraction/stopInteraction scope
     ///
-    /// - Throws: Rethrows from FileSystem
+    /// - Throws: Rethrows from [FileSystem](x-source-tag://FileSystem)
     public func reset() throws {
         guard self.interactionCounter == 0 else {
             fatalError("interactionCounter should be 0")

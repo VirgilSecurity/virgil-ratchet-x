@@ -38,7 +38,7 @@ import Foundation
 import VirgilCrypto
 
 /// FileSessionStorage using files
-/// This class is thread-safe
+/// - Note: This class is thread-safe
 @objc(VSRFileSessionStorage) open class FileSessionStorage: NSObject, SessionStorage {
     private let fileSystem: FileSystem
     private let queue = DispatchQueue(label: "FileSessionStorageQueue")
@@ -48,7 +48,7 @@ import VirgilCrypto
     ///
     /// - Parameters:
     ///   - identity: identity of this user
-    ///   - crypto: VirgilCrypto that will be forwarded to SecureSession
+    ///   - crypto: `VirgilCrypto` that will be forwarded to `SecureSession`
     @objc public init(identity: String, crypto: VirgilCrypto) {
         self.fileSystem = FileSystem(identity: identity)
         self.crypto = crypto
@@ -59,7 +59,7 @@ import VirgilCrypto
     /// Stores session
     ///
     /// - Parameter session: session to store
-    /// - Throws: Rethrows from FileSystem
+    /// - Throws: Rethrows from [FileSystem](x-source-tag://FileSystem)
     public func storeSession(_ session: SecureSession) throws {
         try self.queue.sync {
             let data = session.serialize()
@@ -71,7 +71,7 @@ import VirgilCrypto
     /// Retrieves session
     ///
     /// - Parameter participantIdentity: participant identity
-    /// - Throws: Rethrows from FileSystem
+    /// - Throws: Rethrows from [FileSystem](x-source-tag://FileSystem)
     public func retrieveSession(participantIdentity: String) -> SecureSession? {
         guard let data = try? self.fileSystem.readSession(identity: participantIdentity), !data.isEmpty else {
             return nil
@@ -86,7 +86,7 @@ import VirgilCrypto
     /// Deletes session
     ///
     /// - Parameter participantIdentity: participantIdentity: participant identity
-    /// - Throws: Rethrows from FileSystem
+    /// - Throws: Rethrows from [FileSystem](x-source-tag://FileSystem)
     public func deleteSession(participantIdentity: String) throws {
         try self.queue.sync {
             try self.fileSystem.deleteSessionFile(identity: participantIdentity)
@@ -95,7 +95,7 @@ import VirgilCrypto
 
     /// Removes all sessions
     ///
-    /// - Throws: Rethrows from FileSystem
+    /// - Throws: Rethrows from [FileSystem](x-source-tag://FileSystem)
     public func reset() throws {
         try self.queue.sync {
             try self.fileSystem.resetSessions()

@@ -45,7 +45,8 @@ import VirgilCryptoRatchet
 }
 
 /// SecureSession
-/// NOTE: This class is thread-safe
+/// - Note: This class is thread-safe
+/// - Tag: SecureSession
 @objc(VSRSecureSession) public final class SecureSession: NSObject {
     /// Participant identity
     @objc public let participantIdentity: String
@@ -116,9 +117,9 @@ import VirgilCryptoRatchet
     /// - Parameter message: message to encrypt
     /// - Returns: RatchetMessage
     /// - Throws:
-    ///         - SecureSessionError.invalidUtf8String if given string is not correct utf-8 string
-    ///         - Rethrows from crypto RatchetSession
-    ///         - Rethrows from SessionStorage
+    ///   - `SecureSessionError.invalidUtf8String` if given string is not correct utf-8 string
+    ///   - Rethrows from crypto `RatchetSession`
+    ///   - Rethrows from `SessionStorage`
     public func encrypt(string: String) throws -> RatchetMessage {
         guard let data = string.data(using: .utf8) else {
             throw SecureSessionError.invalidUtf8String
@@ -132,8 +133,8 @@ import VirgilCryptoRatchet
     /// - Parameter message: message to encrypt
     /// - Returns: RatchetMessage
     /// - Throws:
-    ///         - Rethrows from crypto RatchetSession
-    ///         - Rethrows from SessionStorage
+    ///   - Rethrows from crypto `RatchetSession`
+    ///   - Rethrows from `SessionStorage`
     public func encrypt(data: Data) throws -> RatchetMessage {
         return try self.queue.sync {
             let msg = try self.ratchetSession.encrypt(plainText: data)
@@ -149,8 +150,8 @@ import VirgilCryptoRatchet
     /// - Parameter message: RatchetMessage
     /// - Returns: Decrypted data
     /// - Throws:
-    ///         - Rethrows from crypto RatchetSession
-    ///         - Rethrows from SessionStorage
+    ///   - Rethrows from crypto `RatchetSession`
+    ///   - Rethrows from `SessionStorage`
     public func decryptData(from message: RatchetMessage) throws -> Data {
         return try self.queue.sync {
             let data = try self.ratchetSession.decrypt(message: message)
@@ -166,9 +167,9 @@ import VirgilCryptoRatchet
     /// - Parameter message: RatchetMessage
     /// - Returns: Decrypted utf-8 string
     /// - Throws:
-    ///         - SecureSessionError.invalidUtf8String if decrypted data is not correct utf-8 string
-    ///         - Rethrows from crypto RatchetSession
-    ///         - Rethrows from SessionStorage
+    ///   - `SecureSessionError.invalidUtf8String` if decrypted data is not correct utf-8 string
+    ///   - Rethrows from crypto `RatchetSession`
+    ///   - Rethrows from `SessionStorage`
     public func decryptString(from message: RatchetMessage) throws -> String {
         let data = try self.decryptData(from: message)
 
@@ -186,7 +187,7 @@ import VirgilCryptoRatchet
     ///   - participantIdentity: participant identity
     ///   - sessionStorage: SessionStorage
     ///   - crypto: VirgilCrypto
-    /// - Throws: Rethrows from SessionStorage
+    /// - Throws: Rethrows from `SessionStorage`
     public init(data: Data, participantIdentity: String, sessionStorage: SessionStorage, crypto: VirgilCrypto) throws {
         self.crypto = crypto
         let ratchetSession = try RatchetSession.deserialize(input: data)

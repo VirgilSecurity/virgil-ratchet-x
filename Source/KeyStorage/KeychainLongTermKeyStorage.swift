@@ -52,7 +52,7 @@ import VirgilSDK
     /// Initializer
     ///
     /// - Parameter identity: identity of this user
-    /// - Throws: Rethrows from KeychainStorageParams
+    /// - Throws: Rethrows from `KeychainStorageParams`
     @objc public init(identity: String, params: KeychainStorageParams? = nil) throws {
         let storageParams: KeychainStorageParams
 
@@ -105,8 +105,8 @@ import VirgilSDK
     ///   - id: key id
     /// - Returns: LongTermKey
     /// - Throws:
-    ///         - KeychainLongTermKeysStorageError.invalidKeyId
-    ///         - Rethrows from SandboxedKeychainStorage
+    ///   - `KeychainLongTermKeysStorageError.invalidKeyId`
+    ///   - Rethrows from `SandboxedKeychainStorage`
     public func storeKey(_ key: Data, withId id: Data) throws -> LongTermKey {
         let entry = try self.keychain.store(data: key, withName: id.base64EncodedString(), meta: [:])
 
@@ -118,8 +118,8 @@ import VirgilSDK
     /// - Parameter id: key id
     /// - Returns: Long-term key
     /// - Throws:
-    ///         - KeychainLongTermKeysStorageError.invalidKeyId
-    ///         - Rethrows from SandboxedKeychainStorage
+    ///   - `KeychainLongTermKeysStorageError.invalidKeyId`
+    ///   - Rethrows from `SandboxedKeychainStorage`
     public func retrieveKey(withId id: Data) throws -> LongTermKey {
         let entry = try self.keychain.retrieveEntry(withName: id.base64EncodedString())
 
@@ -129,7 +129,7 @@ import VirgilSDK
     /// Deletes key
     ///
     /// - Parameter id: key id
-    /// - Throws: Rethrows from SandboxedKeychainStorage
+    /// - Throws: Rethrows from `SandboxedKeychainStorage`
     public func deleteKey(withId id: Data) throws {
         try self.keychain.deleteEntry(withName: id.base64EncodedString())
     }
@@ -138,8 +138,8 @@ import VirgilSDK
     ///
     /// - Returns: Long-term keys list
     /// - Throws:
-    ///         - KeychainLongTermKeysStorageError.invalidKeyId
-    ///         - Rethrows from SandboxedKeychainStorage
+    ///   - `KeychainLongTermKeysStorageError.invalidKeyId`
+    ///   - Rethrows from `SandboxedKeychainStorage`
     public func retrieveAllKeys() throws -> [LongTermKey] {
         return try self.keychain.retrieveAllEntries().map(self.mapEntry)
     }
@@ -150,8 +150,8 @@ import VirgilSDK
     ///   - date: date from which this key started to be outdated
     ///   - keyId: key id
     /// - Throws:
-    ///         - KeychainLongTermKeysStorageError.invalidMeta
-    ///         - Rethrows from SandboxedKeychainStorage
+    ///   - `KeychainLongTermKeysStorageError.invalidMeta`
+    ///   - Rethrows from `SandboxedKeychainStorage`
     public func markKeyOutdated(startingFrom date: Date, keyId: Data) throws {
         let entry = try self.keychain.retrieveEntry(withName: keyId.base64EncodedString())
 
@@ -166,7 +166,7 @@ import VirgilSDK
 
     /// Deletes all long-term keys
     ///
-    /// - Throws: Rethrows from SandboxedKeychainStorage
+    /// - Throws: Rethrows from `SandboxedKeychainStorage`
     public func reset() throws {
         let keys = try self.keychain.retrieveAllEntries().map(self.mapEntry)
 
