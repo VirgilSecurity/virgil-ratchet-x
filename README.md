@@ -222,7 +222,7 @@ To create user's Virgil Cards, you can use the following code from [this guide](
 Virgil Security has a powerful set of APIs and the documentation to help you get started:
 
 * [PFS Service API reference][_pfs_service]
-* [How to publish user's cards](https://developer.virgilsecurity.com/docs/how-to)
+* [How to publish user's cards](https://developer.virgilsecurity.com/docs/how-to/public-key-management/v5/create-card)
 
 To find more examples how to use Virgil Products, take a look at [SWIFT SDK documentation](https://github.com/VirgilSecurity/virgil-sdk-x/blob/v5/README.md).
 
