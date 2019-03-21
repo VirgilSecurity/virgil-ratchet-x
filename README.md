@@ -133,13 +133,6 @@ Click the “Destination” drop-down menu and select “Products Directory”. 
 
 Make sure that you have already registered at the [Virgil Dashboard][_dashboard] and created an E2EE V5 application.
 
-To initialize the SWIFT Ratchet SDK, you need the __JWT Token__ created for a client at [Dashboard][_dashboard].
-The JWT Token helps to authenticate client's requests.
-
-```swift
-*snippet required*
-```
-
 Before the chat initialization, each user must have a Virgil Card on Virgil Card Service.
 If you have no Virgil Card yet, you can easily create it with our [guide](#register-users).
 
@@ -149,19 +142,65 @@ If you have no Virgil Card yet, you can easily create it with our [guide](#regis
 To begin communicating with PFS service, every user must run the initialization:
 
 ```swift
-*snippet required*
+import VirgilSDKRatchet
+
+let context = SecureChatContext(identity: card.identity,
+                                identityCardId: card.identifier,
+                                identityPrivateKey: keyPair.privateKey,
+                                accessTokenProvider: provider)
+
+let secureChat = try! SecureChat(context: context)
+
+secureChat.rotateKeys().start { result in
+    switch result {
+    // Keys were rotated
+    case .success(let rotationLog): break
+    // Error occured
+    case .failure(let error): break
+    }
+}
 ```
 
 Then Sender establishes a secure PFS conversation with Receiver, encrypts and sends the message:
 
 ```swift
-*snippet required*
+import VirgilSDKRatchet
+
+// prepare a message
+let messageToEncrypt = "Hello, Bob!"
+
+let session: SecureSession
+
+if let existingSession = secureChat.existingSession(withParticpantIdentity: bobCard.identity) {
+    session = existingSession
+} else {
+    // start new session with recipient if session wasn't initialized yet
+    session = try! secureChat.startNewSessionAsSender(receiverCard: bobCard).startSync().getResult()
+}
+
+let ratchetMessage = try! session.encrypt(string: messageToEncrypt)
+
+let encryptedMessage = ratchetMessage.serialize()
 ```
 
 Receiver decrypts the incoming message using the conversation he has just created:
 
 ```swift
-*snippet required*
+import VirgilCryptoRatchet
+import VirgilSDKRatchet
+
+let ratchetMessage = try! RatchetMessage.deserialize(input: encryptedMessage)
+
+let session: SecureSession
+
+if let existingSession = secureChat.existingSession(withParticpantIdentity: aliceCard.identity) {
+    session = existingSession
+} else {
+    // start new session with sender if session wasn't initialized yet
+    session = try! secureChat.startNewSessionAsReceiver(senderCard: aliceCard, ratchetMessage: ratchetMessage)
+}
+
+let decryptedMessage = try! session.decryptString(from: ratchetMessage)
 ```
 
 With the open session, which works in both directions, Sender and Receiver can continue PFS-encrypted communication.
