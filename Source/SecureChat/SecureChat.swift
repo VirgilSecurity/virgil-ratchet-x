@@ -47,12 +47,14 @@ import VirgilCrypto
 /// - identityKeyDoesntMatch: Identity key in the Card and on Ratchet Cloud doesn't match
 /// - invalidLongTermKeySignature: Long-term key signature is invalid
 /// - invalidMessageType: Message type should be .prekey
+/// - invalidKeyType: Invalid key type
 @objc public enum SecureChatError: Int, Error {
     case sessionAlreadyExists = 1
     case wrongIdentityPublicKeyCrypto = 2
     case identityKeyDoesntMatch = 3
     case invalidLongTermKeySignature = 4
     case invalidMessageType = 5
+    case invalidKeyType = 6
 }
 
 /// SecureChat. Class for rotating keys, starting and responding to conversation
@@ -260,6 +262,14 @@ import VirgilCrypto
                     throw SecureChatError.sessionAlreadyExists
                 }
 
+                guard let identityPublicKey = receiverCard.publicKey as? VirgilPublicKey else {
+                    throw SecureChatError.wrongIdentityPublicKeyCrypto
+                }
+
+                guard identityPublicKey.keyType == .ed25519 else {
+                    throw SecureChatError.invalidKeyType
+                }
+
                 let tokenContext = TokenContext(service: "ratchet", operation: "get")
                 let getTokenOperation = OperationUtils.makeGetTokenOperation(
                     tokenContext: tokenContext, accessTokenProvider: self.accessTokenProvider)
@@ -268,10 +278,6 @@ import VirgilCrypto
 
                 let publicKeySet = try self.client.getPublicKeySet(forRecipientIdentity: receiverCard.identity,
                                                                    token: token.stringRepresentation())
-
-                guard let identityPublicKey = receiverCard.publicKey as? VirgilPublicKey else {
-                    throw SecureChatError.wrongIdentityPublicKeyCrypto
-                }
 
                 guard try self.crypto.exportPublicKey(identityPublicKey) == publicKeySet.identityPublicKey else {
                     throw SecureChatError.identityKeyDoesntMatch
@@ -385,6 +391,10 @@ import VirgilCrypto
             throw SecureChatError.wrongIdentityPublicKeyCrypto
         }
 
+        guard senderIdentityPublicKey.keyType == .ed25519 else {
+            throw SecureChatError.invalidKeyType
+        }
+
         guard ratchetMessage.getType() == .prekey else {
             throw SecureChatError.invalidMessageType
         }
@@ -440,7 +450,7 @@ import VirgilCrypto
         return session
     }
 
-    /// Removes all data corresponding to this user: session and keys.
+    /// Removes all data corresponding to this user: sessions and keys.
     ///
     /// - Parameter completion: completion handler
     @objc public func reset(completion: @escaping (Error?) -> Void) {
@@ -449,7 +459,7 @@ import VirgilCrypto
         }
     }
 
-    /// Removes all data corresponding to this user: session and keys.
+    /// Removes all data corresponding to this user: sessions and keys.
     ///
     /// - Returns: GenericOperation
     public func reset() -> GenericOperation<Void> {
