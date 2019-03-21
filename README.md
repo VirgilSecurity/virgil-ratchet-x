@@ -25,8 +25,6 @@ Following this, the parties will use the Double Ratchet SDK to initialize chat s
 
 ## Installation
 
-> Virgil SWIFT Ratchet SDK is suitable only for Client Side.
-
 The Virgil Ratchet is provided as a package.
 
 ### COCOAPODS
@@ -81,11 +79,9 @@ and add the paths to the frameworks you want to use under “Input Files”, e.g
 
 ## Initialization
 
-> Virgil SWIFT Ratchet SDK is suitable only for Client Side. 
-
 Make sure that you have already registered at the [Virgil Dashboard][_dashboard] and created an E2EE V5 application.
 
-To initialize the SWIFT Ratchet SDK at the __Client Side__, you need only the __JWT Token__ created for a client at [Dashboard][_dashboard].
+To initialize the SWIFT Ratchet SDK, you need the __JWT Token__ created for a client at [Dashboard][_dashboard].
 The JWT Token helps to authenticate client's requests.
 
 ```swift
@@ -98,7 +94,7 @@ If you have no Virgil Card yet, you can easily create it with our [guide](#regis
 
 ## Chat Example
 
-To begin communicating with PFS technology, every user must run the initialization:
+To begin communicating with PFS service, every user must run the initialization:
 
 ```swift
 *snippet required*
@@ -120,7 +116,7 @@ With the open session, which works in both directions, Sender and Receiver can c
 
 ## Register Users
 
-In Virgil every user has a **Private Key** and represented with a **Virgil Card (Identity Card)**, which contains a Public Key and user's identity.
+In Virgil every user has a **Private Key** and is represented with a **Virgil Card**, which contains a Public Key and user's identity.
 
 Using Identity Cards, we generate special Cards that have their own life-time:
 * **One-time Key (OTK)**
@@ -128,18 +124,13 @@ Using Identity Cards, we generate special Cards that have their own life-time:
 
 For each session you can use new OTK and delete it after session is finished.
 
-To create user's Identity Virgil Cards, you can use the following code from [this guide](https://developer.virgilsecurity.com/docs/how-to).
-
-When Virgil Card created, sign and publish it with Application Private Virgil Key at the server side.
-
-SWIFT is not supported for publishing Virgil Cards on Virgil Services.
-We recommend using one of the supported languages with this [guide](https://developer.virgilsecurity.com/docs/how-to/public-key-management/v5/create-card).
+To create user's Virgil Cards, you can use the following code from [this guide](https://developer.virgilsecurity.com/docs/use-cases/v5/encrypted-communication#register-users-on-virgil-cloud).
 
 ## Docs
 
 Virgil Security has a powerful set of APIs and the documentation to help you get started:
 
-* [Perfect Forwad Secrecy][_use_case_pfs]
+* [PFS Service API reference][_pfs_service]
 * [How to publish user's cards](https://developer.virgilsecurity.com/docs/how-to)
 
 To find more examples how to use Virgil Products, take a look at [SWIFT SDK documentation](https://github.com/VirgilSecurity/virgil-sdk-x/blob/v5/README.md).
