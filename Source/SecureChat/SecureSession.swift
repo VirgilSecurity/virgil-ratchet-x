@@ -192,7 +192,7 @@ import VirgilCryptoRatchet
         self.crypto = crypto
         let ratchetSession = try RatchetSession.deserialize(input: data)
         ratchetSession.setRng(rng: crypto.rng)
-        
+
         self.ratchetSession = ratchetSession
         self.sessionStorage = sessionStorage
         self.participantIdentity = participantIdentity

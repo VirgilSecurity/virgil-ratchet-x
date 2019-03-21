@@ -278,8 +278,8 @@ import VirgilCrypto
                 }
 
                 guard try self.crypto.verifySignature(publicKeySet.longTermPublicKey.signature,
-                                                  of: publicKeySet.longTermPublicKey.publicKey,
-                                                  with: identityPublicKey) else {
+                                                      of: publicKeySet.longTermPublicKey.publicKey,
+                                                      with: identityPublicKey) else {
                     throw SecureChatError.invalidLongTermKeySignature
                 }
 

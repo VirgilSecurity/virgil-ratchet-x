@@ -77,7 +77,10 @@ import VirgilCrypto
             return nil
         }
 
-        return try? SecureSession(data: data, participantIdentity: participantIdentity, sessionStorage: self, crypto: self.crypto)
+        return try? SecureSession(data: data,
+                                  participantIdentity: participantIdentity,
+                                  sessionStorage: self,
+                                  crypto: self.crypto)
     }
 
     /// Deletes session
