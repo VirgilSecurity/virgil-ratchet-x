@@ -6,20 +6,20 @@
 [![Platform](https://img.shields.io/cocoapods/p/VirgilSDKRatchet.svg?style=flat)](https://cocoapods.org/pods/VirgilSDKRatchet)
 [![GitHub license](https://img.shields.io/badge/license-BSD%203--Clause-blue.svg)](https://github.com/VirgilSecurity/virgil/blob/master/LICENSE)
 
-[Introduction](#introduction) | [SDK Features](#sdk-features) | [Installation](#installation) | [Initialization](#initialization) | [Chat Example](#chat-example) | [Register Users](#register-users) | [Docs](#docs) | [Support](#support)
+[Introduction](#introduction) | [SDK Features](#sdk-features) | [Installation](#installation) | [Register Users](#register-users) | [Chat Example](#chat-example) | [Support](#support)
 
 ## Introduction
 
 <a href="https://developer.virgilsecurity.com/docs"><img width="230px" src="https://cdn.virgilsecurity.com/assets/images/github/logos/virgil-logo-red.png" align="left" hspace="10" vspace="6"></a> [Virgil Security](https://virgilsecurity.com) provides a set of services and open source libraries for adding security to any application.
 Virgil Security is presenting an implementation of the [Double Ratchet](https://signal.org/docs/specifications/doubleratchet/) algorithm, which is used by parties to exchange encrypted messages based on a shared secret key. The implementation includes:
-- **[Virgil Perfect Forward Secrecy (PFS) service][_pfs_service]** – a standalone web-service that is dedicated to managing one-time keys and long-time keys that are based on their Identity Public Keys (public keys that are contained in user cards published on Virgil Cards service);
+- **Virgil Perfect Forward Secrecy (PFS) service** – a standalone web-service that is dedicated to managing one-time keys and long-time keys that are based on their Identity Public Keys (public keys that are contained in user cards published on Virgil Cards service);
 - **Ratchet SDK** – interacts with PFS service for publishing and managing one-time keys and long-time keys and interacts with Virgil Cards service for retrieving user's indentity cards which the OTK and LTK are based on. The parties derive new keys for every Double Ratchet message so that previous private keys cannot be calculated from new ones. The parties that participate in the communication also send Diffie-Hellman public values attached to their messages. The results of Diffie-Hellman calculations are mixed into the derived keys so that the new private keys cannot be calculated from the previous ones.
 
 Following this, the parties will use the Double Ratchet SDK to initialize chat session and send and receive encrypted messages. And as a result, by adding Virgil Perfect Forward Secrecy (PFS) to your encrypted communication you prevent a possibly compromised user's long time private key (private key) from affecting the confidentiality of past communications.
 
 
 # SDK Features
-- communicate with [Virgil PFS Service][_pfs_service]
+- communicate with Virgil PFS Service
 - manage users' OTK and LTK keys
 - use Virgil [Crypto library][_virgil_crypto]
 
@@ -135,12 +135,19 @@ Additionally, you'll need to copy debug symbols for debugging and crash reportin
 On your application target’s “Build Phases” settings tab, click the “+” icon and choose “New Copy Files Phase”.
 Click the “Destination” drop-down menu and select “Products Directory”. For each framework, drag and drop corresponding dSYM file.
 
-## Initialization
+## Register Users
 
 Make sure that you have already registered at the [Virgil Dashboard][_dashboard] and created an E2EE V5 application.
 
-Before the chat initialization, each user must have a Virgil Card on Virgil Card Service.
-If you have no Virgil Card yet, you can easily create it with our [guide](#register-users).
+In Virgil every user has a **Private Key** and is represented with a **Virgil Card**, which contains a Public Key and user's identity.
+
+Using Identity Cards, we generate special Cards that have their own life-time:
+* **One-time Key (OTK)**
+* **Long-time Key (LTK)**
+
+For each session you can use new OTK and delete it after session is finished.
+
+To create user's Virgil Cards, you can use the following code from [this guide](https://developer.virgilsecurity.com/docs/how-to/public-key-management/v5/create-card).
 
 
 ## Chat Example
@@ -211,27 +218,6 @@ let decryptedMessage = try! session.decryptString(from: ratchetMessage)
 
 With the open session, which works in both directions, Sender and Receiver can continue PFS-encrypted communication.
 
-## Register Users
-
-In Virgil every user has a **Private Key** and is represented with a **Virgil Card**, which contains a Public Key and user's identity.
-
-Using Identity Cards, we generate special Cards that have their own life-time:
-* **One-time Key (OTK)**
-* **Long-time Key (LTK)**
-
-For each session you can use new OTK and delete it after session is finished.
-
-To create user's Virgil Cards, you can use the following code from [this guide](https://developer.virgilsecurity.com/docs/how-to/public-key-management/v5/create-card).
-
-## Docs
-
-Virgil Security has a powerful set of APIs and the documentation to help you get started:
-
-* [PFS Service API reference][_pfs_service]
-* [How to publish user's cards](https://developer.virgilsecurity.com/docs/how-to/public-key-management/v5/create-card)
-
-To find more examples how to use Virgil Products, take a look at [SWIFT SDK documentation](https://github.com/VirgilSecurity/virgil-sdk-x/blob/v5/README.md).
-
 ## License
 
 This library is released under the [3-clause BSD License](LICENSE).
@@ -244,13 +230,11 @@ You can find us on [Twitter](https://twitter.com/VirgilSecurity) or send us emai
 Also, get extra help from our support team on [Slack](https://virgilsecurity.com/join-community).
 
 
-[_pfs_service]: https://developer.virgilsecurity.com/docs/api-reference/pfs-service/v4
 [_sdk_x]: https://github.com/VirgilSecurity/virgil-sdk-x/tree/v5
 
 [_dashboard]: https://dashboard.virgilsecurity.com/
-[_virgil_crypto]: https://github.com/VirgilSecurity/virgil-crypto
+[_virgil_crypto]: https://github.com/VirgilSecurity/virgil-crypto-c
 [_reference_api]: https://developer.virgilsecurity.com/docs/api-reference
-[_pfs_reference_api]: https://developer.virgilsecurity.com/docs/references/perfect-forward-secrecy
 [_use_cases]: https://developer.virgilsecurity.com/docs/use-cases
 [_use_case_pfs]:https://developer.virgilsecurity.com/docs/swift/use-cases/v4/perfect-forward-secrecy
 
