@@ -25,7 +25,13 @@ Following this, the parties will use the Double Ratchet SDK to initialize chat s
 
 ## Installation
 
-The Virgil Ratchet is provided as a package.
+Virgil SDK Ratchet is provided as a set of frameworks. These frameworks are distributed via Carthage and CocoaPods. Also in this guide, you find one more package called VirgilCrypto (Virgil Crypto Library) that is used by the Virgil SDK Ratchet to perform cryptographic operations.
+
+All frameworks are available for:
+- iOS 9.0+
+- macOS 10.10+
+- tvOS 9.0+
+- watchOS 2.0+
 
 ### COCOAPODS
 
