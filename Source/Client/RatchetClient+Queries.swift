@@ -136,7 +136,7 @@ extension RatchetClient: RatchetClientProtocol {
         return try self.processResponse(response)
     }
 
-    /// Returns public keys set for given identity.
+    /// Returns public keys set for given identity
     ///
     /// - Parameters:
     ///   - identity: User's identity

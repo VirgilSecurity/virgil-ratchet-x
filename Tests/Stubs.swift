@@ -34,11 +34,9 @@
 // Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 //
 
-import Foundation
 import VirgilSDK
 import VirgilCrypto
 import VirgilCryptoRatchet
-import VirgilCryptoFoundation
 @testable import VirgilSDKRatchet
 
 class RamSessionStorage: SessionStorage {
