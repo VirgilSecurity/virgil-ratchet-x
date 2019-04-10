@@ -1005,34 +1005,43 @@
 				TargetAttributes = {
 					421B43E72190AF5900D4F496 = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1020;
 					};
 					4235244A221EE9360079DD2A = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1020;
 					};
 					42352457221EE9460079DD2A = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1020;
 					};
 					42352464221EE9530079DD2A = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1020;
 					};
 					423524AF221EE98C0079DD2A = {
 						CreatedOnToolsVersion = 10.1;
 					};
 					42352507221EED260079DD2A = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1020;
 					};
 					4235251A221EEDCB0079DD2A = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1020;
 						TestTargetID = 42352507221EED260079DD2A;
 					};
 					42352528221EEDE70079DD2A = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1020;
 					};
 					424FAA052177506100622A3B = {
 						CreatedOnToolsVersion = 10.0;
+						LastSwiftMigration = 1020;
 					};
 					424FAA0E2177506100622A3B = {
 						CreatedOnToolsVersion = 10.0;
+						LastSwiftMigration = 1020;
 						TestTargetID = 421B43E72190AF5900D4F496;
 					};
 				};
@@ -1402,7 +1411,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.virgilsecurity.RatchetTestApp-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -1420,7 +1429,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.virgilsecurity.RatchetTestApp-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -1447,12 +1456,12 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				PRODUCT_BUNDLE_IDENTIFIER = com.virgilsecurity.VirgilSDKRatchet;
 				PRODUCT_NAME = VirgilSDKRatchet;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -1478,12 +1487,12 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				PRODUCT_BUNDLE_IDENTIFIER = com.virgilsecurity.VirgilSDKRatchet;
 				PRODUCT_NAME = VirgilSDKRatchet;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -1511,7 +1520,7 @@
 				PRODUCT_NAME = VirgilSDKRatchet;
 				SDKROOT = appletvos;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 9.0;
 			};
@@ -1541,7 +1550,7 @@
 				PRODUCT_NAME = VirgilSDKRatchet;
 				SDKROOT = appletvos;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 9.0;
 			};
@@ -1572,7 +1581,7 @@
 				PRODUCT_NAME = VirgilSDKRatchet;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				WATCHOS_DEPLOYMENT_TARGET = 2.0;
 			};
@@ -1603,7 +1612,7 @@
 				PRODUCT_NAME = VirgilSDKRatchet;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				WATCHOS_DEPLOYMENT_TARGET = 2.0;
 			};
@@ -1639,7 +1648,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.virgilsecurity.RatchetTestApp-tvOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 12.1;
 			};
@@ -1659,7 +1668,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.virgilsecurity.RatchetTestApp-tvOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 12.1;
 			};
@@ -1681,7 +1690,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.virgilsecurity.VirgilSDKRatchetTests-tvOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 3;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RatchetTestApp tvOS.app/RatchetTestApp tvOS";
 				TVOS_DEPLOYMENT_TARGET = 12.1;
@@ -1704,7 +1713,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.virgilsecurity.VirgilSDKRatchetTests-tvOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 3;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RatchetTestApp tvOS.app/RatchetTestApp tvOS";
 				TVOS_DEPLOYMENT_TARGET = 12.1;
@@ -1730,7 +1739,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.virgilsecurity.VirgilSDKRatchetTests-macOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -1753,7 +1762,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.virgilsecurity.VirgilSDKRatchetTests-macOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -1904,7 +1913,7 @@
 				PRODUCT_MODULE_NAME = VirgilSDKRatchet;
 				PRODUCT_NAME = VirgilSDKRatchet;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -1934,7 +1943,7 @@
 				PRODUCT_MODULE_NAME = VirgilSDKRatchet;
 				PRODUCT_NAME = VirgilSDKRatchet;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -1955,7 +1964,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.virgilsecurity.VirgilSDKRatchetTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RatchetTestApp iOS.app/RatchetTestApp iOS";
 			};
@@ -1977,7 +1986,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.virgilsecurity.VirgilSDKRatchetTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RatchetTestApp iOS.app/RatchetTestApp iOS";
 			};

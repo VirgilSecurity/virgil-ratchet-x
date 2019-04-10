@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name                        = "VirgilSDKRatchet"
-  s.version                     = "0.1.0"
+  s.version                     = "0.2.0"
   s.license                     = { :type => "BSD", :file => "LICENSE" }
   s.summary                     = "Virgil SDK for communication using Double Ratchet protocol for Apple devices and languages."
   s.homepage                    = "https://github.com/VirgilSecurity/virgil-ratchet-x/"
@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
   s.tvos.deployment_target      = "9.0"
   s.watchos.deployment_target   = "2.0"
   s.source_files                = 'Source/**/*.{h,m,swift}'
-  s.dependency "VirgilCryptoRatchet", "~> 0.5.0"
+  s.dependency "VirgilCryptoRatchet", "~> 0.6.0"
   s.dependency "VirgilCrypto", "~> 5.0.0-alpha"
   s.dependency "VirgilSDK", "~> 5.0"
 end

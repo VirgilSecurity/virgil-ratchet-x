@@ -242,7 +242,7 @@ public class KeysRotator: KeysRotatorProtocol {
                     let longTermKeyPair = try self.crypto.generateKeyPair(ofType: .curve25519)
                     let longTermPrivateKey = try self.crypto.exportPrivateKey(longTermKeyPair.privateKey)
                     let longTermPublicKey = try self.crypto.exportPublicKey(longTermKeyPair.publicKey)
-                    let longTermKeyId = try self.keyUtils.computePublicKeyId(publicKey: longTermPublicKey)
+                    let longTermKeyId = try self.keyUtils.computePublicKeyId(publicKey: longTermPublicKey, convertToCurve25519: false)
                     _ = try self.longTermKeysStorage.storeKey(longTermPrivateKey,
                                                               withId: longTermKeyId)
                     let longTermKeySignature = try self.crypto.generateSignature(of: longTermPublicKey,
@@ -266,7 +266,7 @@ public class KeysRotator: KeysRotatorProtocol {
                         let keyPair = try self.crypto.generateKeyPair(ofType: .curve25519)
                         let oneTimePrivateKey = try self.crypto.exportPrivateKey(keyPair.privateKey)
                         let oneTimePublicKey = try self.crypto.exportPublicKey(keyPair.publicKey)
-                        let keyId = try self.keyUtils.computePublicKeyId(publicKey: oneTimePublicKey)
+                        let keyId = try self.keyUtils.computePublicKeyId(publicKey: oneTimePublicKey, convertToCurve25519: false)
                         _ = try self.oneTimeKeysStorage.storeKey(oneTimePrivateKey, withId: keyId)
 
                         publicKeys.append(oneTimePublicKey)

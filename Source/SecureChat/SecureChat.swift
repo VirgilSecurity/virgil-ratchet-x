@@ -335,7 +335,7 @@ import VirgilCrypto
 
                 let oneTimePrivateKey = try self.crypto.exportPrivateKey(keyPair.privateKey)
                 oneTimePublicKey = try self.crypto.exportPublicKey(keyPair.publicKey)
-                let keyId = try self.keyUtils.computePublicKeyId(publicKey: oneTimePublicKey)
+                let keyId = try self.keyUtils.computePublicKeyId(publicKey: oneTimePublicKey, convertToCurve25519: false)
 
                 _ = try self.oneTimeKeysStorage.storeKey(oneTimePrivateKey, withId: keyId)
 
@@ -400,7 +400,7 @@ import VirgilCrypto
         }
 
         let receiverLongTermPublicKey = ratchetMessage.getLongTermPublicKey()
-        let longTermKeyId = try self.keyUtils.computePublicKeyId(publicKey: receiverLongTermPublicKey)
+        let longTermKeyId = try self.keyUtils.computePublicKeyId(publicKey: receiverLongTermPublicKey, convertToCurve25519: false)
         let receiverLongTermPrivateKey = try self.longTermKeysStorage.retrieveKey(withId: longTermKeyId)
 
         let receiverOneTimePublicKey = ratchetMessage.getOneTimePublicKey()
@@ -410,7 +410,7 @@ import VirgilCrypto
             receiverOneTimeKeyId = nil
         }
         else {
-            receiverOneTimeKeyId = try self.keyUtils.computePublicKeyId(publicKey: receiverOneTimePublicKey)
+            receiverOneTimeKeyId = try self.keyUtils.computePublicKeyId(publicKey: receiverOneTimePublicKey, convertToCurve25519: false)
         }
 
         let receiverOneTimePrivateKey: OneTimeKey?

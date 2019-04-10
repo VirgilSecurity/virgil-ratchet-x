@@ -229,14 +229,14 @@ class RamClient: RatchetClientProtocol {
         
         if let longTermKeyId = longTermKeyId,
             let storedLongTermPublicKey = userStore.longTermPublicKey?.publicKey,
-            try! self.keyUtils.computePublicKeyId(publicKey: storedLongTermPublicKey) == longTermKeyId {
+            try! self.keyUtils.computePublicKeyId(publicKey: storedLongTermPublicKey, convertToCurve25519: false) == longTermKeyId {
                 usedLongTermKeyId = nil
         }
         else {
             usedLongTermKeyId = longTermKeyId
         }
         
-        let usedOneTimeKeysIds: [Data] = Array<Data>(Set<Data>(oneTimeKeysIds).subtracting(userStore.oneTimePublicKeys.map{ try! self.keyUtils.computePublicKeyId(publicKey: $0) }))
+        let usedOneTimeKeysIds: [Data] = Array<Data>(Set<Data>(oneTimeKeysIds).subtracting(userStore.oneTimePublicKeys.map{ try! self.keyUtils.computePublicKeyId(publicKey: $0, convertToCurve25519: false) }))
         
         return ValidatePublicKeysResponse(usedLongTermKeyId: usedLongTermKeyId, usedOneTimeKeysIds: usedOneTimeKeysIds)
     }
