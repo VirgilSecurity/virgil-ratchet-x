@@ -52,14 +52,19 @@ import VirgilCryptoRatchet
     @objc public let crypto: VirgilCrypto
     
     /// SessionStorage
-    @objc public let sessionStorage: SessionStorage
+    @objc public let sessionStorage: GroupSessionStorage
+    
+    @objc public var identifier: String {
+        // FIXME
+        return "STUB"
+    }
     
     private let ratchetGroupSession: RatchetGroupSession
     private let queue = DispatchQueue(label: "SecureGroupSessionQueue")
     
     // As receiver
     internal init(crypto: VirgilCrypto,
-                  sessionStorage: SessionStorage,
+                  sessionStorage: GroupSessionStorage,
                   privateKeyData: Data,
                   myId: Data,
                   ratchetGroupMessage: RatchetGroupMessage) throws {
@@ -158,22 +163,22 @@ import VirgilCryptoRatchet
     ///   - sessionStorage: SessionStorage
     ///   - crypto: VirgilCrypto
     /// - Throws: Rethrows from SessionStorage
-//    public init(data: Data, participantIdentity: String, sessionStorage: SessionStorage, crypto: VirgilCrypto) throws {
-//        self.crypto = crypto
-//        let ratchetSession = try RatchetSession.deserialize(input: data)
-//        ratchetSession.setRng(rng: crypto.rng)
-//
-//        self.ratchetSession = ratchetSession
-//        self.sessionStorage = sessionStorage
-//        self.participantIdentity = participantIdentity
-//
-//        super.init()
-//    }
-//
-//    /// Serialize session
-//    ///
-//    /// - Returns: Serialized data
-//    public func serialize() -> Data {
-//        return self.ratchetSession.serialize()
-//    }
+    public init(data: Data, privateKeyData: Data, sessionStorage: GroupSessionStorage, crypto: VirgilCrypto) throws {
+        self.crypto = crypto
+        let ratchetGroupSession = try RatchetGroupSession.deserialize(input: data)
+        ratchetGroupSession.setRng(rng: crypto.rng)
+        try ratchetGroupSession.setPrivateKey(myPrivateKey: privateKeyData)
+
+        self.ratchetGroupSession = ratchetGroupSession
+        self.sessionStorage = sessionStorage
+
+        super.init()
+    }
+
+    /// Serialize session
+    ///
+    /// - Returns: Serialized data
+    public func serialize() -> Data {
+        return self.ratchetGroupSession.serialize()
+    }
 }

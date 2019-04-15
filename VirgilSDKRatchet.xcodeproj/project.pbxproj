@@ -26,6 +26,14 @@
 /* Begin PBXBuildFile section */
 		16D942FA21A316410013E4DE /* RatchetClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D942F921A316410013E4DE /* RatchetClient.swift */; };
 		16D9430E21A321500013E4DE /* RatchetClient+Queries.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D9430D21A321500013E4DE /* RatchetClient+Queries.swift */; };
+		4219FACC2264C30000D4FBC7 /* GroupSessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4219FACB2264C30000D4FBC7 /* GroupSessionStorage.swift */; };
+		4219FACD2264C30000D4FBC7 /* GroupSessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4219FACB2264C30000D4FBC7 /* GroupSessionStorage.swift */; };
+		4219FACE2264C30000D4FBC7 /* GroupSessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4219FACB2264C30000D4FBC7 /* GroupSessionStorage.swift */; };
+		4219FACF2264C30000D4FBC7 /* GroupSessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4219FACB2264C30000D4FBC7 /* GroupSessionStorage.swift */; };
+		4219FAD12264C38800D4FBC7 /* FileGroupSessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4219FAD02264C38800D4FBC7 /* FileGroupSessionStorage.swift */; };
+		4219FAD22264C38800D4FBC7 /* FileGroupSessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4219FAD02264C38800D4FBC7 /* FileGroupSessionStorage.swift */; };
+		4219FAD32264C38800D4FBC7 /* FileGroupSessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4219FAD02264C38800D4FBC7 /* FileGroupSessionStorage.swift */; };
+		4219FAD42264C38800D4FBC7 /* FileGroupSessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4219FAD02264C38800D4FBC7 /* FileGroupSessionStorage.swift */; };
 		421B43CD2190650500D4F496 /* KeychainLongTermKeyStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421B43CC2190650500D4F496 /* KeychainLongTermKeyStorage.swift */; };
 		421B43EB2190AF5A00D4F496 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421B43EA2190AF5A00D4F496 /* AppDelegate.swift */; };
 		421B43ED2190AF5A00D4F496 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421B43EC2190AF5A00D4F496 /* ViewController.swift */; };
@@ -358,6 +366,8 @@
 /* Begin PBXFileReference section */
 		16D942F921A316410013E4DE /* RatchetClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatchetClient.swift; sourceTree = "<group>"; };
 		16D9430D21A321500013E4DE /* RatchetClient+Queries.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RatchetClient+Queries.swift"; sourceTree = "<group>"; };
+		4219FACB2264C30000D4FBC7 /* GroupSessionStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupSessionStorage.swift; sourceTree = "<group>"; };
+		4219FAD02264C38800D4FBC7 /* FileGroupSessionStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileGroupSessionStorage.swift; sourceTree = "<group>"; };
 		421B43CC2190650500D4F496 /* KeychainLongTermKeyStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainLongTermKeyStorage.swift; sourceTree = "<group>"; };
 		421B43E82190AF5900D4F496 /* RatchetTestApp iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "RatchetTestApp iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		421B43EA2190AF5A00D4F496 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -777,6 +787,8 @@
 			children = (
 				42AB65DF2184F31F00AC4631 /* SessionStorage.swift */,
 				42BA8F3F2194771C00075827 /* FileSessionStorage.swift */,
+				4219FACB2264C30000D4FBC7 /* GroupSessionStorage.swift */,
+				4219FAD02264C38800D4FBC7 /* FileGroupSessionStorage.swift */,
 			);
 			path = SessionStorage;
 			sourceTree = "<group>";
@@ -1151,6 +1163,7 @@
 				42352471221EE9690079DD2A /* OneTimeKeysStorage.swift in Sources */,
 				4235246D221EE9690079DD2A /* LongTermKey.swift in Sources */,
 				42352477221EE9690079DD2A /* SignedPublicKey.swift in Sources */,
+				4219FACD2264C30000D4FBC7 /* GroupSessionStorage.swift in Sources */,
 				42352470221EE9690079DD2A /* OneTimeKey.swift in Sources */,
 				42352479221EE9690079DD2A /* RatchetClient.swift in Sources */,
 				42352480221EE9690079DD2A /* SecureSession.swift in Sources */,
@@ -1161,6 +1174,7 @@
 				42352474221EE9690079DD2A /* FileSessionStorage.swift in Sources */,
 				42352475221EE9690079DD2A /* PublicKeySet.swift in Sources */,
 				4235246F221EE9690079DD2A /* KeychainLongTermKeyStorage.swift in Sources */,
+				4219FAD22264C38800D4FBC7 /* FileGroupSessionStorage.swift in Sources */,
 				4258CD62225DDC8E003CFCBD /* SecureGroupSession.swift in Sources */,
 				4235247B221EE9690079DD2A /* RotationLog.swift in Sources */,
 				42352472221EE9690079DD2A /* FileOneTimeKeysStorage.swift in Sources */,
@@ -1180,6 +1194,7 @@
 				42352486221EE96A0079DD2A /* OneTimeKeysStorage.swift in Sources */,
 				42352482221EE96A0079DD2A /* LongTermKey.swift in Sources */,
 				4235248C221EE96A0079DD2A /* SignedPublicKey.swift in Sources */,
+				4219FACE2264C30000D4FBC7 /* GroupSessionStorage.swift in Sources */,
 				42352485221EE96A0079DD2A /* OneTimeKey.swift in Sources */,
 				4235248E221EE96A0079DD2A /* RatchetClient.swift in Sources */,
 				42352495221EE96A0079DD2A /* SecureSession.swift in Sources */,
@@ -1190,6 +1205,7 @@
 				42352489221EE96A0079DD2A /* FileSessionStorage.swift in Sources */,
 				4235248A221EE96A0079DD2A /* PublicKeySet.swift in Sources */,
 				42352484221EE96A0079DD2A /* KeychainLongTermKeyStorage.swift in Sources */,
+				4219FAD32264C38800D4FBC7 /* FileGroupSessionStorage.swift in Sources */,
 				4258CD63225DDC8E003CFCBD /* SecureGroupSession.swift in Sources */,
 				42352490221EE96A0079DD2A /* RotationLog.swift in Sources */,
 				42352487221EE96A0079DD2A /* FileOneTimeKeysStorage.swift in Sources */,
@@ -1209,6 +1225,7 @@
 				4235249B221EE96A0079DD2A /* OneTimeKeysStorage.swift in Sources */,
 				42352497221EE96A0079DD2A /* LongTermKey.swift in Sources */,
 				423524A1221EE96A0079DD2A /* SignedPublicKey.swift in Sources */,
+				4219FACF2264C30000D4FBC7 /* GroupSessionStorage.swift in Sources */,
 				4235249A221EE96A0079DD2A /* OneTimeKey.swift in Sources */,
 				423524A3221EE96A0079DD2A /* RatchetClient.swift in Sources */,
 				423524AA221EE96A0079DD2A /* SecureSession.swift in Sources */,
@@ -1219,6 +1236,7 @@
 				4235249E221EE96A0079DD2A /* FileSessionStorage.swift in Sources */,
 				4235249F221EE96A0079DD2A /* PublicKeySet.swift in Sources */,
 				42352499221EE96A0079DD2A /* KeychainLongTermKeyStorage.swift in Sources */,
+				4219FAD42264C38800D4FBC7 /* FileGroupSessionStorage.swift in Sources */,
 				4258CD64225DDC8E003CFCBD /* SecureGroupSession.swift in Sources */,
 				423524A5221EE96A0079DD2A /* RotationLog.swift in Sources */,
 				4235249C221EE96A0079DD2A /* FileOneTimeKeysStorage.swift in Sources */,
@@ -1277,6 +1295,7 @@
 				42BA8F402194771C00075827 /* FileSessionStorage.swift in Sources */,
 				42AB65BD218350F700AC4631 /* SignedPublicKey.swift in Sources */,
 				42AB65AD21834F0A00AC4631 /* KeysRotator.swift in Sources */,
+				4219FACC2264C30000D4FBC7 /* GroupSessionStorage.swift in Sources */,
 				42AB65E22184F31F00AC4631 /* LongTermKeysStorage.swift in Sources */,
 				16D9430E21A321500013E4DE /* RatchetClient+Queries.swift in Sources */,
 				42AB65BB218350F700AC4631 /* PublicKeySet.swift in Sources */,
@@ -1287,6 +1306,7 @@
 				421B440021912CA100D4F496 /* FileOneTimeKeysStorage.swift in Sources */,
 				424FAAB02177520200622A3B /* SecureSession.swift in Sources */,
 				42AB65E32184F31F00AC4631 /* OneTimeKeysStorage.swift in Sources */,
+				4219FAD12264C38800D4FBC7 /* FileGroupSessionStorage.swift in Sources */,
 				4258CD61225DDC8E003CFCBD /* SecureGroupSession.swift in Sources */,
 				42C837652211B283008AFFD9 /* KeysRotatorProtocol.swift in Sources */,
 				42352442221D78B80079DD2A /* RotationLog.swift in Sources */,

@@ -50,6 +50,8 @@ import VirgilCryptoRatchet
 @objc(VSRSecureSession) public final class SecureSession: NSObject {
     /// Participant identity
     @objc public let participantIdentity: String
+    
+    @objc public let name: String
 
     /// Crypto
     @objc public let crypto: VirgilCrypto
@@ -64,6 +66,7 @@ import VirgilCryptoRatchet
     internal init(crypto: VirgilCrypto,
                   sessionStorage: SessionStorage,
                   participantIdentity: String,
+                  name: String,
                   receiverIdentityPrivateKey: VirgilPrivateKey,
                   receiverLongTermPrivateKey: LongTermKey,
                   receiverOneTimePrivateKey: OneTimeKey?,
@@ -72,6 +75,7 @@ import VirgilCryptoRatchet
         self.crypto = crypto
         self.sessionStorage = sessionStorage
         self.participantIdentity = participantIdentity
+        self.name = name
 
         let ratchetSession = RatchetSession()
         ratchetSession.setRng(rng: crypto.rng)
@@ -91,6 +95,7 @@ import VirgilCryptoRatchet
     internal init(crypto: VirgilCrypto,
                   sessionStorage: SessionStorage,
                   participantIdentity: String,
+                  name: String,
                   senderIdentityPrivateKey: Data,
                   receiverIdentityPublicKey: Data,
                   receiverLongTermPublicKey: Data,
@@ -98,6 +103,7 @@ import VirgilCryptoRatchet
         self.crypto = crypto
         self.sessionStorage = sessionStorage
         self.participantIdentity = participantIdentity
+        self.name = name
 
         let ratchetSession = RatchetSession()
         ratchetSession.setRng(rng: crypto.rng)
@@ -188,7 +194,7 @@ import VirgilCryptoRatchet
     ///   - sessionStorage: SessionStorage
     ///   - crypto: VirgilCrypto
     /// - Throws: Rethrows from SessionStorage
-    public init(data: Data, participantIdentity: String, sessionStorage: SessionStorage, crypto: VirgilCrypto) throws {
+    public init(data: Data, participantIdentity: String, name: String /* FIXME*/, sessionStorage: SessionStorage, crypto: VirgilCrypto) throws {
         self.crypto = crypto
         let ratchetSession = try RatchetSession.deserialize(input: data)
         ratchetSession.setRng(rng: crypto.rng)
@@ -196,6 +202,7 @@ import VirgilCryptoRatchet
         self.ratchetSession = ratchetSession
         self.sessionStorage = sessionStorage
         self.participantIdentity = participantIdentity
+        self.name = name
 
         super.init()
     }

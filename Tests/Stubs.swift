@@ -48,12 +48,34 @@ class RamSessionStorage: SessionStorage {
         self.db[session.participantIdentity] = session
     }
     
-    func retrieveSession(participantIdentity: String) -> SecureSession? {
+    func retrieveSession(participantIdentity: String, name: String) -> SecureSession? {
         return self.db[participantIdentity]
     }
     
-    func deleteSession(participantIdentity: String) throws {
+    func deleteSession(participantIdentity: String, name: String?) throws {
         guard self.db.removeValue(forKey: participantIdentity) != nil else {
+            throw NSError()
+        }
+    }
+    
+    func reset() throws {
+        self.db = [:]
+    }
+}
+
+class RamGroupSessionStorage: GroupSessionStorage {
+    private var db: [String: SecureGroupSession] = [:]
+    
+    func storeSession(_ session: SecureGroupSession) throws {
+        self.db[session.identifier] = session
+    }
+    
+    func retrieveSession(identifier: String, privateKeyData: Data) -> SecureGroupSession? {
+        return self.db[identifier]
+    }
+    
+    func deleteSession(identifier: String) throws {
+        guard self.db.removeValue(forKey: identifier) != nil else {
             throw NSError()
         }
     }

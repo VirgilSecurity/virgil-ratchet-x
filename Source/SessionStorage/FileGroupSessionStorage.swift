@@ -39,9 +39,9 @@ import VirgilCrypto
 
 /// FileSessionStorage using files
 /// This class is thread-safe
-@objc(VSRFileSessionStorage) open class FileSessionStorage: NSObject, SessionStorage {
+@objc(VSRFileGroupSessionStorage) open class FileGroupSessionStorage: NSObject, GroupSessionStorage {
     private let fileSystem: FileSystem
-    private let queue = DispatchQueue(label: "FileSessionStorageQueue")
+    private let queue = DispatchQueue(label: "FileGroupSessionStorageQueue")
     private let crypto: VirgilCrypto
     
     /// Initializer
@@ -50,55 +50,49 @@ import VirgilCrypto
     ///   - identity: identity of this user
     ///   - crypto: VirgilCrypto that will be forwarded to SecureSession
     @objc public init(identity: String, crypto: VirgilCrypto) {
-        self.fileSystem = FileSystem(userIdentifier: identity, pathComponents: ["SESSIONS"])
+        self.fileSystem = FileSystem(userIdentifier: identity, pathComponents: ["GROUPS"])
         self.crypto = crypto
-
+        
         super.init()
     }
-
+    
     /// Stores session
     ///
     /// - Parameter session: session to store
     /// - Throws: Rethrows from FileSystem
-    public func storeSession(_ session: SecureSession) throws {
+    public func storeSession(_ session: SecureGroupSession) throws {
         try self.queue.sync {
             let data = session.serialize()
             
-            try self.fileSystem.write(data: data, name: session.name, subdir: session.participantIdentity)
+            try self.fileSystem.write(data: data, name: session.identifier)
         }
     }
-
+    
     /// Retrieves session
     ///
     /// - Parameter participantIdentity: participant identity
     /// - Throws: Rethrows from FileSystem
-    public func retrieveSession(participantIdentity: String, name: String) -> SecureSession? {
-        guard let data = try? self.fileSystem.read(name: name, subdir: participantIdentity), !data.isEmpty else {
+    public func retrieveSession(identifier: String, privateKeyData: Data) -> SecureGroupSession? {
+        guard let data = try? self.fileSystem.read(name: identifier), !data.isEmpty else {
             return nil
         }
-
-        return try? SecureSession(data: data,
-                                  participantIdentity: participantIdentity,
-                                  name: name,
-                                  sessionStorage: self,
-                                  crypto: self.crypto)
+        
+        return try? SecureGroupSession(data: data,
+                                       privateKeyData: privateKeyData,
+                                       sessionStorage: self,
+                                       crypto: self.crypto)
     }
-
+    
     /// Deletes session
     ///
     /// - Parameter participantIdentity: participantIdentity: participant identity
     /// - Throws: Rethrows from FileSystem
-    public func deleteSession(participantIdentity: String, name: String?) throws {
+    public func deleteSession(identifier: String) throws {
         try self.queue.sync {
-            if let name = name {
-                try self.fileSystem.delete(name: name, subdir: participantIdentity)
-            }
-            else {
-                try self.fileSystem.delete(subdir: participantIdentity)
-            }
+            try self.fileSystem.delete(name: identifier)
         }
     }
-
+    
     /// Removes all sessions
     ///
     /// - Throws: Rethrows from FileSystem

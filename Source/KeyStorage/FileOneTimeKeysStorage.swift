@@ -61,7 +61,7 @@ import Foundation
     ///
     /// - Parameter identity: identity of this user
     @objc public init(identity: String) {
-        self.fileSystem = FileSystem(identity: identity)
+        self.fileSystem = FileSystem(userIdentifier: identity, pathComponents: [])
 
         super.init()
     }
@@ -85,7 +85,7 @@ import Foundation
                 fatalError("oneTimeKeys should be nil")
             }
 
-            let data = try self.fileSystem.readOneTimeKeysFile()
+            let data = try self.fileSystem.read(name: "OTK")
 
             if !data.isEmpty {
                 self.oneTimeKeys = try PropertyListDecoder().decode(OneTimeKeys.self, from: data)
@@ -123,7 +123,7 @@ import Foundation
 
             let data = try PropertyListEncoder().encode(oneTimeKeys)
 
-            try self.fileSystem.writeOneTimeKeysFile(data: data)
+            try self.fileSystem.write(data: data, name: "OTK")
 
             self.oneTimeKeys = nil
         }
@@ -245,6 +245,6 @@ import Foundation
             fatalError("interactionCounter should be 0")
         }
 
-        try self.fileSystem.resetOneTimeKeys()
+        try self.fileSystem.delete()
     }
 }
