@@ -44,7 +44,7 @@ import VirgilSDK
     @objc public let identity: String
 
     /// User's identity card id
-    @objc public let identityCardId: String
+    @objc public let identityCard: Card
 
     /// User's identity private key (corresponding to public key in identityCard)
     @objc public let identityPrivateKey: VirgilPrivateKey
@@ -75,11 +75,11 @@ import VirgilSDK
     ///   - identityPrivateKey: user's identity private key (corresponding to public key in identityCard)
     ///   - accessTokenProvider: access token provider
     @objc public init(identity: String,
-                      identityCardId: String,
+                      identityCard: Card,
                       identityPrivateKey: VirgilPrivateKey,
                       accessTokenProvider: AccessTokenProvider) {
         self.identity = identity
-        self.identityCardId = identityCardId
+        self.identityCard = identityCard
         self.identityPrivateKey = identityPrivateKey
         self.accessTokenProvider = accessTokenProvider
 

@@ -43,7 +43,7 @@ import VirgilCryptoFoundation
 @testable import VirgilSDKRatchet
 
 class ClientTests: XCTestCase {
-    let keyUtils = RatchetKeyUtils()
+    let keyId = RatchetKeyId()
     
     private func initialize() -> (JwtGenerator, String, VirgilPrivateKey, Card, RatchetClient) {
         let testConfig = TestConfig.readFromBundle()
@@ -84,7 +84,7 @@ class ClientTests: XCTestCase {
         let longTermKey = try! crypto.generateKeyPair(ofType: .curve25519)
         
         let longTermPublicKey = try! crypto.exportPublicKey(longTermKey.publicKey)
-        let longTermKeyId = try! self.keyUtils.computePublicKeyId(publicKey: longTermPublicKey, convertToCurve25519: false)
+        let longTermKeyId = try! self.keyId.computePublicKeyId(publicKey: longTermPublicKey)
         let signature = try! crypto.generateSignature(of: longTermPublicKey, using: privateKey)
         
         let signedLongTermKey = SignedPublicKey(publicKey: longTermPublicKey, signature: signature)
@@ -113,11 +113,11 @@ class ClientTests: XCTestCase {
         let oneTimeKey1 = try! crypto.exportPublicKey(try! crypto.generateKeyPair(ofType: .curve25519).publicKey)
         let oneTimeKey2 = try! crypto.exportPublicKey(try! crypto.generateKeyPair(ofType: .curve25519).publicKey)
         
-        let oneTimeKeyId1 = try! self.keyUtils.computePublicKeyId(publicKey: oneTimeKey1, convertToCurve25519: false)
-        let oneTimeKeyId2 = try! self.keyUtils.computePublicKeyId(publicKey: oneTimeKey2, convertToCurve25519: false)
+        let oneTimeKeyId1 = try! self.keyId.computePublicKeyId(publicKey: oneTimeKey1)
+        let oneTimeKeyId2 = try! self.keyId.computePublicKeyId(publicKey: oneTimeKey2)
         
         let longTermPublicKey = try! crypto.exportPublicKey(longTermKey.publicKey)
-        let longTermKeyId = try! self.keyUtils.computePublicKeyId(publicKey: longTermPublicKey, convertToCurve25519: false)
+        let longTermKeyId = try! self.keyId.computePublicKeyId(publicKey: longTermPublicKey)
         let signature = try! crypto.generateSignature(of: longTermPublicKey, using: privateKey)
         
         let signedLongTermKey = SignedPublicKey(publicKey: longTermPublicKey, signature: signature)

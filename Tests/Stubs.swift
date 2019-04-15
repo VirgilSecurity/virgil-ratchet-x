@@ -162,7 +162,7 @@ class RamClient: RatchetClientProtocol {
         var oneTimePublicKeys: Set<Data> = []
     }
     
-    private let keyUtils = RatchetKeyUtils()
+    private let keyId = RatchetKeyId()
     private let cardManager: CardManager
     private let crypto = try! VirgilCrypto()
     var users: [String: UserStore] = [:]
@@ -229,14 +229,14 @@ class RamClient: RatchetClientProtocol {
         
         if let longTermKeyId = longTermKeyId,
             let storedLongTermPublicKey = userStore.longTermPublicKey?.publicKey,
-            try! self.keyUtils.computePublicKeyId(publicKey: storedLongTermPublicKey, convertToCurve25519: false) == longTermKeyId {
+            try! self.keyId.computePublicKeyId(publicKey: storedLongTermPublicKey) == longTermKeyId {
                 usedLongTermKeyId = nil
         }
         else {
             usedLongTermKeyId = longTermKeyId
         }
         
-        let usedOneTimeKeysIds: [Data] = Array<Data>(Set<Data>(oneTimeKeysIds).subtracting(userStore.oneTimePublicKeys.map{ try! self.keyUtils.computePublicKeyId(publicKey: $0, convertToCurve25519: false) }))
+        let usedOneTimeKeysIds: [Data] = Array<Data>(Set<Data>(oneTimeKeysIds).subtracting(userStore.oneTimePublicKeys.map{ try! self.keyId.computePublicKeyId(publicKey: $0) }))
         
         return ValidatePublicKeysResponse(usedLongTermKeyId: usedLongTermKeyId, usedOneTimeKeysIds: usedOneTimeKeysIds)
     }

@@ -64,7 +64,7 @@ import VirgilCrypto
 
     /// Identity private key
     @objc public let identityPrivateKey: VirgilPrivateKey
-
+    
     /// Crypto
     @objc public let crypto: VirgilCrypto
 
@@ -79,8 +79,11 @@ import VirgilCrypto
 
     /// Client
     public let client: RatchetClientProtocol
+    
+    // Identity card id
+    public let identityCard: Card
 
-    private let keyUtils = RatchetKeyUtils()
+    private let keyId = RatchetKeyId()
     private let keysRotator: KeysRotatorProtocol
 
     /// Initializer
@@ -105,7 +108,7 @@ import VirgilCrypto
         let sessionStorage = FileSessionStorage(identity: context.identity, crypto: crypto)
         let keysRotator = KeysRotator(crypto: crypto,
                                       identityPrivateKey: context.identityPrivateKey,
-                                      identityCardId: context.identityCardId,
+                                      identityCardId: context.identityCard.identifier,
                                       orphanedOneTimeKeyTtl: context.orphanedOneTimeKeyTtl,
                                       longTermKeyTtl: context.longTermKeyTtl,
                                       outdatedLongTermKeyTtl: context.outdatedLongTermKeyTtl,
@@ -116,6 +119,7 @@ import VirgilCrypto
 
         self.init(crypto: crypto,
                   identityPrivateKey: context.identityPrivateKey,
+                  identityCard: context.identityCard,
                   accessTokenProvider: context.accessTokenProvider,
                   client: client,
                   longTermKeysStorage: longTermKeysStorage,
@@ -128,6 +132,7 @@ import VirgilCrypto
     ///
     /// - Parameters:
     ///   - identityPrivateKey: identity private key
+    ///   - identityCardId: Identity card id
     ///   - accessTokenProvider: access token provider
     ///   - client: client
     ///   - longTermKeysStorage: long-term keys storage
@@ -136,6 +141,7 @@ import VirgilCrypto
     ///   - keysRotator: keys rotation
     public init(crypto: VirgilCrypto,
                 identityPrivateKey: VirgilPrivateKey,
+                identityCard: Card,
                 accessTokenProvider: AccessTokenProvider,
                 client: RatchetClientProtocol,
                 longTermKeysStorage: LongTermKeysStorage,
@@ -144,6 +150,7 @@ import VirgilCrypto
                 keysRotator: KeysRotatorProtocol) {
         self.crypto = crypto
         self.identityPrivateKey = identityPrivateKey
+        self.identityCard = identityCard
         self.accessTokenProvider = accessTokenProvider
         self.client = client
         self.longTermKeysStorage = longTermKeysStorage
@@ -335,7 +342,7 @@ import VirgilCrypto
 
                 let oneTimePrivateKey = try self.crypto.exportPrivateKey(keyPair.privateKey)
                 oneTimePublicKey = try self.crypto.exportPublicKey(keyPair.publicKey)
-                let keyId = try self.keyUtils.computePublicKeyId(publicKey: oneTimePublicKey, convertToCurve25519: false)
+                let keyId = try self.keyId.computePublicKeyId(publicKey: oneTimePublicKey)
 
                 _ = try self.oneTimeKeysStorage.storeKey(oneTimePrivateKey, withId: keyId)
 
@@ -400,7 +407,7 @@ import VirgilCrypto
         }
 
         let receiverLongTermPublicKey = ratchetMessage.getLongTermPublicKey()
-        let longTermKeyId = try self.keyUtils.computePublicKeyId(publicKey: receiverLongTermPublicKey, convertToCurve25519: false)
+        let longTermKeyId = try self.keyId.computePublicKeyId(publicKey: receiverLongTermPublicKey)
         let receiverLongTermPrivateKey = try self.longTermKeysStorage.retrieveKey(withId: longTermKeyId)
 
         let receiverOneTimePublicKey = ratchetMessage.getOneTimePublicKey()
@@ -410,7 +417,7 @@ import VirgilCrypto
             receiverOneTimeKeyId = nil
         }
         else {
-            receiverOneTimeKeyId = try self.keyUtils.computePublicKeyId(publicKey: receiverOneTimePublicKey, convertToCurve25519: false)
+            receiverOneTimeKeyId = try self.keyId.computePublicKeyId(publicKey: receiverOneTimePublicKey)
         }
 
         let receiverOneTimePrivateKey: OneTimeKey?
@@ -448,6 +455,84 @@ import VirgilCrypto
         try self.sessionStorage.storeSession(session)
 
         return session
+    }
+    
+    @objc public func startNewGroupSession(with receiversCards: [Card]) throws -> RatchetGroupMessage {
+        let ticket = RatchetGroupTicket()
+        
+        ticket.setRng(rng: self.crypto.rng)
+        
+        guard let myId = Data(hexEncodedString: self.identityCard.identifier) else {
+            throw NSError()
+        }
+        
+        let publicKey = self.crypto.extractPublicKey(from: self.identityPrivateKey)
+        let publicKeyData = try self.crypto.exportPublicKey(publicKey)
+        
+        try ticket.addNewParticipant(participantId: myId, publicKey: publicKeyData)
+        
+        try receiversCards.forEach { card in
+            guard let participantId = Data(hexEncodedString: card.identifier) else {
+                throw NSError()
+            }
+
+            guard let publicKey = card.publicKey as? VirgilPublicKey else {
+                throw NSError()
+            }
+            
+            let publicKeyData = try self.crypto.exportPublicKey(publicKey)
+            
+            try ticket.addNewParticipant(participantId: participantId, publicKey: publicKeyData)
+        }
+        
+        return ticket.getFullTicketMessage()
+    }
+    
+    @objc public func startGroupSession(with receiversCards: [Card],
+                                        using ratchetMessage: RatchetGroupMessage) throws -> SecureGroupSession {
+        guard ratchetMessage.getType() == .startGroup else {
+            throw NSError()
+        }
+        
+        guard ratchetMessage.getPubKeyCount() == receiversCards.count + 1 else {
+            throw NSError()
+        }
+        
+        try receiversCards.forEach { card in
+            guard let participantId = Data(hexEncodedString: card.identifier) else {
+                throw NSError()
+            }
+            
+            guard let publicKey = card.publicKey as? VirgilPublicKey else {
+                throw NSError()
+            }
+            
+            let publicKeyData = try self.crypto.exportPublicKey(publicKey)
+            
+            let cardPublicKeyId = try self.keyId.computePublicKeyId(publicKey: publicKeyData)
+            
+            let msgPublicKeyId = ratchetMessage.getPubKeyId(participantId: participantId)
+            
+            guard msgPublicKeyId == cardPublicKeyId else {
+                throw NSError()
+            }
+        }
+        
+        let privateKeyData = try self.crypto.exportPrivateKey(self.identityPrivateKey)
+        
+        guard let myId = Data(hexEncodedString: self.identityCard.identifier) else {
+            throw NSError()
+        }
+        
+        let msgPublicKeyId = ratchetMessage.getPubKeyId(participantId: myId)
+        
+        let myPublicKeyId = try self.keyId.computePublicKeyId(publicKey: self.crypto.exportPublicKey(self.crypto.extractPublicKey(from: self.identityPrivateKey)))
+        
+        guard msgPublicKeyId == myPublicKeyId else {
+            throw NSError()
+        }
+        
+        return try SecureGroupSession(crypto: self.crypto, sessionStorage: self.sessionStorage, privateKeyData: privateKeyData, myId: myId, ratchetGroupMessage: ratchetMessage)
     }
 
     /// Removes all data corresponding to this user: sessions and keys.

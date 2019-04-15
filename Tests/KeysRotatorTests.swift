@@ -42,7 +42,7 @@ import VirgilCryptoRatchet
 @testable import VirgilSDKRatchet
 
 class KeysRotatorTests: XCTestCase {
-    private let keyUtils = RatchetKeyUtils()
+    private let keyId = RatchetKeyId()
     private let crypto = try! VirgilCrypto()
     
     override func setUp() {
@@ -57,7 +57,7 @@ class KeysRotatorTests: XCTestCase {
         
         do {
             if let longTermKey = userStore.longTermPublicKey?.publicKey {
-                let keyId = try self.keyUtils.computePublicKeyId(publicKey: longTermKey, convertToCurve25519: false)
+                let keyId = try self.keyId.computePublicKeyId(publicKey: longTermKey)
                 
                 guard try longTermStorage.retrieveKey(withId: keyId).identifier == keyId else {
                     return false
@@ -67,7 +67,7 @@ class KeysRotatorTests: XCTestCase {
             let storedOneTimeKeysIds = Set<Data>(try oneTimeStorage.retrieveAllKeys().map { $0.identifier })
             
             let cloudOneTimeKeysIds = Set<Data>(try userStore.oneTimePublicKeys.map {
-                try self.keyUtils.computePublicKeyId(publicKey: $0, convertToCurve25519: false)
+                try self.keyId.computePublicKeyId(publicKey: $0)
             })
             
             guard storedOneTimeKeysIds == cloudOneTimeKeysIds else {

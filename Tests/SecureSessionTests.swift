@@ -99,6 +99,7 @@ class SecureSessionTests: XCTestCase {
         
         let senderSecureChat = SecureChat(crypto: crypto,
                                           identityPrivateKey: senderIdentityKeyPair.privateKey,
+                                          identityCard: senderCard,
                                           accessTokenProvider: senderTokenProvider,
                                           client: fakeClient,
                                           longTermKeysStorage: RamLongTermKeysStorage(db: [:]),
@@ -110,6 +111,7 @@ class SecureSessionTests: XCTestCase {
         
         let receiverSecureChat = SecureChat(crypto: crypto,
                                             identityPrivateKey: receiverIdentityKeyPair.privateKey,
+                                            identityCard: receiverCard,
                                             accessTokenProvider: receiverTokenProvider,
                                             client: fakeClient,
                                             longTermKeysStorage: receiverLongTermKeysStorage,
