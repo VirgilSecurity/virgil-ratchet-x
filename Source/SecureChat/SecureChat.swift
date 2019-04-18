@@ -479,8 +479,9 @@ import VirgilCrypto
     
     @objc public func startNewGroupSession(with receiversCards: [Card]) throws -> RatchetGroupMessage {
         let ticket = RatchetGroupTicket()
-        
         ticket.setRng(rng: self.crypto.rng)
+        
+        try ticket.setupTicketAsNew()
         
         guard let myId = Data(hexEncodedString: self.identityCard.identifier) else {
             throw NSError()
@@ -505,12 +506,12 @@ import VirgilCrypto
             try ticket.addNewParticipant(participantId: participantId, publicKey: publicKeyData)
         }
         
-        return ticket.getFullTicketMessage()
+        return ticket.getTicketMessage()
     }
     
     @objc public func startGroupSession(with receiversCards: [Card],
                                         using ratchetMessage: RatchetGroupMessage) throws -> SecureGroupSession {
-        guard ratchetMessage.getType() == .startGroup else {
+        guard ratchetMessage.getType() == .groupInfo else {
             throw NSError()
         }
         

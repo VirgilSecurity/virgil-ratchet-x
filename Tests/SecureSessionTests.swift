@@ -140,7 +140,7 @@ class SecureSessionTests: XCTestCase {
         
         XCTAssert(decryptedMessage == plainText)
         
-        Utils.encryptDecrypt100Times(senderSession: senderSession, receiverSession: receiverSession)
+        try! Utils.encryptDecrypt100Times(senderSession: senderSession, receiverSession: receiverSession)
     }
     
     func test2__session_persistence__random_uuid_messages_ram_client__should_decrypt() {

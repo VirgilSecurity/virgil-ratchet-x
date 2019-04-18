@@ -39,7 +39,7 @@ import XCTest
 import VirgilSDKRatchet
 
 class Utils {
-    static func encryptDecrypt100Times(senderSession: SecureSession, receiverSession: SecureSession) {
+    static func encryptDecrypt100Times(senderSession: SecureSession, receiverSession: SecureSession) throws {
         for _ in 0..<100 {
             let sender: SecureSession
             let receiver: SecureSession
@@ -55,35 +55,35 @@ class Utils {
             
             let plainText = UUID().uuidString
             
-            let message = try! sender.encrypt(string: plainText)
+            let message = try sender.encrypt(string: plainText)
             
-            let decryptedMessage = try! receiver.decryptString(from: message)
+            let decryptedMessage = try receiver.decryptString(from: message)
             
             XCTAssert(decryptedMessage == plainText)
         }
     }
     
-    static func encryptDecrypt100Times(senderGroupSession: SecureGroupSession, receiverGroupSession: SecureGroupSession) {
+    static func encryptDecrypt100Times(groupSessions: [SecureGroupSession]) throws {
         for _ in 0..<100 {
-            let sender: SecureGroupSession
-            let receiver: SecureGroupSession
+            let senderNum = Int.random(in: 0..<groupSessions.count)
             
-            if Bool.random() {
-                sender = senderGroupSession
-                receiver = receiverGroupSession
-            }
-            else {
-                sender = receiverGroupSession
-                receiver = senderGroupSession
-            }
+            let sender = groupSessions[senderNum]
             
             let plainText = UUID().uuidString
             
-            let message = try! sender.encrypt(string: plainText)
+            let message = try sender.encrypt(string: plainText)
             
-            let decryptedMessage = try! receiver.decryptString(from: message)
-            
-            XCTAssert(decryptedMessage == plainText)
+            for i in 0..<groupSessions.count {
+                if i == senderNum {
+                    continue
+                }
+                
+                let receiver = groupSessions[i]
+                
+                let decryptedMessage = try receiver.decryptString(from: message)
+                
+                XCTAssert(decryptedMessage == plainText)
+            }
         }
     }
     

@@ -147,7 +147,7 @@ class IntegrationTests: XCTestCase {
         
         XCTAssert(decryptedMessage == plainText)
         
-        Utils.encryptDecrypt100Times(senderSession: senderSession, receiverSession: receiverSession)
+        try! Utils.encryptDecrypt100Times(senderSession: senderSession, receiverSession: receiverSession)
     }
     
     func test2__session_persistence__random_uuid_messages__should_decrypt() {
@@ -193,7 +193,7 @@ class IntegrationTests: XCTestCase {
         
         XCTAssert(decryptedMessage == plainText)
         
-        Utils.encryptDecrypt100Times(senderSession: senderSession, receiverSession: receiverSession)
+        try! Utils.encryptDecrypt100Times(senderSession: senderSession, receiverSession: receiverSession)
         
         try! senderSecureChat.deleteSession(withParticpantIdentity: receiverCard.identity)
         try! receiverSecureChat.deleteSession(withParticpantIdentity: senderCard.identity)
@@ -219,7 +219,7 @@ class IntegrationTests: XCTestCase {
         
         XCTAssert(decryptedMessage == plainText)
         
-        Utils.encryptDecrypt100Times(senderSession: senderSession, receiverSession: receiverSession)
+        try! Utils.encryptDecrypt100Times(senderSession: senderSession, receiverSession: receiverSession)
         
         sleep(3)
         

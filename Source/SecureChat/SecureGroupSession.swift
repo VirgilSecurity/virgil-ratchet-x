@@ -35,6 +35,7 @@
 //
 
 import Foundation
+import VirgilSDK
 import VirgilCrypto
 import VirgilCryptoRatchet
 
@@ -55,8 +56,11 @@ import VirgilCryptoRatchet
     @objc public let sessionStorage: GroupSessionStorage
     
     @objc public var identifier: String {
-        // FIXME
-        return "STUB"
+        return self.ratchetGroupSession.getId().hexEncodedString()
+    }
+    
+    @objc public var myIdentifier: String {
+        return self.ratchetGroupSession.getMyId().hexEncodedString()
     }
     
     private let ratchetGroupSession: RatchetGroupSession
@@ -153,6 +157,58 @@ import VirgilCryptoRatchet
         }
         
         return string
+    }
+    
+    public func createChangeMembersTicket(add: [Card], remove: [Card]) throws -> RatchetGroupMessage {
+        guard !add.isEmpty || !remove.isEmpty else {
+            throw NSError()
+        }
+        
+        let ticket: RatchetGroupTicket
+            
+        if remove.isEmpty {
+            ticket = self.ratchetGroupSession.createGroupTicketForAddingMembers()
+        }
+        else {
+            ticket = try self.ratchetGroupSession.createGroupTicketForAddingOrRemovingMembers()
+        }
+        
+        for card in remove {
+            guard let id = Data(hexEncodedString: card.identifier) else {
+                throw NSError()
+            }
+            
+            try ticket.removeParticipant(participantId: id)
+        }
+        
+        for card in add {
+            guard let id = Data(hexEncodedString: card.identifier) else {
+                throw NSError()
+            }
+            
+            guard let publicKey = card.publicKey as? VirgilPublicKey else {
+                throw NSError()
+            }
+            let publicKeyData = try self.crypto.exportPublicKey(publicKey)
+            
+            try ticket.addNewParticipant(participantId: id, publicKey: publicKeyData)
+        }
+
+        return ticket.getTicketMessage()
+    }
+    
+    public func useChangeMembersTicket(ticket: RatchetGroupMessage, add: [Card], remove: [Card]) throws {
+        guard ticket.getType() == .groupInfo else {
+            throw NSError()
+        }
+        
+        guard !add.isEmpty || !remove.isEmpty else {
+            throw NSError()
+        }
+        
+        // TODO: Check ticket matches arguments
+        
+        try self.ratchetGroupSession.setupSession(message: ticket)
     }
     
     /// Init session from serialized representation

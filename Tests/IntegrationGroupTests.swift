@@ -50,93 +50,122 @@ class IntegrationGroupTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
     
-    private func initChat() -> (Card, Card, SecureChat, SecureChat) {
+    private func initChat(numberOfParticipants: Int) -> ([Card], [SecureChat]) {
         let testConfig = TestConfig.readFromBundle()
         
         let crypto = try! VirgilCrypto()
-        let receiverIdentityKeyPair = try! crypto.generateKeyPair(ofType: .ed25519)
-        let senderIdentityKeyPair = try! crypto.generateKeyPair(ofType: .ed25519)
-        
-        let senderIdentity = NSUUID().uuidString
-        let receiverIdentity = NSUUID().uuidString
-        
-        let receiverTokenProvider = CachingJwtProvider(renewJwtCallback: { context, completion in
-            let privateKey = try! crypto.importPrivateKey(from: Data(base64Encoded: testConfig.ApiPrivateKey)!).privateKey
-            
-            let generator = JwtGenerator(apiKey: privateKey, apiPublicKeyIdentifier: testConfig.ApiPublicKeyId, accessTokenSigner: VirgilAccessTokenSigner(virgilCrypto: crypto), appId: testConfig.AppId, ttl: 10050)
-            
-            completion(try! generator.generateToken(identity: receiverIdentity), nil)
-        })
-        
-        let senderTokenProvider = CachingJwtProvider(renewJwtCallback: { context, completion in
-            let privateKey = try! crypto.importPrivateKey(from: Data(base64Encoded: testConfig.ApiPrivateKey)!).privateKey
-            
-            let generator = JwtGenerator(apiKey: privateKey, apiPublicKeyIdentifier: testConfig.ApiPublicKeyId, accessTokenSigner: VirgilAccessTokenSigner(virgilCrypto: crypto), appId: testConfig.AppId, ttl: 10050)
-            
-            completion(try! generator.generateToken(identity: senderIdentity), nil)
-        })
         
         let cardVerifier = VirgilCardVerifier(cardCrypto: VirgilCardCrypto(virgilCrypto: crypto))!
         cardVerifier.verifyVirgilSignature = false
         
-        let senderCardManagerParams = CardManagerParams(cardCrypto: VirgilCardCrypto(virgilCrypto: crypto), accessTokenProvider: senderTokenProvider, cardVerifier: cardVerifier)
-        let receiverCardManagerParams = CardManagerParams(cardCrypto: VirgilCardCrypto(virgilCrypto: crypto), accessTokenProvider: receiverTokenProvider, cardVerifier: cardVerifier)
-        senderCardManagerParams.cardClient = CardClient(serviceUrl: URL(string: testConfig.ServiceURL)!)
-        receiverCardManagerParams.cardClient = CardClient(serviceUrl: URL(string: testConfig.ServiceURL)!)
-        
-        let senderCardManager = CardManager(params: senderCardManagerParams)
-        let receiverCardManager = CardManager(params: receiverCardManagerParams)
-        
-        let receiverCard = try! receiverCardManager.publishCard(privateKey: receiverIdentityKeyPair.privateKey, publicKey: receiverIdentityKeyPair.publicKey).startSync().getResult()
-        let senderCard = try! senderCardManager.publishCard(privateKey: senderIdentityKeyPair.privateKey, publicKey: senderIdentityKeyPair.publicKey).startSync().getResult()
-        
-        let params = try! KeychainStorageParams.makeKeychainStorageParams(appName: "test")
-        let receiverLongTermKeysStorage = try! KeychainLongTermKeysStorage(identity: receiverIdentity, params: params)
-        let senderLongTermKeysStorage = try! KeychainLongTermKeysStorage(identity: senderIdentity, params: params)
-        
-        let receiverOneTimeKeysStorage = FileOneTimeKeysStorage(identity: receiverIdentity)
-        let senderOneTimeKeysStorage = FileOneTimeKeysStorage(identity: senderIdentity)
-
         let client = RatchetClient(serviceUrl: URL(string: testConfig.ServiceURL)!)
         
-        let receiverKeysRotator = KeysRotator(crypto: crypto, identityPrivateKey: receiverIdentityKeyPair.privateKey, identityCardId: receiverCard.identifier, orphanedOneTimeKeyTtl: 5, longTermKeyTtl: 10, outdatedLongTermKeyTtl: 5, desiredNumberOfOneTimeKeys: IntegrationTests.desiredNumberOfOtKeys, longTermKeysStorage: receiverLongTermKeysStorage, oneTimeKeysStorage: receiverOneTimeKeysStorage, client: client)
+        var cards = [Card]()
+        var chats = [SecureChat]()
         
-        let senderKeysRotator = KeysRotator(crypto: crypto, identityPrivateKey: senderIdentityKeyPair.privateKey, identityCardId: senderCard.identifier, orphanedOneTimeKeyTtl: 100, longTermKeyTtl: 100, outdatedLongTermKeyTtl: 100, desiredNumberOfOneTimeKeys: IntegrationTests.desiredNumberOfOtKeys, longTermKeysStorage: senderLongTermKeysStorage, oneTimeKeysStorage: senderOneTimeKeysStorage, client: client)
+        for _ in 0..<numberOfParticipants {
+            let identity = NSUUID().uuidString
+            let keyPair = try! crypto.generateKeyPair(ofType: .ed25519)
+            let tokenProvider = CachingJwtProvider(renewJwtCallback: { context, completion in
+                let privateKey = try! crypto.importPrivateKey(from: Data(base64Encoded: testConfig.ApiPrivateKey)!).privateKey
+                
+                let generator = JwtGenerator(apiKey: privateKey, apiPublicKeyIdentifier: testConfig.ApiPublicKeyId, accessTokenSigner: VirgilAccessTokenSigner(virgilCrypto: crypto), appId: testConfig.AppId, ttl: 10050)
+                
+                completion(try! generator.generateToken(identity: identity), nil)
+            })
+            
+            let cardManagerParams = CardManagerParams(cardCrypto: VirgilCardCrypto(virgilCrypto: crypto), accessTokenProvider: tokenProvider, cardVerifier: cardVerifier)
+            cardManagerParams.cardClient = CardClient(serviceUrl: URL(string: testConfig.ServiceURL)!)
+            
+            let cardManager = CardManager(params: cardManagerParams)
+            
+            let card = try! cardManager.publishCard(privateKey: keyPair.privateKey, publicKey: keyPair.publicKey).startSync().getResult()
+            
+            let params = try! KeychainStorageParams.makeKeychainStorageParams(appName: "test")
+            let longTermKeysStorage = try! KeychainLongTermKeysStorage(identity: identity, params: params)
+            let oneTimeKeysStorage = FileOneTimeKeysStorage(identity: identity)
+            
+            let keysRotator = KeysRotator(crypto: crypto, identityPrivateKey: keyPair.privateKey, identityCardId: card.identifier, orphanedOneTimeKeyTtl: 5, longTermKeyTtl: 10, outdatedLongTermKeyTtl: 5, desiredNumberOfOneTimeKeys: IntegrationTests.desiredNumberOfOtKeys, longTermKeysStorage: longTermKeysStorage, oneTimeKeysStorage: oneTimeKeysStorage, client: client)
+            
+            let secureChat = SecureChat(crypto: crypto,
+                                        identityPrivateKey: keyPair.privateKey,
+                                        identityCard: card,
+                                        accessTokenProvider: tokenProvider,
+                                        client: client,
+                                        longTermKeysStorage: longTermKeysStorage,
+                                        oneTimeKeysStorage: oneTimeKeysStorage,
+                                        sessionStorage: FileSessionStorage(identity: identity, crypto: crypto),
+                                        groupSessionStorage: FileGroupSessionStorage(identity: identity, crypto: crypto),
+                                        keysRotator: keysRotator)
+            
+            cards.append(card)
+            chats.append(secureChat)
+        }
         
-        
-        let senderSecureChat = SecureChat(crypto: crypto,
-                                          identityPrivateKey: senderIdentityKeyPair.privateKey,
-                                          identityCard: senderCard,
-                                          accessTokenProvider: senderTokenProvider,
-                                          client: client,
-                                          longTermKeysStorage: senderLongTermKeysStorage,
-                                          oneTimeKeysStorage: senderOneTimeKeysStorage,
-                                          sessionStorage: FileSessionStorage(identity: senderIdentity, crypto: crypto),
-                                          groupSessionStorage: FileGroupSessionStorage(identity: senderIdentity, crypto: crypto),
-                                          keysRotator: senderKeysRotator)
-        
-        let receiverSecureChat = SecureChat(crypto: crypto,
-                                            identityPrivateKey: receiverIdentityKeyPair.privateKey,
-                                            identityCard: receiverCard,
-                                            accessTokenProvider: receiverTokenProvider,
-                                            client: client,
-                                            longTermKeysStorage: receiverLongTermKeysStorage,
-                                            oneTimeKeysStorage: receiverOneTimeKeysStorage,
-                                            sessionStorage: FileSessionStorage(identity: receiverIdentity, crypto: crypto),
-                                            groupSessionStorage: FileGroupSessionStorage(identity: receiverIdentity, crypto: crypto),
-                                            keysRotator: receiverKeysRotator)
-        
-        return (senderCard, receiverCard, senderSecureChat, receiverSecureChat)
+        return (cards, chats)
     }
     
     func test1__encrypt_decrypt__random_uuid_messages__should_decrypt() {
-        let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = self.initChat()
+        let num = 10
         
-        let initMsg = try! senderSecureChat.startNewGroupSession(with: [receiverCard])
+        let (cards1, chats1) = self.initChat(numberOfParticipants: num)
         
-        let senderSession = try! senderSecureChat.startGroupSession(with: [senderCard], using: initMsg)
-        let receiverSession = try! receiverSecureChat.startGroupSession(with: [receiverCard], using: initMsg)
+        let initMsg = try! chats1[0].startNewGroupSession(with: [Card](cards1.dropFirst()))
         
-        Utils.encryptDecrypt100Times(senderGroupSession: senderSession, receiverGroupSession: receiverSession)
+        var sessions = [SecureGroupSession]()
+        
+        for i in 0..<num {
+            var localCards = cards1
+            localCards.remove(at: i)
+            
+            let session = try! chats1[i].startGroupSession(with: localCards, using: initMsg)
+            
+            sessions.append(session)
+        }
+        
+        try! Utils.encryptDecrypt100Times(groupSessions: sessions)
+        
+        let (cards2, chats2) = self.initChat(numberOfParticipants: num)
+        
+        let ticket1 = try! sessions[0].createChangeMembersTicket(add: cards2, remove: [])
+        
+        for i in 0..<num * 2 {
+            if i < num {
+                try! sessions[i].useChangeMembersTicket(ticket: ticket1, add: cards2, remove: [])
+            }
+            else {
+                var localCards = cards1
+                localCards.remove(at: i - num)
+                
+                let session = try! chats2[i - num].startGroupSession(with: cards1 + localCards, using:
+                    ticket1)
+                
+                sessions.append(session)
+            }
+        }
+        
+        try! Utils.encryptDecrypt100Times(groupSessions: sessions)
+        
+        let (cards3, chats3) = self.initChat(numberOfParticipants: num)
+        
+        let ticket2 = try! sessions[num].createChangeMembersTicket(add: cards3, remove: cards1)
+        sessions = [SecureGroupSession](sessions.dropFirst(num))
+        
+        for i in 0..<num * 2 {
+            if i < num {
+                try! sessions[i].useChangeMembersTicket(ticket: ticket2, add: cards3, remove: cards1)
+            }
+            else {
+                var localCards = cards3
+                localCards.remove(at: i - num)
+                
+                let session = try! chats3[i - num].startGroupSession(with: cards2 + localCards, using:
+                    ticket2)
+                
+                sessions.append(session)
+            }
+        }
+        
+        try! Utils.encryptDecrypt100Times(groupSessions: sessions)
     }
 }
