@@ -210,7 +210,7 @@ import VirgilCryptoRatchet
             throw NSError()
         }
 
-        guard ticket.getPubKeyCount() == self.participantsCount + addCards.count - removeCardIds.count else {
+        guard ticket.getPubKeyCount() - 1 == self.participantsCount + addCards.count - removeCardIds.count else {
             throw NSError()
         }
 
