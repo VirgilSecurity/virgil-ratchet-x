@@ -127,11 +127,11 @@ class IntegrationGroupTests: XCTestCase {
         
         let (cards2, chats2) = self.initChat(numberOfParticipants: num)
         
-        let ticket1 = try! sessions[0].createChangeMembersTicket(add: cards2, remove: [])
+        let ticket1 = try! sessions[0].createChangeMembersTicket(add: cards2, removeCardIds: [])
         
         for i in 0..<num * 2 {
             if i < num {
-                try! sessions[i].useChangeMembersTicket(ticket: ticket1, add: cards2, remove: [])
+                try! sessions[i].useChangeMembersTicket(ticket: ticket1, addCards: cards2, removeCardIds: [])
             }
             else {
                 var localCards = cards1
@@ -148,12 +148,12 @@ class IntegrationGroupTests: XCTestCase {
         
         let (cards3, chats3) = self.initChat(numberOfParticipants: num)
         
-        let ticket2 = try! sessions[num].createChangeMembersTicket(add: cards3, remove: cards1)
+        let ticket2 = try! sessions[num].createChangeMembersTicket(add: cards3, removeCardIds: cards1.map { $0.identifier })
         sessions = [SecureGroupSession](sessions.dropFirst(num))
         
         for i in 0..<num * 2 {
             if i < num {
-                try! sessions[i].useChangeMembersTicket(ticket: ticket2, add: cards3, remove: cards1)
+                try! sessions[i].useChangeMembersTicket(ticket: ticket2, addCards: cards3, removeCardIds: cards1.map { $0.identifier })
             }
             else {
                 var localCards = cards3

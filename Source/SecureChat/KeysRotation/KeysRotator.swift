@@ -122,6 +122,8 @@ public class KeysRotator: KeysRotatorProtocol {
 
             Log.debug("Started keys' rotation operation")
 
+            var interactionStarted = false
+
             let completionWrapper: (RotationLog?, Error?) -> Void = {
                 do {
                     try self.mutex.unlock()
@@ -131,13 +133,15 @@ public class KeysRotator: KeysRotatorProtocol {
                     return
                 }
 
-                do {
-                    try self.oneTimeKeysStorage.stopInteraction()
-                }
-                catch {
-                    Log.debug("Completed keys' rotation with storage error")
-                    completion(nil, error)
-                    return
+                if interactionStarted {
+                    do {
+                        try self.oneTimeKeysStorage.stopInteraction()
+                    }
+                    catch {
+                        Log.debug("Completed keys' rotation with storage error")
+                        completion(nil, error)
+                        return
+                    }
                 }
 
                 if let error = $1 {
@@ -162,6 +166,8 @@ public class KeysRotator: KeysRotatorProtocol {
                 let rotationLog = RotationLog()
 
                 try self.oneTimeKeysStorage.startInteraction()
+                interactionStarted = true
+
                 let oneTimeKeys = try self.oneTimeKeysStorage.retrieveAllKeys()
                 var oneTimeKeysIds = [Data]()
                 oneTimeKeysIds.reserveCapacity(oneTimeKeys.count)

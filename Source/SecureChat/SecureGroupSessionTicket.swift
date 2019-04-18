@@ -39,10 +39,10 @@ import VirgilCryptoRatchet
 
 @objc(VSRSecureGroupSessionTicket) public final class SecureGroupSessionTicket: NSObject {
     @objc public let ticket: RatchetGroupTicket
-    
+
     public init(ticket: RatchetGroupTicket) {
         self.ticket = ticket
-        
+
         super.init()
     }
 

@@ -13,9 +13,11 @@ disabled_rules:
   - closure_body_length
   - no_grouping_extension
   - identifier_name
+  - lower_acl_than_parent
   - file_length
-  - function_body_length
   - type_body_length
+  - function_body_length
+  - explicit_acl
   - cyclomatic_complexity
 
 opt_in_rules:
@@ -29,7 +31,6 @@ opt_in_rules:
   - explicit_acl
   - explicit_enum_raw_value
   - explicit_init
-  - explicit_top_level_acl
   - extension_access_modifier
   - file_header
   - first_where
@@ -56,6 +57,7 @@ opt_in_rules:
   - comma
   - control_statement
   - convenience_type
+  - cyclomatic_complexity
   - discouraged_direct_init
   - discouraged_optional_boolean
   - empty_enum_arguments
@@ -65,9 +67,11 @@ opt_in_rules:
   - empty_xctest_method
   - explicit_self
   - fallthrough
+  - file_length
   - for_where
   - force_cast
   - force_try
+  - function_body_length
   - function_parameter_count
   - identical_operands
   - identifier_name
@@ -113,6 +117,7 @@ opt_in_rules:
   - trailing_newline
   - trailing_semicolon
   - trailing_whitespace
+  - type_body_length
   - type_name
   - unavailable_function
   - unneeded_break_in_switch

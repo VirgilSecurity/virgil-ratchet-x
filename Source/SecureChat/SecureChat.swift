@@ -64,7 +64,7 @@ import VirgilCrypto
 
     /// Identity private key
     @objc public let identityPrivateKey: VirgilPrivateKey
-    
+
     /// Crypto
     @objc public let crypto: VirgilCrypto
 
@@ -76,12 +76,12 @@ import VirgilCrypto
 
     /// Session storage
     @objc public let sessionStorage: SessionStorage
-    
+
     @objc public let groupSessionStorage: GroupSessionStorage
 
     /// Client
     public let client: RatchetClientProtocol
-    
+
     // Identity card id
     public let identityCard: Card
 
@@ -89,7 +89,7 @@ import VirgilCrypto
     private let keysRotator: KeysRotatorProtocol
 
     public static let defaultSessionName = "DEFAULT"
-    
+
     /// Initializer
     ///
     /// - Parameter context: SecureChatContext
@@ -219,8 +219,10 @@ import VirgilCrypto
     ///
     /// - Parameter particpantIdentity: participant identity
     /// - Returns: SecureSession if exists
-    @objc open func existingSession(withParticpantIdentity particpantIdentity: String, name: String? = nil) -> SecureSession? {
-        if let session = self.sessionStorage.retrieveSession(participantIdentity: particpantIdentity, name: name ?? SecureChat.defaultSessionName) {
+    @objc open func existingSession(withParticpantIdentity particpantIdentity: String,
+                                    name: String? = nil) -> SecureSession? {
+        if let session = self.sessionStorage.retrieveSession(participantIdentity: particpantIdentity,
+                                                             name: name ?? SecureChat.defaultSessionName) {
             Log.debug("Found existing session with \(particpantIdentity)")
 
             return session
@@ -239,16 +241,17 @@ import VirgilCrypto
     @objc public func deleteSession(withParticpantIdentity particpantIdentity: String, name: String? = nil) throws {
         Log.debug("Deleting session with \(particpantIdentity)")
 
-        try self.sessionStorage.deleteSession(participantIdentity: particpantIdentity, name: name ?? SecureChat.defaultSessionName)
+        try self.sessionStorage.deleteSession(participantIdentity: particpantIdentity,
+                                              name: name ?? SecureChat.defaultSessionName)
     }
-    
+
     /// Deletes session with given participant identity
     ///
     /// - Parameter particpantIdentity: participant identity
     /// - Throws: Rethrows from SessionStorage
     @objc public func deleteAllSessions(withParticpantIdentity particpantIdentity: String) throws {
         Log.debug("Deleting session with \(particpantIdentity)")
-        
+
         try self.sessionStorage.deleteSession(participantIdentity: particpantIdentity, name: nil)
     }
 
@@ -283,7 +286,8 @@ import VirgilCrypto
             do {
                 Log.debug("Starting new session with \(receiverCard.identity)")
 
-                guard self.existingSession(withParticpantIdentity: receiverCard.identity, name: name ?? SecureChat.defaultSessionName) == nil else {
+                guard self.existingSession(withParticpantIdentity: receiverCard.identity,
+                                           name: name ?? SecureChat.defaultSessionName) == nil else {
                     throw SecureChatError.sessionAlreadyExists
                 }
 
@@ -405,7 +409,8 @@ import VirgilCrypto
     ///         - Rethrows from SessionStorage
     ///         - Rethrows form SecureSession
     ///         - Rethrows form AccessTokenProvider
-    @objc public func startNewSessionAsReceiver(senderCard: Card, name: String? = nil,
+    @objc public func startNewSessionAsReceiver(senderCard: Card,
+                                                name: String? = nil,
                                                 ratchetMessage: RatchetMessage) throws -> SecureSession {
         Log.debug("Responding to session with \(senderCard.identity) queued")
 
@@ -441,8 +446,11 @@ import VirgilCrypto
 
         let receiverOneTimePrivateKey: OneTimeKey?
 
+        var interactionStarted = false
+
         if let receiverOneTimeKeyId = receiverOneTimeKeyId {
             try self.oneTimeKeysStorage.startInteraction()
+            interactionStarted = true
 
             receiverOneTimePrivateKey = try self.oneTimeKeysStorage.retrieveKey(withId: receiverOneTimeKeyId)
         }
@@ -451,7 +459,7 @@ import VirgilCrypto
         }
 
         defer {
-            if receiverOneTimeKeyId != nil {
+            if interactionStarted {
                 try? self.oneTimeKeysStorage.stopInteraction()
             }
         }
@@ -476,22 +484,22 @@ import VirgilCrypto
 
         return session
     }
-    
+
     @objc public func startNewGroupSession(with receiversCards: [Card]) throws -> RatchetGroupMessage {
         let ticket = RatchetGroupTicket()
         ticket.setRng(rng: self.crypto.rng)
-        
+
         try ticket.setupTicketAsNew()
-        
+
         guard let myId = Data(hexEncodedString: self.identityCard.identifier) else {
             throw NSError()
         }
-        
+
         let publicKey = self.crypto.extractPublicKey(from: self.identityPrivateKey)
         let publicKeyData = try self.crypto.exportPublicKey(publicKey)
-        
+
         try ticket.addNewParticipant(participantId: myId, publicKey: publicKeyData)
-        
+
         try receiversCards.forEach { card in
             guard let participantId = Data(hexEncodedString: card.identifier) else {
                 throw NSError()
@@ -500,60 +508,66 @@ import VirgilCrypto
             guard let publicKey = card.publicKey as? VirgilPublicKey else {
                 throw NSError()
             }
-            
+
             let publicKeyData = try self.crypto.exportPublicKey(publicKey)
-            
+
             try ticket.addNewParticipant(participantId: participantId, publicKey: publicKeyData)
         }
-        
+
         return ticket.getTicketMessage()
     }
-    
+
     @objc public func startGroupSession(with receiversCards: [Card],
                                         using ratchetMessage: RatchetGroupMessage) throws -> SecureGroupSession {
         guard ratchetMessage.getType() == .groupInfo else {
             throw NSError()
         }
-        
+
         guard ratchetMessage.getPubKeyCount() == receiversCards.count + 1 else {
             throw NSError()
         }
-        
+
         try receiversCards.forEach { card in
             guard let participantId = Data(hexEncodedString: card.identifier) else {
                 throw NSError()
             }
-            
+
             guard let publicKey = card.publicKey as? VirgilPublicKey else {
                 throw NSError()
             }
-            
+
             let publicKeyData = try self.crypto.exportPublicKey(publicKey)
-            
+
             let cardPublicKeyId = try self.keyId.computePublicKeyId(publicKey: publicKeyData)
-            
-            let msgPublicKeyId = ratchetMessage.getPubKeyId(participantId: participantId)
-            
+
+            let msgPublicKeyId = try ratchetMessage.getPubKeyId(participantId: participantId)
+
             guard msgPublicKeyId == cardPublicKeyId else {
                 throw NSError()
             }
         }
-        
+
         let privateKeyData = try self.crypto.exportPrivateKey(self.identityPrivateKey)
-        
+
         guard let myId = Data(hexEncodedString: self.identityCard.identifier) else {
             throw NSError()
         }
-        
-        let msgPublicKeyId = ratchetMessage.getPubKeyId(participantId: myId)
-        
-        let myPublicKeyId = try self.keyId.computePublicKeyId(publicKey: self.crypto.exportPublicKey(self.crypto.extractPublicKey(from: self.identityPrivateKey)))
-        
+
+        let msgPublicKeyId = try ratchetMessage.getPubKeyId(participantId: myId)
+
+        let publicKey = self.crypto.extractPublicKey(from: self.identityPrivateKey)
+        let publicKeyData = try self.crypto.exportPublicKey(publicKey)
+        let myPublicKeyId = try self.keyId.computePublicKeyId(publicKey: publicKeyData)
+
         guard msgPublicKeyId == myPublicKeyId else {
             throw NSError()
         }
-        
-        return try SecureGroupSession(crypto: self.crypto, sessionStorage: self.groupSessionStorage, privateKeyData: privateKeyData, myId: myId, ratchetGroupMessage: ratchetMessage)
+
+        return try SecureGroupSession(crypto: self.crypto,
+                                      sessionStorage: self.groupSessionStorage,
+                                      privateKeyData: privateKeyData,
+                                      myId: myId,
+                                      ratchetGroupMessage: ratchetMessage)
     }
 
     /// Removes all data corresponding to this user: sessions and keys.

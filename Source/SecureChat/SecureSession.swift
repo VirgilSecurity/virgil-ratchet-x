@@ -50,7 +50,7 @@ import VirgilCryptoRatchet
 @objc(VSRSecureSession) public final class SecureSession: NSObject {
     /// Participant identity
     @objc public let participantIdentity: String
-    
+
     @objc public let name: String
 
     /// Crypto
@@ -194,7 +194,10 @@ import VirgilCryptoRatchet
     ///   - sessionStorage: SessionStorage
     ///   - crypto: VirgilCrypto
     /// - Throws: Rethrows from SessionStorage
-    public init(data: Data, participantIdentity: String, name: String /* FIXME*/, sessionStorage: SessionStorage, crypto: VirgilCrypto) throws {
+    public init(data: Data, participantIdentity: String,
+                name: String,
+                sessionStorage: SessionStorage,
+                crypto: VirgilCrypto) throws {
         self.crypto = crypto
         let ratchetSession = try RatchetSession.deserialize(input: data)
         ratchetSession.setRng(rng: crypto.rng)

@@ -43,7 +43,7 @@ import VirgilCrypto
     private let fileSystem: FileSystem
     private let queue = DispatchQueue(label: "FileGroupSessionStorageQueue")
     private let crypto: VirgilCrypto
-    
+
     /// Initializer
     ///
     /// - Parameters:
@@ -52,10 +52,10 @@ import VirgilCrypto
     @objc public init(identity: String, crypto: VirgilCrypto) {
         self.fileSystem = FileSystem(userIdentifier: identity, pathComponents: ["GROUPS"])
         self.crypto = crypto
-        
+
         super.init()
     }
-    
+
     /// Stores session
     ///
     /// - Parameter session: session to store
@@ -63,11 +63,11 @@ import VirgilCrypto
     public func storeSession(_ session: SecureGroupSession) throws {
         try self.queue.sync {
             let data = session.serialize()
-            
+
             try self.fileSystem.write(data: data, name: session.identifier)
         }
     }
-    
+
     /// Retrieves session
     ///
     /// - Parameter participantIdentity: participant identity
@@ -76,13 +76,13 @@ import VirgilCrypto
         guard let data = try? self.fileSystem.read(name: identifier), !data.isEmpty else {
             return nil
         }
-        
+
         return try? SecureGroupSession(data: data,
                                        privateKeyData: privateKeyData,
                                        sessionStorage: self,
                                        crypto: self.crypto)
     }
-    
+
     /// Deletes session
     ///
     /// - Parameter participantIdentity: participantIdentity: participant identity
@@ -92,7 +92,7 @@ import VirgilCrypto
             try self.fileSystem.delete(name: identifier)
         }
     }
-    
+
     /// Removes all sessions
     ///
     /// - Throws: Rethrows from FileSystem

@@ -43,7 +43,7 @@ import VirgilCrypto
     private let fileSystem: FileSystem
     private let queue = DispatchQueue(label: "FileSessionStorageQueue")
     private let crypto: VirgilCrypto
-    
+
     /// Initializer
     ///
     /// - Parameters:
@@ -63,7 +63,7 @@ import VirgilCrypto
     public func storeSession(_ session: SecureSession) throws {
         try self.queue.sync {
             let data = session.serialize()
-            
+
             try self.fileSystem.write(data: data, name: session.name, subdir: session.participantIdentity)
         }
     }

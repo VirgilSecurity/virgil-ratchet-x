@@ -54,7 +54,7 @@ import Foundation
     private let fileSystem: FileSystem
 
     private struct OneTimeKeys: Codable {
-        var oneTimeKeys: [OneTimeKey]
+        internal var oneTimeKeys: [OneTimeKey]
     }
 
     /// Initializer
