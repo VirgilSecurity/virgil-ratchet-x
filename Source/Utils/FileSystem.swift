@@ -114,25 +114,25 @@ internal class FileSystem {
 }
 
 internal extension FileSystem {
-    internal func write(data: Data, name: String, subdir: String? = nil) throws {
+    func write(data: Data, name: String, subdir: String? = nil) throws {
         let url = try self.getFullUrl(name: name, subdir: subdir)
 
         try self.writeFile(url: url, data: data)
     }
 
-    internal func read(name: String, subdir: String? = nil) throws -> Data {
+    func read(name: String, subdir: String? = nil) throws -> Data {
         let url = try self.getFullUrl(name: name, subdir: subdir)
 
         return self.readFile(url: url)
     }
 
-    internal func delete(name: String, subdir: String? = nil) throws {
+    func delete(name: String, subdir: String? = nil) throws {
         let url = try self.getFullUrl(name: name, subdir: subdir)
 
         try self.fileManager.removeItem(at: url)
     }
 
-    internal func delete(subdir: String? = nil) throws {
+    func delete(subdir: String? = nil) throws {
         let url = try self.getFullUrl(name: nil, subdir: subdir)
 
         try self.fileManager.removeItem(at: url)
