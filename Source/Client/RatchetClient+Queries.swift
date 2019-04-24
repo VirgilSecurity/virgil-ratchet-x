@@ -146,7 +146,7 @@ extension RatchetClient: RatchetClientProtocol {
     ///         - Rethrows from JSONDecoder
     ///         - Rethrows from BaseClient
     public func getPublicKeySet(forRecipientIdentity identity: String, token: String) throws -> PublicKeySet {
-        guard let url = URL(string: "pfs/v2/keys/actions/get", relativeTo: self.serviceUrl) else {
+        guard let url = URL(string: "pfs/v2/keys/actions/pick-one", relativeTo: self.serviceUrl) else {
             throw RatchetClientError.constructingUrl
         }
 
