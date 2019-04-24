@@ -330,7 +330,7 @@ import VirgilCrypto
             }
         }
     }
-    
+
     /// Starts multiple new sessions with given participants using their identity cards
     ///
     /// - Parameters:
@@ -340,7 +340,7 @@ import VirgilCrypto
                                                      completion: @escaping ([SecureSession]?, Error?) -> Void) {
         self.startMutipleNewSessionsAsSender(receiverCards: receiverCards, name: name).start(completion: completion)
     }
-    
+
     /// Starts multiple new sessions with given participants using their identity cards
     ///
     /// - Parameter receiverCards: receivers identity cards
@@ -355,64 +355,67 @@ import VirgilCrypto
     ///         - Rethrows from RatchetClient
     ///         - Rethrows form SecureSession
     ///         - Rethrows form AccessTokenProvider
-    open func startMutipleNewSessionsAsSender(receiverCards: [Card], name: String? = nil) -> GenericOperation<[SecureSession]> {
+    open func startMutipleNewSessionsAsSender(receiverCards: [Card],
+                                              name: String? = nil) -> GenericOperation<[SecureSession]> {
         Log.debug("Starting new session with \(receiverCards.map { $0.identity }) queued")
-        
+
         return CallbackOperation { _, completion in
             do {
                 Log.debug("Starting new session with \(receiverCards.map { $0.identity })")
-                
+
                 for card in receiverCards {
                     guard self.existingSession(withParticpantIdentity: card.identity,
-                                           name: name ?? SecureChat.defaultSessionName) == nil else {
+                                               name: name ?? SecureChat.defaultSessionName) == nil else {
                         throw SecureChatError.sessionAlreadyExists
                     }
-                    
+
                     guard let identityPublicKey = card.publicKey as? VirgilPublicKey else {
                         throw SecureChatError.wrongIdentityPublicKeyCrypto
                     }
-                    
+
                     guard identityPublicKey.keyType == .ed25519 else {
                         throw SecureChatError.invalidKeyType
                     }
                 }
-                
+
                 let tokenContext = TokenContext(service: "ratchet", operation: "get")
                 let getTokenOperation = OperationUtils.makeGetTokenOperation(
                     tokenContext: tokenContext, accessTokenProvider: self.accessTokenProvider)
-                
+
                 let token = try getTokenOperation.startSync().getResult()
-                
-                let publicKeysSets = try self.client.getMultiplePublicKeysSets(forRecipientsIdentities: receiverCards.map { $0.identity },
-                                                                   token: token.stringRepresentation())
-                
+
+                let publicKeysSets = try self.client
+                    .getMultiplePublicKeysSets(forRecipientsIdentities: receiverCards.map { $0.identity },
+                                               token: token.stringRepresentation())
+
                 guard publicKeysSets.count == receiverCards.count else {
                     throw SecureChatError.publicKeysSetsMismatch
                 }
-                
+
                 var sessions: [SecureSession] = []
-                
+
                 for card in receiverCards {
                     let set = publicKeysSets.first { $0.identity == card.identity }
-                    
+
                     guard let publicKeySet = set else {
                         throw SecureChatError.publicKeysSetsMismatch
                     }
-                    
+
                     guard let identityPublicKey = card.publicKey as? VirgilPublicKey else {
                         throw SecureChatError.wrongIdentityPublicKeyCrypto
                     }
-                
-                    let session = try self.startNewSessionAsSender(identity: card.identity,
-                                                                   identityPublicKey: identityPublicKey,
-                                                                   name: name,
-                                                                   identityPublicKeyData: publicKeySet.identityPublicKey,
-                                                                   longTermPublicKey: publicKeySet.longTermPublicKey,
-                                                                   oneTimePublicKey: publicKeySet.oneTimePublicKey)
-                    
+
+                    let session = try self
+                        .startNewSessionAsSender(identity: card.identity,
+                                                 identityPublicKey: identityPublicKey,
+                                                 name: name,
+                                                 identityPublicKeyData: publicKeySet.identityPublicKey,
+                                                 longTermPublicKey: publicKeySet.longTermPublicKey,
+                                                 oneTimePublicKey: publicKeySet.oneTimePublicKey)
+
                     sessions.append(session)
                 }
-                
+
                 completion(sessions, nil)
             }
             catch {
@@ -420,29 +423,29 @@ import VirgilCrypto
             }
         }
     }
-    
+
     private func startNewSessionAsSender(identity: String,
                                          identityPublicKey: VirgilPublicKey,
                                          name: String? = nil,
                                          identityPublicKeyData: Data,
                                          longTermPublicKey: SignedPublicKey,
-                                         oneTimePublicKey: Data?) throws -> SecureSession{
+                                         oneTimePublicKey: Data?) throws -> SecureSession {
         guard try self.crypto.exportPublicKey(identityPublicKey) == identityPublicKeyData else {
             throw SecureChatError.identityKeyDoesntMatch
         }
-        
+
         guard try self.crypto.verifySignature(longTermPublicKey.signature,
                                               of: longTermPublicKey.publicKey,
                                               with: identityPublicKey) else {
                                                 throw SecureChatError.invalidLongTermKeySignature
         }
-        
+
         if oneTimePublicKey == nil {
             Log.error("Creating weak session with \(identity)")
         }
-        
+
         let privateKeyData = try self.crypto.exportPrivateKey(self.identityPrivateKey)
-        
+
         let session = try SecureSession(crypto: self.crypto,
                                         sessionStorage: self.sessionStorage,
                                         participantIdentity: identity,
@@ -451,9 +454,9 @@ import VirgilCrypto
                                         receiverIdentityPublicKey: identityPublicKeyData,
                                         receiverLongTermPublicKey: longTermPublicKey.publicKey,
                                         receiverOneTimePublicKey: oneTimePublicKey)
-        
+
         try self.sessionStorage.storeSession(session)
-        
+
         return session
     }
 

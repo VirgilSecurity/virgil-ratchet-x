@@ -43,13 +43,13 @@ import Foundation
 
     /// Identity public key
     @objc public let identityPublicKey: Data
-    
+
     /// Long-term public key
     @objc public let longTermPublicKey: SignedPublicKey
-    
+
     /// One-time public key
     @objc public let oneTimePublicKey: Data?
-    
+
     /// Defines coding keys for encoding and decoding
     private enum CodingKeys: String, CodingKey {
         case identity = "identity"
@@ -57,7 +57,7 @@ import Foundation
         case longTermPublicKey = "long_term_key"
         case oneTimePublicKey = "one_time_key"
     }
-    
+
     internal init(identity: String,
                   identityPublicKey: Data,
                   longTermPublicKey: SignedPublicKey,
