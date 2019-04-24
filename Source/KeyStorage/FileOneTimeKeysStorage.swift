@@ -35,6 +35,7 @@
 //
 
 import Foundation
+import VirgilCrypto
 
 /// FileOneTimeKeysStorage errors
 ///
@@ -60,8 +61,9 @@ import Foundation
     /// Initializer
     ///
     /// - Parameter identity: identity of this user
-    @objc public init(identity: String) {
-        self.fileSystem = FileSystem(userIdentifier: identity, pathComponents: [])
+    @objc public init(identity: String, crypto: VirgilCrypto, identityKeyPair: VirgilKeyPair) {
+        let credentials = FileSystem.Credentials(crypto: crypto, keyPair: identityKeyPair)
+        self.fileSystem = FileSystem(userIdentifier: identity, pathComponents: [], credentials: credentials)
 
         super.init()
     }

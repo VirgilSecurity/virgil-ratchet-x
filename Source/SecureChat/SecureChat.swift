@@ -108,11 +108,17 @@ import VirgilCrypto
         }
 
         let longTermKeysStorage = try KeychainLongTermKeysStorage(identity: context.identity, params: params)
-        let oneTimeKeysStorage = FileOneTimeKeysStorage(identity: context.identity)
-        let sessionStorage = FileSessionStorage(identity: context.identity, crypto: crypto)
-        let groupSessionStorage = FileGroupSessionStorage(identity: context.identity, crypto: crypto)
+        let oneTimeKeysStorage = FileOneTimeKeysStorage(identity: context.identity,
+                                                        crypto: crypto,
+                                                        identityKeyPair: context.identityKeyPair)
+        let sessionStorage = FileSessionStorage(identity: context.identity,
+                                                crypto: crypto,
+                                                identityKeyPair: context.identityKeyPair)
+        let groupSessionStorage = try FileGroupSessionStorage(identity: context.identity,
+                                                              crypto: crypto,
+                                                              identityKeyPair: context.identityKeyPair)
         let keysRotator = KeysRotator(crypto: crypto,
-                                      identityPrivateKey: context.identityPrivateKey,
+                                      identityPrivateKey: context.identityKeyPair.privateKey,
                                       identityCardId: context.identityCard.identifier,
                                       orphanedOneTimeKeyTtl: context.orphanedOneTimeKeyTtl,
                                       longTermKeyTtl: context.longTermKeyTtl,
@@ -123,7 +129,7 @@ import VirgilCrypto
                                       client: client)
 
         self.init(crypto: crypto,
-                  identityPrivateKey: context.identityPrivateKey,
+                  identityPrivateKey: context.identityKeyPair.privateKey,
                   identityCard: context.identityCard,
                   accessTokenProvider: context.accessTokenProvider,
                   client: client,

@@ -46,13 +46,14 @@ import Foundation
 
     /// Retrieves session
     ///
-    /// - Parameter participantIdentity: participant identity
-    /// - Returns: Stored session if found, nil otherwise
-    @objc func retrieveSession(identifier: String, privateKeyData: Data) -> SecureGroupSession?
+    /// - Parameter identifier: session identifier
+    /// - Returns: Stored session if found
+    /// - Throws: Depends on implementation
+    @objc func retrieveSession(identifier: String) -> SecureGroupSession?
 
     /// Deletes session
     ///
-    /// - Parameter participantIdentity: participantIdentity: participant identity
+    /// - Parameter identifier: session identifier
     /// - Throws: Depends on implementation
     @objc func deleteSession(identifier: String) throws
 

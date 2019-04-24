@@ -43,15 +43,18 @@ import VirgilCrypto
     private let fileSystem: FileSystem
     private let queue = DispatchQueue(label: "FileGroupSessionStorageQueue")
     private let crypto: VirgilCrypto
+    private let privateKeyData: Data
 
     /// Initializer
     ///
     /// - Parameters:
     ///   - identity: identity of this user
     ///   - crypto: VirgilCrypto that will be forwarded to SecureSession
-    @objc public init(identity: String, crypto: VirgilCrypto) {
-        self.fileSystem = FileSystem(userIdentifier: identity, pathComponents: ["GROUPS"])
+    @objc public init(identity: String, crypto: VirgilCrypto, identityKeyPair: VirgilKeyPair) throws {
+        let credentials = FileSystem.Credentials(crypto: crypto, keyPair: identityKeyPair)
+        self.fileSystem = FileSystem(userIdentifier: identity, pathComponents: ["GROUPS"], credentials: credentials)
         self.crypto = crypto
+        self.privateKeyData = try crypto.exportPrivateKey(identityKeyPair.privateKey)
 
         super.init()
     }
@@ -70,9 +73,9 @@ import VirgilCrypto
 
     /// Retrieves session
     ///
-    /// - Parameter participantIdentity: participant identity
+    /// - Parameter identifier: session identifier
     /// - Throws: Rethrows from FileSystem
-    public func retrieveSession(identifier: String, privateKeyData: Data) -> SecureGroupSession? {
+    public func retrieveSession(identifier: String) -> SecureGroupSession? {
         guard let data = try? self.fileSystem.read(name: identifier), !data.isEmpty else {
             return nil
         }

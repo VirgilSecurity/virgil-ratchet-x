@@ -49,8 +49,9 @@ import VirgilCrypto
     /// - Parameters:
     ///   - identity: identity of this user
     ///   - crypto: VirgilCrypto that will be forwarded to SecureSession
-    @objc public init(identity: String, crypto: VirgilCrypto) {
-        self.fileSystem = FileSystem(userIdentifier: identity, pathComponents: ["SESSIONS"])
+    @objc public init(identity: String, crypto: VirgilCrypto, identityKeyPair: VirgilKeyPair) {
+        let credentials = FileSystem.Credentials(crypto: crypto, keyPair: identityKeyPair)
+        self.fileSystem = FileSystem(userIdentifier: identity, pathComponents: ["SESSIONS"], credentials: credentials)
         self.crypto = crypto
 
         super.init()

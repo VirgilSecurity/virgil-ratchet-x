@@ -83,7 +83,7 @@ class IntegrationGroupTests: XCTestCase {
             
             let params = try! KeychainStorageParams.makeKeychainStorageParams(appName: "test")
             let longTermKeysStorage = try! KeychainLongTermKeysStorage(identity: identity, params: params)
-            let oneTimeKeysStorage = FileOneTimeKeysStorage(identity: identity)
+            let oneTimeKeysStorage = FileOneTimeKeysStorage(identity: identity, crypto: crypto, identityKeyPair: keyPair)
             
             let keysRotator = KeysRotator(crypto: crypto, identityPrivateKey: keyPair.privateKey, identityCardId: card.identifier, orphanedOneTimeKeyTtl: 5, longTermKeyTtl: 10, outdatedLongTermKeyTtl: 5, desiredNumberOfOneTimeKeys: IntegrationTests.desiredNumberOfOtKeys, longTermKeysStorage: longTermKeysStorage, oneTimeKeysStorage: oneTimeKeysStorage, client: client)
             
@@ -94,8 +94,8 @@ class IntegrationGroupTests: XCTestCase {
                                         client: client,
                                         longTermKeysStorage: longTermKeysStorage,
                                         oneTimeKeysStorage: oneTimeKeysStorage,
-                                        sessionStorage: FileSessionStorage(identity: identity, crypto: crypto),
-                                        groupSessionStorage: FileGroupSessionStorage(identity: identity, crypto: crypto),
+                                        sessionStorage: FileSessionStorage(identity: identity, crypto: crypto, identityKeyPair: keyPair),
+                                        groupSessionStorage: try! FileGroupSessionStorage(identity: identity, crypto: crypto, identityKeyPair: keyPair),
                                         keysRotator: keysRotator)
             
             cards.append(card)

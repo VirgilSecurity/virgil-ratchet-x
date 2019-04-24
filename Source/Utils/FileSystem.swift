@@ -35,18 +35,26 @@
 //
 
 import Foundation
+import VirgilCrypto
 import VirgilSDK
 
 /// Class for saving Sessions and One-time keys to the filesystem
 /// NOTE: This class is not thread-safe
 internal class FileSystem {
+    internal struct Credentials {
+        let crypto: VirgilCrypto
+        let keyPair: VirgilKeyPair
+    }
+
     private let fileManager = FileManager()
     private let userIdentifier: String
     private let pathComponents: [String]
+    private let credentials: Credentials?
 
-    internal init(userIdentifier: String, pathComponents: [String]) {
+    internal init(userIdentifier: String, pathComponents: [String], credentials: Credentials? = nil) {
         self.userIdentifier = userIdentifier
         self.pathComponents = pathComponents
+        self.credentials = credentials
     }
 
     private func createRatchetSuppDir() throws -> URL {
@@ -85,11 +93,35 @@ internal class FileSystem {
         ]
     #endif
 
-        try data.write(to: url, options: options)
+        let dataToWrite: Data
+
+        if let credentials = self.credentials, !data.isEmpty {
+            dataToWrite = try credentials.crypto.signThenEncrypt(data,
+                                                                 with: credentials.keyPair.privateKey,
+                                                                 for: [credentials.keyPair.publicKey])
+        }
+        else {
+            dataToWrite = data
+        }
+
+        try dataToWrite.write(to: url, options: options)
     }
 
-    private func readFile(url: URL) -> Data {
-        return (try? Data(contentsOf: url)) ?? Data()
+    private func readFile(url: URL) throws -> Data {
+        let data = (try? Data(contentsOf: url)) ?? Data()
+
+        let dataToReturn: Data
+
+        if let credentials = self.credentials, !data.isEmpty {
+            dataToReturn = try credentials.crypto.decryptThenVerify(data,
+                                                                    with: credentials.keyPair.privateKey,
+                                                                    using: credentials.keyPair.publicKey)
+        }
+        else {
+            dataToReturn = data
+        }
+
+        return dataToReturn
     }
 
     private func getFullUrl(name: String?, subdir: String?) throws -> URL {
@@ -123,7 +155,7 @@ internal extension FileSystem {
     func read(name: String, subdir: String? = nil) throws -> Data {
         let url = try self.getFullUrl(name: name, subdir: subdir)
 
-        return self.readFile(url: url)
+        return try self.readFile(url: url)
     }
 
     func delete(name: String, subdir: String? = nil) throws {

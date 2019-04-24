@@ -56,7 +56,7 @@ import VirgilCryptoRatchet
     @objc public let sessionStorage: GroupSessionStorage
 
     @objc public var identifier: String {
-        return self.ratchetGroupSession.getId().hexEncodedString()
+        return self.ratchetGroupSession.getSessionId().hexEncodedString()
     }
 
     @objc public var myIdentifier: String {
@@ -83,7 +83,7 @@ import VirgilCryptoRatchet
         ratchetGroupSession.setRng(rng: crypto.rng)
 
         try ratchetGroupSession.setPrivateKey(myPrivateKey: privateKeyData)
-        ratchetGroupSession.setId(myId: myId)
+        ratchetGroupSession.setMyId(myId: myId)
         try ratchetGroupSession.setupSession(message: ratchetGroupMessage)
 
         self.ratchetGroupSession = ratchetGroupSession
@@ -171,10 +171,10 @@ import VirgilCryptoRatchet
         let ticket: RatchetGroupTicket
 
         if removeCardIds.isEmpty {
-            ticket = self.ratchetGroupSession.createGroupTicketForAddingMembers()
+            ticket = self.ratchetGroupSession.createGroupTicketForAddingParticipants()
         }
         else {
-            ticket = try self.ratchetGroupSession.createGroupTicketForAddingOrRemovingMembers()
+            ticket = try self.ratchetGroupSession.createGroupTicketForAddingOrRemovingParticipants()
         }
 
         for id in removeCardIds {
