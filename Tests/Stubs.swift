@@ -178,6 +178,10 @@ class RamOneTimeKeysStorage: OneTimeKeysStorage {
 }
 
 class RamClient: RatchetClientProtocol {
+    func getMultiplePublicKeysSets(forRecipientsIdentities identities: [String], token: String) throws -> [IdentityPublicKeySet] {
+        throw NSError()
+    }
+    
     struct UserStore {
         var identityPublicKey: (VirgilPublicKey, Data)?
         var longTermPublicKey: SignedPublicKey?

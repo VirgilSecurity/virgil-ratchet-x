@@ -133,12 +133,7 @@ class IntegrationTests: XCTestCase {
     func test1__encrypt_decrypt__random_uuid_messages__should_decrypt() {
         let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = self.initChat()
         
-        do {
-        _ = try receiverSecureChat.rotateKeys().startSync().getResult()
-        }
-        catch {
-            print(error)
-        }
+        _ = try! receiverSecureChat.rotateKeys().startSync().getResult()
         
         let senderSession = try! senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().getResult()
         
@@ -335,5 +330,40 @@ class IntegrationTests: XCTestCase {
         _ = try! receiverSecureChat.rotateKeys().startSync().getResult()
         
         XCTAssert(try! receiverSecureChat.longTermKeysStorage.retrieveAllKeys().count == 1)
+    }
+    
+    func test9__start_multiple_chats__random_uuid_messages__should_decrypt() {
+        let (card1, card2, chat1, chat2) = self.initChat()
+        let (card3, card4, chat3, chat4) = self.initChat()
+        
+        _ = try! chat2.rotateKeys().startSync().getResult()
+        _ = try! chat3.rotateKeys().startSync().getResult()
+        _ = try! chat4.rotateKeys().startSync().getResult()
+        
+        let sessions = try! chat1.startMutipleNewSessionsAsSender(receiverCards: [card2, card3, card4]).startSync().getResult()
+        
+        let plainText2 = UUID().uuidString
+        let plainText3 = UUID().uuidString
+        let plainText4 = UUID().uuidString
+    
+        let cipherText2 = try! sessions[0].encrypt(string: plainText2)
+        let cipherText3 = try! sessions[1].encrypt(string: plainText3)
+        let cipherText4 = try! sessions[2].encrypt(string: plainText4)
+        
+        let receiverSession2 = try! chat2.startNewSessionAsReceiver(senderCard: card1, ratchetMessage: cipherText2)
+        let receiverSession3 = try! chat3.startNewSessionAsReceiver(senderCard: card1, ratchetMessage: cipherText3)
+        let receiverSession4 = try! chat4.startNewSessionAsReceiver(senderCard: card1, ratchetMessage: cipherText4)
+        
+        let decryptedMessage2 = try! receiverSession2.decryptString(from: cipherText2)
+        let decryptedMessage3 = try! receiverSession3.decryptString(from: cipherText3)
+        let decryptedMessage4 = try! receiverSession4.decryptString(from: cipherText4)
+        
+        XCTAssert(decryptedMessage2 == plainText2)
+        XCTAssert(decryptedMessage3 == plainText3)
+        XCTAssert(decryptedMessage4 == plainText4)
+        
+        try! Utils.encryptDecrypt100Times(senderSession: sessions[0], receiverSession: receiverSession2)
+        try! Utils.encryptDecrypt100Times(senderSession: sessions[1], receiverSession: receiverSession3)
+        try! Utils.encryptDecrypt100Times(senderSession: sessions[2], receiverSession: receiverSession4)
     }
 }

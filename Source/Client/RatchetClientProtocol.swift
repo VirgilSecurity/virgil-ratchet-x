@@ -81,6 +81,15 @@ public protocol RatchetClientProtocol: class {
     /// - Returns: Set of public keys
     /// - Throws: Depends on implementation
     func getPublicKeySet(forRecipientIdentity identity: String, token: String) throws -> PublicKeySet
+    
+    /// Returns public keys sets for given identities.
+    ///
+    /// - Parameters:
+    ///   - identities: Users' identities
+    ///   - token: auth token (JWT)
+    /// - Returns: Sets of public keys
+    /// - Throws: Depends on implementation
+    func getMultiplePublicKeysSets(forRecipientsIdentities identities: [String], token: String) throws -> [IdentityPublicKeySet]
 
     /// Deletes keys entity
     ///

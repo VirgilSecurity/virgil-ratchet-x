@@ -205,6 +205,10 @@
 		4258CD66225DDF6D003CFCBD /* IntegrationGroupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4258CD65225DDF6D003CFCBD /* IntegrationGroupTests.swift */; };
 		4258CD67225DDF6D003CFCBD /* IntegrationGroupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4258CD65225DDF6D003CFCBD /* IntegrationGroupTests.swift */; };
 		4258CD68225DDF6D003CFCBD /* IntegrationGroupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4258CD65225DDF6D003CFCBD /* IntegrationGroupTests.swift */; };
+		428184DE2270F68D00E44A6B /* IdentityPublicKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 428184DD2270F68D00E44A6B /* IdentityPublicKeySet.swift */; };
+		428184DF2270F68D00E44A6B /* IdentityPublicKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 428184DD2270F68D00E44A6B /* IdentityPublicKeySet.swift */; };
+		428184E02270F68D00E44A6B /* IdentityPublicKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 428184DD2270F68D00E44A6B /* IdentityPublicKeySet.swift */; };
+		428184E12270F68D00E44A6B /* IdentityPublicKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 428184DD2270F68D00E44A6B /* IdentityPublicKeySet.swift */; };
 		429D79AE21779292003B56F8 /* VirgilCrypto.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 429D799F217791A2003B56F8 /* VirgilCrypto.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		429D79AF21779292003B56F8 /* VirgilCryptoAPI.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 429D799E217791A2003B56F8 /* VirgilCryptoAPI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		429D79B121779292003B56F8 /* VirgilSDK.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 429D79A0217791A2003B56F8 /* VirgilSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -427,6 +431,7 @@
 		424FAAA92177520200622A3B /* SecureSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecureSession.swift; sourceTree = "<group>"; };
 		4258CD60225DDC8E003CFCBD /* SecureGroupSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureGroupSession.swift; sourceTree = "<group>"; };
 		4258CD65225DDF6D003CFCBD /* IntegrationGroupTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntegrationGroupTests.swift; sourceTree = "<group>"; };
+		428184DD2270F68D00E44A6B /* IdentityPublicKeySet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentityPublicKeySet.swift; sourceTree = "<group>"; };
 		429D799E217791A2003B56F8 /* VirgilCryptoAPI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilCryptoAPI.framework; path = Carthage/Build/iOS/VirgilCryptoAPI.framework; sourceTree = "<group>"; };
 		429D799F217791A2003B56F8 /* VirgilCrypto.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilCrypto.framework; path = Carthage/Build/iOS/VirgilCrypto.framework; sourceTree = "<group>"; };
 		429D79A0217791A2003B56F8 /* VirgilSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilSDK.framework; path = Carthage/Build/iOS/VirgilSDK.framework; sourceTree = "<group>"; };
@@ -757,6 +762,7 @@
 				42AB65B7218350F700AC4631 /* PublicKeySet.swift */,
 				42AB65B8218350F700AC4631 /* ValidatePublicKeysResponse.swift */,
 				42AB65B9218350F700AC4631 /* SignedPublicKey.swift */,
+				428184DD2270F68D00E44A6B /* IdentityPublicKeySet.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -1166,6 +1172,7 @@
 				4219FACD2264C30000D4FBC7 /* GroupSessionStorage.swift in Sources */,
 				42352470221EE9690079DD2A /* OneTimeKey.swift in Sources */,
 				42352479221EE9690079DD2A /* RatchetClient.swift in Sources */,
+				428184DF2270F68D00E44A6B /* IdentityPublicKeySet.swift in Sources */,
 				42352480221EE9690079DD2A /* SecureSession.swift in Sources */,
 				4235246E221EE9690079DD2A /* LongTermKeysStorage.swift in Sources */,
 				42352481221EE9690079DD2A /* FileSystem.swift in Sources */,
@@ -1197,6 +1204,7 @@
 				4219FACE2264C30000D4FBC7 /* GroupSessionStorage.swift in Sources */,
 				42352485221EE96A0079DD2A /* OneTimeKey.swift in Sources */,
 				4235248E221EE96A0079DD2A /* RatchetClient.swift in Sources */,
+				428184E02270F68D00E44A6B /* IdentityPublicKeySet.swift in Sources */,
 				42352495221EE96A0079DD2A /* SecureSession.swift in Sources */,
 				42352483221EE96A0079DD2A /* LongTermKeysStorage.swift in Sources */,
 				42352496221EE96A0079DD2A /* FileSystem.swift in Sources */,
@@ -1228,6 +1236,7 @@
 				4219FACF2264C30000D4FBC7 /* GroupSessionStorage.swift in Sources */,
 				4235249A221EE96A0079DD2A /* OneTimeKey.swift in Sources */,
 				423524A3221EE96A0079DD2A /* RatchetClient.swift in Sources */,
+				428184E12270F68D00E44A6B /* IdentityPublicKeySet.swift in Sources */,
 				423524AA221EE96A0079DD2A /* SecureSession.swift in Sources */,
 				42352498221EE96A0079DD2A /* LongTermKeysStorage.swift in Sources */,
 				423524AB221EE96A0079DD2A /* FileSystem.swift in Sources */,
@@ -1298,6 +1307,7 @@
 				4219FACC2264C30000D4FBC7 /* GroupSessionStorage.swift in Sources */,
 				42AB65E22184F31F00AC4631 /* LongTermKeysStorage.swift in Sources */,
 				16D9430E21A321500013E4DE /* RatchetClient+Queries.swift in Sources */,
+				428184DE2270F68D00E44A6B /* IdentityPublicKeySet.swift in Sources */,
 				42AB65BB218350F700AC4631 /* PublicKeySet.swift in Sources */,
 				42BA8F3E21946CF100075827 /* FileSystem.swift in Sources */,
 				16D942FA21A316410013E4DE /* RatchetClient.swift in Sources */,

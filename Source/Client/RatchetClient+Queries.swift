@@ -158,6 +158,32 @@ extension RatchetClient: RatchetClientProtocol {
 
         return try self.processResponse(response)
     }
+    
+    /// Returns public keys sets for given identities.
+    ///
+    /// - Parameters:
+    ///   - identities: Users' identities
+    ///   - token: auth token (JWT)
+    /// - Returns: Sets of public keys
+    /// - Throws:
+    ///         - RatchetClientError.constructingUrl
+    ///         - Rethrows from ServiceRequest
+    ///         - Rethrows from HttpConnectionProtocol
+    ///         - Rethrows from JSONDecoder
+    ///         - Rethrows from BaseClient
+    public func getMultiplePublicKeysSets(forRecipientsIdentities identities: [String], token: String) throws -> [IdentityPublicKeySet] {
+        guard let url = URL(string: "pfs/v2/keys/actions/pick-batch", relativeTo: self.serviceUrl) else {
+            throw RatchetClientError.constructingUrl
+        }
+        
+        let params = ["identities": identities]
+        
+        let request = try ServiceRequest(url: url, method: .post, accessToken: token, params: params)
+        
+        let response = try self.connection.send(request)
+        
+        return try self.processResponse(response)
+    }
 
     /// Deletes keys entity
     ///

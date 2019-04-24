@@ -155,7 +155,65 @@ class ClientTests: XCTestCase {
         XCTAssert(response3.usedOneTimeKeysIds[0] == usedKeyId)
     }
     
-    func test3__reset__all_keys__should_succeed() {
+    func test3__full_cycle__multiple_identities__should_succeed() {
+        let crypto = try! VirgilCrypto()
+        
+        struct Entry {
+            var identity: String
+            var token: String
+            var client: RatchetClient
+            var identityPublicKey: Data
+            var longTermKey: Data
+            var longTermKeySignature: Data
+            var oneTimeKey1: Data
+            var oneTimeKey2: Data
+        }
+        
+        var entries: [Entry] = []
+        
+        for _ in 0..<10 {
+            let (generator, identity, privateKey, card, client) = self.initialize()
+            
+            let longTermKey = try! crypto.generateKeyPair(ofType: .curve25519)
+            let oneTimeKey1 = try! crypto.exportPublicKey(try! crypto.generateKeyPair(ofType: .curve25519).publicKey)
+            let oneTimeKey2 = try! crypto.exportPublicKey(try! crypto.generateKeyPair(ofType: .curve25519).publicKey)
+            
+            let longTermPublicKey = try! crypto.exportPublicKey(longTermKey.publicKey)
+            let signature = try! crypto.generateSignature(of: longTermPublicKey, using: privateKey)
+            
+            let signedLongTermKey = SignedPublicKey(publicKey: longTermPublicKey, signature: signature)
+            
+            let token = try! generator.generateToken(identity: identity).stringRepresentation()
+            
+            try! client.uploadPublicKeys(identityCardId: card.identifier, longTermPublicKey: signedLongTermKey, oneTimePublicKeys: [oneTimeKey1, oneTimeKey2], token: token)
+            
+            let entry = Entry(identity: identity,
+                              token: token,
+                              client: client,
+                              identityPublicKey: try! crypto.exportPublicKey(crypto.extractPublicKey(from: privateKey)),
+                              longTermKey: longTermPublicKey,
+                              longTermKeySignature: signature,
+                              oneTimeKey1: oneTimeKey1,
+                              oneTimeKey2: oneTimeKey2)
+            
+            entries.append(entry)
+        }
+        
+        let response = try! entries.last!.client.getMultiplePublicKeysSets(forRecipientsIdentities: entries.map { $0.identity }, token: entries.last!.token)
+        
+        XCTAssert(response.count == entries.count)
+        
+        for entry in entries {
+            let cloudEntry = response.first { $0.identity == entry.identity }!
+            
+            XCTAssert(cloudEntry.identityPublicKey == entry.identityPublicKey)
+            XCTAssert(cloudEntry.longTermPublicKey.publicKey == entry.longTermKey)
+            XCTAssert(cloudEntry.longTermPublicKey.signature == entry.longTermKeySignature)
+            XCTAssert(cloudEntry.oneTimePublicKey! == entry.oneTimeKey1 || cloudEntry.oneTimePublicKey! == entry.oneTimeKey2)
+        }
+    }
+    
+    func test4__reset__all_keys__should_succeed() {
         let (generator, identity, privateKey, card, client) = self.initialize()
         
         let crypto = try! VirgilCrypto()
