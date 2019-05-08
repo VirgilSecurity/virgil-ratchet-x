@@ -65,24 +65,26 @@ class Utils {
     
     static func encryptDecrypt100Times(groupSessions: [SecureGroupSession]) throws {
         for _ in 0..<100 {
-            let senderNum = Int.random(in: 0..<groupSessions.count)
-            
-            let sender = groupSessions[senderNum]
-            
-            let plainText = UUID().uuidString
-            
-            let message = try sender.encrypt(string: plainText)
-            
-            for i in 0..<groupSessions.count {
-                if i == senderNum {
-                    continue
+            try autoreleasepool {
+                let senderNum = Int.random(in: 0..<groupSessions.count)
+                
+                let sender = groupSessions[senderNum]
+                
+                let plainText = UUID().uuidString
+                
+                let message = try sender.encrypt(string: plainText)
+                
+                for i in 0..<groupSessions.count {
+                    if i == senderNum {
+                        continue
+                    }
+                    
+                    let receiver = groupSessions[i]
+                    
+                    let decryptedMessage = try receiver.decryptString(from: message)
+                    
+                    XCTAssert(decryptedMessage == plainText)
                 }
-                
-                let receiver = groupSessions[i]
-                
-                let decryptedMessage = try receiver.decryptString(from: message)
-                
-                XCTAssert(decryptedMessage == plainText)
             }
         }
     }
