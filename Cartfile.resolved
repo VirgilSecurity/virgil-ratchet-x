@@ -1,5 +1,5 @@
 github "VirgilSecurity/virgil-crypto-c" "v0.7.0-alpha1"
-github "VirgilSecurity/virgil-crypto-x" "5.0.0-alpha2"
+github "VirgilSecurity/virgil-crypto-x" "ba23272425691333a2faf858816b5eeb48bc6d8a"
 github "VirgilSecurity/virgil-cryptoapi-x" "1.0.5"
-github "VirgilSecurity/virgil-cryptowrapper-x" "a0ae38b08108a0b170458304bc8eb5b33b82abc9"
+github "VirgilSecurity/virgil-cryptowrapper-x" "9b5cdb612e50183f34b8a62c3331891a32ba6171"
 github "VirgilSecurity/virgil-sdk-x" "5.7.2"
