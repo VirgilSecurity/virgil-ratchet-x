@@ -50,7 +50,7 @@ class IntegrationGroupTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
     
-    private func initChat(numberOfParticipants: Int) -> ([Card], [SecureChat]) {
+    private func initChat(numberOfParticipants: Int) throws -> ([Card], [SecureChat]) {
         let testConfig = TestConfig.readFromBundle()
         
         let crypto = try! VirgilCrypto()
@@ -79,10 +79,10 @@ class IntegrationGroupTests: XCTestCase {
             
             let cardManager = CardManager(params: cardManagerParams)
             
-            let card = try! cardManager.publishCard(privateKey: keyPair.privateKey, publicKey: keyPair.publicKey).startSync().getResult()
+            let card = try cardManager.publishCard(privateKey: keyPair.privateKey, publicKey: keyPair.publicKey).startSync().getResult()
             
-            let params = try! KeychainStorageParams.makeKeychainStorageParams(appName: "test")
-            let longTermKeysStorage = try! KeychainLongTermKeysStorage(identity: identity, params: params)
+            let params = try KeychainStorageParams.makeKeychainStorageParams(appName: "test")
+            let longTermKeysStorage = try KeychainLongTermKeysStorage(identity: identity, params: params)
             let oneTimeKeysStorage = FileOneTimeKeysStorage(identity: identity, crypto: crypto, identityKeyPair: keyPair)
             
             let keysRotator = KeysRotator(crypto: crypto, identityPrivateKey: keyPair.privateKey, identityCardId: card.identifier, orphanedOneTimeKeyTtl: 5, longTermKeyTtl: 10, outdatedLongTermKeyTtl: 5, desiredNumberOfOneTimeKeys: IntegrationTests.desiredNumberOfOtKeys, longTermKeysStorage: longTermKeysStorage, oneTimeKeysStorage: oneTimeKeysStorage, client: client)
@@ -95,7 +95,7 @@ class IntegrationGroupTests: XCTestCase {
                                         longTermKeysStorage: longTermKeysStorage,
                                         oneTimeKeysStorage: oneTimeKeysStorage,
                                         sessionStorage: FileSessionStorage(identity: identity, crypto: crypto, identityKeyPair: keyPair),
-                                        groupSessionStorage: try! FileGroupSessionStorage(identity: identity, crypto: crypto, identityKeyPair: keyPair),
+                                        groupSessionStorage: try FileGroupSessionStorage(identity: identity, crypto: crypto, identityKeyPair: keyPair),
                                         keysRotator: keysRotator)
             
             cards.append(card)
@@ -106,66 +106,71 @@ class IntegrationGroupTests: XCTestCase {
     }
     
     func test1__encrypt_decrypt__random_uuid_messages__should_decrypt() {
-        let num = 10
-        
-        let (cards1, chats1) = self.initChat(numberOfParticipants: num)
-        
-        let initMsg = try! chats1[0].startNewGroupSession(with: [Card](cards1.dropFirst()))
-        
-        var sessions = [SecureGroupSession]()
-        
-        for i in 0..<num {
-            var localCards = cards1
-            localCards.remove(at: i)
+        do {
+            let num = 10
             
-            let session = try! chats1[i].startGroupSession(with: localCards, using: initMsg)
+            let (cards1, chats1) = try self.initChat(numberOfParticipants: num)
             
-            sessions.append(session)
-        }
-        
-        try! Utils.encryptDecrypt100Times(groupSessions: sessions)
-        
-        let (cards2, chats2) = self.initChat(numberOfParticipants: num)
-        
-        let ticket1 = try! sessions[0].createChangeMembersTicket(add: cards2, removeCardIds: [])
-        
-        for i in 0..<num * 2 {
-            if i < num {
-                try! sessions[i].useChangeMembersTicket(ticket: ticket1, addCards: cards2, removeCardIds: [])
-            }
-            else {
+            let initMsg = try chats1[0].startNewGroupSession(with: [Card](cards1.dropFirst()))
+            
+            var sessions = [SecureGroupSession]()
+            
+            for i in 0..<num {
                 var localCards = cards1
-                localCards.remove(at: i - num)
+                localCards.remove(at: i)
                 
-                let session = try! chats2[i - num].startGroupSession(with: cards1 + localCards, using:
-                    ticket1)
-                
-                sessions.append(session)
-            }
-        }
-        
-        try! Utils.encryptDecrypt100Times(groupSessions: sessions)
-        
-        let (cards3, chats3) = self.initChat(numberOfParticipants: num)
-        
-        let ticket2 = try! sessions[num].createChangeMembersTicket(add: cards3, removeCardIds: cards1.map { $0.identifier })
-        sessions = [SecureGroupSession](sessions.dropFirst(num))
-        
-        for i in 0..<num * 2 {
-            if i < num {
-                try! sessions[i].useChangeMembersTicket(ticket: ticket2, addCards: cards3, removeCardIds: cards1.map { $0.identifier })
-            }
-            else {
-                var localCards = cards3
-                localCards.remove(at: i - num)
-                
-                let session = try! chats3[i - num].startGroupSession(with: cards2 + localCards, using:
-                    ticket2)
+                let session = try chats1[i].startGroupSession(with: localCards, using: initMsg)
                 
                 sessions.append(session)
             }
+            
+            try Utils.encryptDecrypt100Times(groupSessions: sessions)
+            
+            let (cards2, chats2) = try self.initChat(numberOfParticipants: num)
+            
+            let ticket1 = try sessions[0].createChangeMembersTicket(add: cards2, removeCardIds: [])
+            
+            for i in 0..<num * 2 {
+                if i < num {
+                    try sessions[i].useChangeMembersTicket(ticket: ticket1, addCards: cards2, removeCardIds: [])
+                }
+                else {
+                    var localCards = cards1
+                    localCards.remove(at: i - num)
+                    
+                    let session = try chats2[i - num].startGroupSession(with: cards1 + localCards, using:
+                        ticket1)
+                    
+                    sessions.append(session)
+                }
+            }
+            
+            try Utils.encryptDecrypt100Times(groupSessions: sessions)
+            
+            let (cards3, chats3) = try self.initChat(numberOfParticipants: num)
+            
+            let ticket2 = try sessions[num].createChangeMembersTicket(add: cards3, removeCardIds: cards1.map { $0.identifier })
+            sessions = [SecureGroupSession](sessions.dropFirst(num))
+            
+            for i in 0..<num * 2 {
+                if i < num {
+                    try sessions[i].useChangeMembersTicket(ticket: ticket2, addCards: cards3, removeCardIds: cards1.map { $0.identifier })
+                }
+                else {
+                    var localCards = cards3
+                    localCards.remove(at: i - num)
+                    
+                    let session = try chats3[i - num].startGroupSession(with: cards2 + localCards, using:
+                        ticket2)
+                    
+                    sessions.append(session)
+                }
+            }
+            
+            try Utils.encryptDecrypt100Times(groupSessions: sessions)
         }
-        
-        try! Utils.encryptDecrypt100Times(groupSessions: sessions)
+        catch {
+            XCTFail(error.localizedDescription)
+        }
     }
 }

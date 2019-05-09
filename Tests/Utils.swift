@@ -91,9 +91,9 @@ class Utils {
         }
     }
     
-    static func encryptDecrypt100TimesRestored(senderSecureChat: SecureChat, senderIdentity: String, receiverSecureChat: SecureChat, receiverIdentity: String) {
+    static func encryptDecrypt100TimesRestored(senderSecureChat: SecureChat, senderIdentity: String, receiverSecureChat: SecureChat, receiverIdentity: String) throws {
         for _ in 0..<100 {
-            autoreleasepool {
+            try autoreleasepool {
                 let sender: SecureSession
                 let receiver: SecureSession
                 
@@ -108,9 +108,9 @@ class Utils {
                 
                 let plainText = UUID().uuidString
                 
-                let message = try! sender.encrypt(string: plainText)
+                let message = try sender.encrypt(string: plainText)
                 
-                let decryptedMessage = try! receiver.decryptString(from: message)
+                let decryptedMessage = try receiver.decryptString(from: message)
                 
                 XCTAssert(decryptedMessage == plainText)
             }

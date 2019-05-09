@@ -208,7 +208,7 @@ class RamClient: RatchetClientProtocol {
         if let identityCardId = identityCardId {
             let card = try self.cardManager.getCard(withId: identityCardId).startSync().getResult()
             publicKey = card.publicKey as! VirgilPublicKey
-            userStore.identityPublicKey = (publicKey, try! self.crypto.exportPublicKey(publicKey))
+            userStore.identityPublicKey = (publicKey, try self.crypto.exportPublicKey(publicKey))
         }
         else {
             guard let existingIdentityPublicKey = userStore.identityPublicKey else {
@@ -219,7 +219,7 @@ class RamClient: RatchetClientProtocol {
         }
         
         if let longTermPublicKey = longTermPublicKey {
-            guard try! crypto.verifySignature(longTermPublicKey.signature, of: longTermPublicKey.publicKey, with: publicKey) else {
+            guard try crypto.verifySignature(longTermPublicKey.signature, of: longTermPublicKey.publicKey, with: publicKey) else {
                 throw NSError()
             }
             
@@ -255,14 +255,14 @@ class RamClient: RatchetClientProtocol {
         
         if let longTermKeyId = longTermKeyId,
             let storedLongTermPublicKey = userStore.longTermPublicKey?.publicKey,
-            try! self.keyId.computePublicKeyId(publicKey: storedLongTermPublicKey) == longTermKeyId {
+            try self.keyId.computePublicKeyId(publicKey: storedLongTermPublicKey) == longTermKeyId {
                 usedLongTermKeyId = nil
         }
         else {
             usedLongTermKeyId = longTermKeyId
         }
         
-        let usedOneTimeKeysIds: [Data] = Array<Data>(Set<Data>(oneTimeKeysIds).subtracting(userStore.oneTimePublicKeys.map{ try! self.keyId.computePublicKeyId(publicKey: $0) }))
+        let usedOneTimeKeysIds: [Data] = Array<Data>(Set<Data>(oneTimeKeysIds).subtracting(userStore.oneTimePublicKeys.map { try! self.keyId.computePublicKeyId(publicKey: $0) }))
         
         return ValidatePublicKeysResponse(usedLongTermKeyId: usedLongTermKeyId, usedOneTimeKeysIds: usedOneTimeKeysIds)
     }
