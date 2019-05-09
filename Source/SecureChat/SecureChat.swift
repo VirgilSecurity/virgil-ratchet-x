@@ -687,6 +687,19 @@ import VirgilCrypto
                                       ratchetGroupMessage: ratchetMessage)
     }
 
+    @objc public func existingGroupSession(sessionId: String) -> SecureSession? {
+        if let session = self.groupSessionStorage.retrieveSession(identifier: sessionId) {
+            Log.debug("Found existing group session with identifier: \(sessionId)")
+
+            return session
+        }
+        else {
+            Log.debug("Existing session with identifier: \(sessionId) was not found")
+
+            return nil
+        }
+    }
+
     /// Removes all data corresponding to this user: sessions and keys.
     ///
     /// - Parameter completion: completion handler
