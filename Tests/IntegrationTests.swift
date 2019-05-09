@@ -173,32 +173,37 @@ class IntegrationTests: XCTestCase {
     }
     
     func test3__session_removal__one_session_per_participant__should_delete_session() {
-        let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = self.initChat()
-        
-        _ = try! receiverSecureChat.rotateKeys().startSync().getResult()
-        
-        let senderSession = try! senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().getResult()
-        
-        XCTAssert(senderSecureChat.existingSession(withParticpantIdentity: receiverCard.identity) != nil)
-        
-        let plainText = UUID().uuidString
-        let cipherText = try! senderSession.encrypt(string: plainText)
-        
-        let receiverSession = try! receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, ratchetMessage: cipherText)
-        
-        XCTAssert(receiverSecureChat.existingSession(withParticpantIdentity: senderCard.identity) != nil)
-        
-        let decryptedMessage = try! receiverSession.decryptString(from: cipherText)
-        
-        XCTAssert(decryptedMessage == plainText)
-        
-        try! Utils.encryptDecrypt100Times(senderSession: senderSession, receiverSession: receiverSession)
-        
-        try! senderSecureChat.deleteSession(withParticpantIdentity: receiverCard.identity)
-        try! receiverSecureChat.deleteSession(withParticpantIdentity: senderCard.identity)
-        
-        XCTAssert(senderSecureChat.existingSession(withParticpantIdentity: receiverCard.identity) == nil)
-        XCTAssert(receiverSecureChat.existingSession(withParticpantIdentity: senderCard.identity) == nil)
+        do {
+            let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = self.initChat()
+            
+            _ = try receiverSecureChat.rotateKeys().startSync().getResult()
+            
+            let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().getResult()
+            
+            XCTAssert(senderSecureChat.existingSession(withParticpantIdentity: receiverCard.identity) != nil)
+            
+            let plainText = UUID().uuidString
+            let cipherText = try senderSession.encrypt(string: plainText)
+            
+            let receiverSession = try receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, ratchetMessage: cipherText)
+            
+            XCTAssert(receiverSecureChat.existingSession(withParticpantIdentity: senderCard.identity) != nil)
+            
+            let decryptedMessage = try receiverSession.decryptString(from: cipherText)
+            
+            XCTAssert(decryptedMessage == plainText)
+            
+            try Utils.encryptDecrypt100Times(senderSession: senderSession, receiverSession: receiverSession)
+            
+            try senderSecureChat.deleteSession(withParticpantIdentity: receiverCard.identity)
+            try receiverSecureChat.deleteSession(withParticpantIdentity: senderCard.identity)
+            
+            XCTAssert(senderSecureChat.existingSession(withParticpantIdentity: receiverCard.identity) == nil)
+            XCTAssert(receiverSecureChat.existingSession(withParticpantIdentity: senderCard.identity) == nil)
+        }
+        catch {
+            XCTFail(error.localizedDescription)
+        }
     }
     
     func test4__reset__one_session_per_participant__should_reset() {
