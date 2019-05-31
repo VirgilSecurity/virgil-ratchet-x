@@ -602,33 +602,19 @@ import VirgilCrypto
         return session
     }
 
-    @objc public func startNewGroupSession(with receiversCards: [Card]) throws -> RatchetGroupMessage {
+    @objc public func startNewGroupSession(customSessionId: Data? = nil) throws -> RatchetGroupMessage {
         let ticket = RatchetGroupTicket()
         ticket.setRng(rng: self.crypto.rng)
 
         try ticket.setupTicketAsNew()
 
-        guard let myId = Data(hexEncodedString: self.identityCard.identifier) else {
-            throw NSError()
-        }
-
-        let publicKey = self.crypto.extractPublicKey(from: self.identityPrivateKey)
-        let publicKeyData = try self.crypto.exportPublicKey(publicKey)
-
-        try ticket.addNewParticipant(participantId: myId, publicKey: publicKeyData)
-
-        try receiversCards.forEach { card in
-            guard let participantId = Data(hexEncodedString: card.identifier) else {
+        if let sessionId = customSessionId {
+            // FIXME
+            guard sessionId.count == 32 else {
                 throw NSError()
             }
-
-            guard let publicKey = card.publicKey as? VirgilPublicKey else {
-                throw NSError()
-            }
-
-            let publicKeyData = try self.crypto.exportPublicKey(publicKey)
-
-            try ticket.addNewParticipant(participantId: participantId, publicKey: publicKeyData)
+            
+            ticket.setSessionId(sessionId: sessionId)
         }
 
         return ticket.getTicketMessage()
@@ -640,43 +626,9 @@ import VirgilCrypto
             throw NSError()
         }
 
-        guard ratchetMessage.getPubKeyCount() == receiversCards.count + 1 else {
-            throw NSError()
-        }
-
-        try receiversCards.forEach { card in
-            guard let participantId = Data(hexEncodedString: card.identifier) else {
-                throw NSError()
-            }
-
-            guard let publicKey = card.publicKey as? VirgilPublicKey else {
-                throw NSError()
-            }
-
-            let publicKeyData = try self.crypto.exportPublicKey(publicKey)
-
-            let cardPublicKeyId = try self.keyId.computePublicKeyId(publicKey: publicKeyData)
-
-            let msgPublicKeyId = try ratchetMessage.getPubKeyId(participantId: participantId)
-
-            guard msgPublicKeyId == cardPublicKeyId else {
-                throw NSError()
-            }
-        }
-
         let privateKeyData = try self.crypto.exportPrivateKey(self.identityPrivateKey)
 
         guard let myId = Data(hexEncodedString: self.identityCard.identifier) else {
-            throw NSError()
-        }
-
-        let msgPublicKeyId = try ratchetMessage.getPubKeyId(participantId: myId)
-
-        let publicKey = self.crypto.extractPublicKey(from: self.identityPrivateKey)
-        let publicKeyData = try self.crypto.exportPublicKey(publicKey)
-        let myPublicKeyId = try self.keyId.computePublicKeyId(publicKey: publicKeyData)
-
-        guard msgPublicKeyId == myPublicKeyId else {
             throw NSError()
         }
 
@@ -684,7 +636,8 @@ import VirgilCrypto
                                       sessionStorage: self.groupSessionStorage,
                                       privateKeyData: privateKeyData,
                                       myId: myId,
-                                      ratchetGroupMessage: ratchetMessage)
+                                      ratchetGroupMessage: ratchetMessage,
+                                      cards: receiversCards)
     }
 
     @objc public func existingGroupSession(sessionId: Data) -> SecureGroupSession? {

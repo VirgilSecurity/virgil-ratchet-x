@@ -70,12 +70,12 @@ import VirgilCryptoRatchet
     private let ratchetGroupSession: RatchetGroupSession
     private let queue = DispatchQueue(label: "SecureGroupSessionQueue")
 
-    // As receiver
     internal init(crypto: VirgilCrypto,
                   sessionStorage: GroupSessionStorage,
                   privateKeyData: Data,
                   myId: Data,
-                  ratchetGroupMessage: RatchetGroupMessage) throws {
+                  ratchetGroupMessage: RatchetGroupMessage,
+                  cards: [Card]) throws {
         self.crypto = crypto
         self.sessionStorage = sessionStorage
 
@@ -84,7 +84,24 @@ import VirgilCryptoRatchet
 
         try ratchetGroupSession.setPrivateKey(myPrivateKey: privateKeyData)
         ratchetGroupSession.setMyId(myId: myId)
-        try ratchetGroupSession.setupSession(message: ratchetGroupMessage)
+        
+        let info = RatchetGroupParticipantsInfo(size: cards.count)
+        
+        try cards.forEach { card in
+            guard let participantId = Data(hexEncodedString: card.identifier) else {
+                throw NSError()
+            }
+            
+            guard let publicKey = card.publicKey as? VirgilPublicKey else {
+                throw NSError()
+            }
+            
+            let publicKeyData = try crypto.exportPublicKey(publicKey)
+            
+            try info.addParticipant(id: participantId, pubKey: publicKeyData)
+        }
+        
+        try ratchetGroupSession.setupSessionState(message: ratchetGroupMessage, participants: info)
 
         self.ratchetGroupSession = ratchetGroupSession
 
@@ -163,58 +180,49 @@ import VirgilCryptoRatchet
         return string
     }
 
-    public func createChangeMembersTicket(add: [Card], removeCardIds: [String]) throws -> RatchetGroupMessage {
-        guard !add.isEmpty || !removeCardIds.isEmpty else {
-            throw NSError()
-        }
-
-        let ticket: RatchetGroupTicket
-
-        if removeCardIds.isEmpty {
-            ticket = self.ratchetGroupSession.createGroupTicketForAddingParticipants()
-        }
-        else {
-            ticket = try self.ratchetGroupSession.createGroupTicketForAddingOrRemovingParticipants()
-        }
-
-        for id in removeCardIds {
-            guard let idData = Data(hexEncodedString: id) else {
-                throw NSError()
-            }
-
-            try ticket.removeParticipant(participantId: idData)
-        }
-
-        for card in add {
-            guard let id = Data(hexEncodedString: card.identifier) else {
-                throw NSError()
-            }
-
-            guard let publicKey = card.publicKey as? VirgilPublicKey else {
-                throw NSError()
-            }
-            let publicKeyData = try self.crypto.exportPublicKey(publicKey)
-
-            try ticket.addNewParticipant(participantId: id, publicKey: publicKeyData)
-        }
-
-        return ticket.getTicketMessage()
+    public func createChangeMembersTicket() throws -> RatchetGroupMessage {
+        return try self.ratchetGroupSession.createGroupTicket().getTicketMessage()
     }
-
-    public func useChangeMembersTicket(ticket: RatchetGroupMessage, addCards: [Card], removeCardIds: [String]) throws {
+    
+    public func setMembers(ticket: RatchetGroupMessage,
+                           cards: [Card]) throws {
         guard ticket.getType() == .groupInfo else {
             throw NSError()
         }
+        
+        let info = RatchetGroupParticipantsInfo(size: cards.count)
+        
+        try cards.forEach { card in
+            guard let participantId = Data(hexEncodedString: card.identifier) else {
+                throw NSError()
+            }
+            
+            guard let publicKey = card.publicKey as? VirgilPublicKey else {
+                throw NSError()
+            }
+            
+            let publicKeyData = try self.crypto.exportPublicKey(publicKey)
+            
+            try info.addParticipant(id: participantId, pubKey: publicKeyData)
+        }
+        
+        try self.ratchetGroupSession.setupSessionState(message: ticket,
+                                                       participants: info)
+    }
 
-        guard !addCards.isEmpty || !removeCardIds.isEmpty else {
+    public func updateMembers(ticket: RatchetGroupMessage,
+                              addCards: [Card],
+                              removeCardIds: [String]) throws {
+        guard ticket.getType() == .groupInfo else {
             throw NSError()
         }
-
-        guard ticket.getPubKeyCount() - 1 == self.participantsCount + addCards.count - removeCardIds.count else {
+        
+        guard ticket.getEpoch() == self.ratchetGroupSession.getCurrentEpoch() + 1 else {
             throw NSError()
         }
-
-        let keyId = RatchetKeyId()
+        
+        let addInfo = RatchetGroupParticipantsInfo(size: addCards.count)
+        let removeInfo = RatchetGroupParticipantsIds(size: removeCardIds.count)
 
         try addCards.forEach { card in
             guard let participantId = Data(hexEncodedString: card.identifier) else {
@@ -226,14 +234,8 @@ import VirgilCryptoRatchet
             }
 
             let publicKeyData = try self.crypto.exportPublicKey(publicKey)
-
-            let cardPublicKeyId = try keyId.computePublicKeyId(publicKey: publicKeyData)
-
-            let msgPublicKeyId = try ticket.getPubKeyId(participantId: participantId)
-
-            guard msgPublicKeyId == cardPublicKeyId else {
-                throw NSError()
-            }
+            
+            try addInfo.addParticipant(id: participantId, pubKey: publicKeyData)
         }
 
         try removeCardIds.forEach { id in
@@ -241,20 +243,12 @@ import VirgilCryptoRatchet
                 throw NSError()
             }
 
-            var pubKetIdIsAbsent = false
-            do {
-                _ = try ticket.getPubKeyId(participantId: idData)
-            }
-            catch RatchetError.errorUserIsNotPresentInGroupMessage {
-                pubKetIdIsAbsent = true
-            }
-
-            guard pubKetIdIsAbsent else {
-                throw NSError()
-            }
+            removeInfo.addId(id: idData)
         }
 
-        try self.ratchetGroupSession.setupSession(message: ticket)
+        try self.ratchetGroupSession.updateSessionState(message: ticket,
+                                                        addParticipants: addInfo,
+                                                        removeParticipants: removeInfo)
     }
 
     /// Init session from serialized representation
