@@ -228,4 +228,52 @@ class IntegrationGroupTests: XCTestCase {
             XCTFail(error.localizedDescription)
         }
     }
+
+    func test3__add_remove_user_100_times__should_not_crash() {
+        do {
+            // Start group chat
+            let num = 3
+
+            let (cards, chats) = try self.initChat(numberOfParticipants: num)
+
+            let initMsg = try chats.first!.startNewGroupSession(with: [Card](cards.dropFirst()))
+
+            var sessions = [SecureGroupSession]()
+
+            for i in 0..<num {
+                var localCards = cards
+                localCards.remove(at: i)
+
+                let session = try chats[i].startGroupSession(with: localCards, using: initMsg)
+
+                sessions.append(session)
+            }
+
+            for _ in 1..<100 {
+                // Remove user
+                let experimentalCard = cards.last!
+                let removeCardIds = [experimentalCard.identifier]
+
+                let removeTicket = try sessions.first!.createChangeMembersTicket(add: [], removeCardIds: removeCardIds)
+
+                sessions.removeLast()
+
+                for session in sessions {
+                    try session.useChangeMembersTicket(ticket: removeTicket, addCards: [], removeCardIds: removeCardIds)
+                }
+
+                // Return user
+                let addTicket = try sessions.first!.createChangeMembersTicket(add: [experimentalCard], removeCardIds: [])
+
+                for session in sessions {
+                    try session.useChangeMembersTicket(ticket: addTicket, addCards: [experimentalCard], removeCardIds: [])
+                }
+
+                let newSession = try chats.last!.startGroupSession(with: cards.dropLast(), using: addTicket)
+                sessions.append(newSession)
+            }
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
 }
