@@ -181,7 +181,7 @@ class IntegrationGroupTests: XCTestCase {
 
             let (cards, chats) = try self.initChat(numberOfParticipants: num)
 
-            let initMsg = try chats.first!.startNewGroupSession(with: [Card](cards.dropFirst()))
+            let initMsg = try chats.first!.startNewGroupSession()
 
             var sessions = [SecureGroupSession]()
 
@@ -204,19 +204,19 @@ class IntegrationGroupTests: XCTestCase {
             let experimentalCard = cards.last!
             let removeCardIds = [experimentalCard.identifier]
 
-            let removeTicket = try sessions.first!.createChangeMembersTicket(add: [], removeCardIds: removeCardIds)
+            let removeTicket = try sessions.first!.createChangeMembersTicket()
 
             sessions.removeLast()
 
             for session in sessions {
-                try session.useChangeMembersTicket(ticket: removeTicket, addCards: [], removeCardIds: removeCardIds)
+                try session.updateMembers(ticket: removeTicket, addCards: [], removeCardIds: removeCardIds)
             }
 
             // Return user
-            let addTicket = try sessions.first!.createChangeMembersTicket(add: [experimentalCard], removeCardIds: [])
+            let addTicket = try sessions.first!.createChangeMembersTicket()
 
             for session in sessions {
-                try session.useChangeMembersTicket(ticket: addTicket, addCards: [experimentalCard], removeCardIds: [])
+                try session.updateMembers(ticket: addTicket, addCards: [experimentalCard], removeCardIds: [])
             }
 
             let newSession = try chats.last!.startGroupSession(with: cards.dropLast(), using: addTicket)
@@ -236,7 +236,7 @@ class IntegrationGroupTests: XCTestCase {
 
             let (cards, chats) = try self.initChat(numberOfParticipants: num)
 
-            let initMsg = try chats.first!.startNewGroupSession(with: [Card](cards.dropFirst()))
+            let initMsg = try chats.first!.startNewGroupSession()
 
             var sessions = [SecureGroupSession]()
 
@@ -254,19 +254,19 @@ class IntegrationGroupTests: XCTestCase {
                 let experimentalCard = cards.last!
                 let removeCardIds = [experimentalCard.identifier]
 
-                let removeTicket = try sessions.first!.createChangeMembersTicket(add: [], removeCardIds: removeCardIds)
+                let removeTicket = try sessions.first!.createChangeMembersTicket()
 
                 sessions.removeLast()
 
                 for session in sessions {
-                    try session.useChangeMembersTicket(ticket: removeTicket, addCards: [], removeCardIds: removeCardIds)
+                    try session.updateMembers(ticket: removeTicket, addCards: [], removeCardIds: removeCardIds)
                 }
 
                 // Return user
-                let addTicket = try sessions.first!.createChangeMembersTicket(add: [experimentalCard], removeCardIds: [])
+                let addTicket = try sessions.first!.createChangeMembersTicket()
 
                 for session in sessions {
-                    try session.useChangeMembersTicket(ticket: addTicket, addCards: [experimentalCard], removeCardIds: [])
+                    try session.updateMembers(ticket: addTicket, addCards: [experimentalCard], removeCardIds: [])
                 }
 
                 let newSession = try chats.last!.startGroupSession(with: cards.dropLast(), using: addTicket)
