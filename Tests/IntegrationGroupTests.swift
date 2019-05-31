@@ -111,7 +111,7 @@ class IntegrationGroupTests: XCTestCase {
             
             let (cards1, chats1) = try self.initChat(numberOfParticipants: num)
             
-            let initMsg = try chats1[0].startNewGroupSession(with: [Card](cards1.dropFirst()))
+            let initMsg = try chats1[0].startNewGroupSession()
             
             var sessions = [SecureGroupSession]()
             
@@ -128,14 +128,14 @@ class IntegrationGroupTests: XCTestCase {
             
             let (cards2, chats2) = try self.initChat(numberOfParticipants: num)
             
-            let ticket1 = try sessions[0].createChangeMembersTicket(add: cards2, removeCardIds: [])
+            let ticket1 = try sessions[0].createChangeMembersTicket()
             
             for i in 0..<num * 2 {
                 if i < num {
-                    try sessions[i].useChangeMembersTicket(ticket: ticket1, addCards: cards2, removeCardIds: [])
+                    try sessions[i].updateMembers(ticket: ticket1, addCards: cards2, removeCardIds: [])
                 }
                 else {
-                    var localCards = cards1
+                    var localCards = cards2
                     localCards.remove(at: i - num)
                     
                     let session = try chats2[i - num].startGroupSession(with: cards1 + localCards, using:
@@ -149,12 +149,12 @@ class IntegrationGroupTests: XCTestCase {
             
             let (cards3, chats3) = try self.initChat(numberOfParticipants: num)
             
-            let ticket2 = try sessions[num].createChangeMembersTicket(add: cards3, removeCardIds: cards1.map { $0.identifier })
+            let ticket2 = try sessions[num].createChangeMembersTicket()
             sessions = [SecureGroupSession](sessions.dropFirst(num))
             
             for i in 0..<num * 2 {
                 if i < num {
-                    try sessions[i].useChangeMembersTicket(ticket: ticket2, addCards: cards3, removeCardIds: cards1.map { $0.identifier })
+                    try sessions[i].updateMembers(ticket: ticket2, addCards: cards3, removeCardIds: cards1.map { $0.identifier })
                 }
                 else {
                     var localCards = cards3

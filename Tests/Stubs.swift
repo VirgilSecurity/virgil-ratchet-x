@@ -307,6 +307,10 @@ class FakeKeysRotator: KeysRotatorProtocol {
 }
 
 class RamCardClient: CardClientProtocol {
+    func revokeCard(withId cardId: String, token: String) throws {
+        throw NSError()
+    }
+    
     let crypto = try! VirgilCrypto()
     private var cards: [String: RawSignedModel] = [:]
     
