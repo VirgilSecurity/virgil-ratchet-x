@@ -613,7 +613,7 @@ import VirgilCrypto
             guard sessionId.count == 32 else {
                 throw NSError()
             }
-            
+
             ticket.setSessionId(sessionId: sessionId)
         }
 

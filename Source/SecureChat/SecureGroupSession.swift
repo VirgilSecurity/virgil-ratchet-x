@@ -84,23 +84,23 @@ import VirgilCryptoRatchet
 
         try ratchetGroupSession.setPrivateKey(myPrivateKey: privateKeyData)
         ratchetGroupSession.setMyId(myId: myId)
-        
+
         let info = RatchetGroupParticipantsInfo(size: cards.count)
-        
+
         try cards.forEach { card in
             guard let participantId = Data(hexEncodedString: card.identifier) else {
                 throw NSError()
             }
-            
+
             guard let publicKey = card.publicKey as? VirgilPublicKey else {
                 throw NSError()
             }
-            
+
             let publicKeyData = try crypto.exportPublicKey(publicKey)
-            
+
             try info.addParticipant(id: participantId, pubKey: publicKeyData)
         }
-        
+
         try ratchetGroupSession.setupSessionState(message: ratchetGroupMessage, participants: info)
 
         self.ratchetGroupSession = ratchetGroupSession
@@ -183,29 +183,29 @@ import VirgilCryptoRatchet
     public func createChangeMembersTicket() throws -> RatchetGroupMessage {
         return try self.ratchetGroupSession.createGroupTicket().getTicketMessage()
     }
-    
+
     public func setMembers(ticket: RatchetGroupMessage,
                            cards: [Card]) throws {
         guard ticket.getType() == .groupInfo else {
             throw NSError()
         }
-        
+
         let info = RatchetGroupParticipantsInfo(size: cards.count)
-        
+
         try cards.forEach { card in
             guard let participantId = Data(hexEncodedString: card.identifier) else {
                 throw NSError()
             }
-            
+
             guard let publicKey = card.publicKey as? VirgilPublicKey else {
                 throw NSError()
             }
-            
+
             let publicKeyData = try self.crypto.exportPublicKey(publicKey)
-            
+
             try info.addParticipant(id: participantId, pubKey: publicKeyData)
         }
-        
+
         try self.ratchetGroupSession.setupSessionState(message: ticket,
                                                        participants: info)
     }
@@ -216,11 +216,11 @@ import VirgilCryptoRatchet
         guard ticket.getType() == .groupInfo else {
             throw NSError()
         }
-        
+
         guard ticket.getEpoch() == self.ratchetGroupSession.getCurrentEpoch() + 1 else {
             throw NSError()
         }
-        
+
         let addInfo = RatchetGroupParticipantsInfo(size: addCards.count)
         let removeInfo = RatchetGroupParticipantsIds(size: removeCardIds.count)
 
@@ -234,7 +234,7 @@ import VirgilCryptoRatchet
             }
 
             let publicKeyData = try self.crypto.exportPublicKey(publicKey)
-            
+
             try addInfo.addParticipant(id: participantId, pubKey: publicKeyData)
         }
 
