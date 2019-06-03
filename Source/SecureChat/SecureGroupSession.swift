@@ -63,7 +63,7 @@ import VirgilCryptoRatchet
         return self.ratchetGroupSession.getMyId().hexEncodedString()
     }
 
-    @objc public var participantsCount: Int {
+    @objc public var participantsCount: UInt32 {
         return self.ratchetGroupSession.getParticipantsCount()
     }
 
@@ -85,7 +85,7 @@ import VirgilCryptoRatchet
         try ratchetGroupSession.setPrivateKey(myPrivateKey: privateKeyData)
         ratchetGroupSession.setMyId(myId: myId)
 
-        let info = RatchetGroupParticipantsInfo(size: cards.count)
+        let info = RatchetGroupParticipantsInfo(size: UInt32(cards.count))
 
         try cards.forEach { card in
             guard let participantId = Data(hexEncodedString: card.identifier) else {
@@ -190,7 +190,7 @@ import VirgilCryptoRatchet
             throw NSError()
         }
 
-        let info = RatchetGroupParticipantsInfo(size: cards.count)
+        let info = RatchetGroupParticipantsInfo(size: UInt32(cards.count))
 
         try cards.forEach { card in
             guard let participantId = Data(hexEncodedString: card.identifier) else {
@@ -221,8 +221,8 @@ import VirgilCryptoRatchet
             throw NSError()
         }
 
-        let addInfo = RatchetGroupParticipantsInfo(size: addCards.count)
-        let removeInfo = RatchetGroupParticipantsIds(size: removeCardIds.count)
+        let addInfo = RatchetGroupParticipantsInfo(size: UInt32(addCards.count))
+        let removeInfo = RatchetGroupParticipantsIds(size: UInt32(removeCardIds.count))
 
         try addCards.forEach { card in
             guard let participantId = Data(hexEncodedString: card.identifier) else {
