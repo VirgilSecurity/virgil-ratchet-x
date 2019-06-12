@@ -132,7 +132,7 @@ class IntegrationGroupTests: XCTestCase {
             
             for i in 0..<num * 2 {
                 if i < num {
-                    try sessions[i].updateMembers(ticket: ticket1, addCards: cards2, removeCardIds: [])
+                    try sessions[i].updateParticipants(ticket: ticket1, addCards: cards2, removeCardIds: [])
                 }
                 else {
                     var localCards = cards2
@@ -154,7 +154,7 @@ class IntegrationGroupTests: XCTestCase {
             
             for i in 0..<num * 2 {
                 if i < num {
-                    try sessions[i].updateMembers(ticket: ticket2, addCards: cards3, removeCardIds: cards1.map { $0.identifier })
+                    try sessions[i].updateParticipants(ticket: ticket2, addCards: cards3, removeCardIds: cards1.map { $0.identifier })
                 }
                 else {
                     var localCards = cards3
@@ -209,14 +209,14 @@ class IntegrationGroupTests: XCTestCase {
             sessions.removeLast()
 
             for session in sessions {
-                try session.updateMembers(ticket: removeTicket, addCards: [], removeCardIds: removeCardIds)
+                try session.updateParticipants(ticket: removeTicket, addCards: [], removeCardIds: removeCardIds)
             }
 
             // Return user
             let addTicket = try sessions.first!.createChangeMembersTicket()
 
             for session in sessions {
-                try session.updateMembers(ticket: addTicket, addCards: [experimentalCard], removeCardIds: [])
+                try session.updateParticipants(ticket: addTicket, addCards: [experimentalCard], removeCardIds: [])
             }
 
             let newSession = try chats.last!.startGroupSession(with: cards.dropLast(), using: addTicket)
@@ -259,14 +259,14 @@ class IntegrationGroupTests: XCTestCase {
                 sessions.removeLast()
 
                 for session in sessions {
-                    try session.updateMembers(ticket: removeTicket, addCards: [], removeCardIds: removeCardIds)
+                    try session.updateParticipants(ticket: removeTicket, addCards: [], removeCardIds: removeCardIds)
                 }
 
                 // Return user
                 let addTicket = try sessions.first!.createChangeMembersTicket()
 
                 for session in sessions {
-                    try session.updateMembers(ticket: addTicket, addCards: [experimentalCard], removeCardIds: [])
+                    try session.updateParticipants(ticket: addTicket, addCards: [experimentalCard], removeCardIds: [])
                 }
 
                 let newSession = try chats.last!.startGroupSession(with: cards.dropLast(), using: addTicket)

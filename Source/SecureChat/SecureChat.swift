@@ -57,6 +57,8 @@ import VirgilCrypto
     case invalidMessageType = 5
     case invalidKeyType = 6
     case publicKeysSetsMismatch = 7
+    case invalidSessionIdLen = 8
+    case invalidCardId = 9
 }
 
 /// SecureChat. Class for rotating keys, starting and responding to conversation
@@ -609,9 +611,8 @@ import VirgilCrypto
         try ticket.setupTicketAsNew()
 
         if let sessionId = customSessionId {
-            // FIXME
-            guard sessionId.count == 32 else {
-                throw NSError()
+            guard sessionId.count == RatchetCommon.sessionIdLen else {
+                throw SecureChatError.invalidSessionIdLen
             }
 
             ticket.setSessionId(sessionId: sessionId)
@@ -623,13 +624,13 @@ import VirgilCrypto
     @objc public func startGroupSession(with receiversCards: [Card],
                                         using ratchetMessage: RatchetGroupMessage) throws -> SecureGroupSession {
         guard ratchetMessage.getType() == .groupInfo else {
-            throw NSError()
+            throw SecureChatError.invalidMessageType
         }
 
         let privateKeyData = try self.crypto.exportPrivateKey(self.identityPrivateKey)
 
         guard let myId = Data(hexEncodedString: self.identityCard.identifier) else {
-            throw NSError()
+            throw SecureChatError.invalidCardId
         }
 
         return try SecureGroupSession(crypto: self.crypto,

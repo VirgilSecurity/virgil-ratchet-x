@@ -1,3 +1,2 @@
 github "VirgilSecurity/virgil-sdk-x" ~> 5.7
-github "VirgilSecurity/virgil-crypto-x" "develop"
-github "VirgilSecurity/virgil-cryptowrapper-x" "develop-alpha"
+github "VirgilSecurity/virgil-crypto-x" "develop-multithreading-fix"

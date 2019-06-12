@@ -44,6 +44,10 @@ import VirgilCryptoRatchet
 /// - invalidUtf8String: invalid convesion to/from utf-8 string
 @objc(VSCRSecureGroupSessionError) public enum SecureGroupSessionError: Int, Error {
     case invalidUtf8String = 1
+    case notConsequentTicket = 2
+    case invalidMessageType = 3
+    case invalidCardId = 4
+    case publicKeyIsNotVirgil = 5
 }
 
 /// SecureSession
@@ -55,14 +59,17 @@ import VirgilCryptoRatchet
     /// SessionStorage
     @objc public let sessionStorage: GroupSessionStorage
 
-    @objc public var identifier: String {
-        return self.ratchetGroupSession.getSessionId().hexEncodedString()
+    /// Session id
+    @objc public var identifier: Data {
+        return self.ratchetGroupSession.getSessionId()
     }
 
+    /// User identity card id
     @objc public var myIdentifier: String {
         return self.ratchetGroupSession.getMyId().hexEncodedString()
     }
 
+    /// Number of participants
     @objc public var participantsCount: UInt32 {
         return self.ratchetGroupSession.getParticipantsCount()
     }
@@ -89,11 +96,11 @@ import VirgilCryptoRatchet
 
         try cards.forEach { card in
             guard let participantId = Data(hexEncodedString: card.identifier) else {
-                throw NSError()
+                throw SecureGroupSessionError.invalidCardId
             }
 
             guard let publicKey = card.publicKey as? VirgilPublicKey else {
-                throw NSError()
+                throw SecureGroupSessionError.publicKeyIsNotVirgil
             }
 
             let publicKeyData = try crypto.exportPublicKey(publicKey)
@@ -168,7 +175,7 @@ import VirgilCryptoRatchet
     ///         - Rethrows from SessionStorage
     public func decryptString(from message: RatchetGroupMessage) throws -> String {
         guard message.getType() == .regular else {
-            throw NSError()
+            throw SecureGroupSessionError.invalidMessageType
         }
 
         let data = try self.decryptData(from: message)
@@ -180,25 +187,42 @@ import VirgilCryptoRatchet
         return string
     }
 
+    /// Creates ticket for adding/removing members, or just to rotate secret
+    ///
+    /// - Returns: RatchetGroupMessage
+    /// - Throws: Rethrows from GroupSession
     public func createChangeMembersTicket() throws -> RatchetGroupMessage {
         return try self.ratchetGroupSession.createGroupTicket().getTicketMessage()
     }
 
-    public func setMembers(ticket: RatchetGroupMessage,
-                           cards: [Card]) throws {
+    /// Set participants
+    /// NOTE: As this update is incremental, tickets should be applied strictly consequently
+    /// Otherwise, use setMembers()
+    ///
+    /// - Parameters:
+    ///   - ticket: ticket
+    ///   - addCards: participants to add
+    ///   - removeCardIds: participants to remove
+    /// - Throws:
+    ///         - SecureGroupSessionError.invalidMessageType
+    ///         - SecureGroupSessionError.invalidCardId
+    ///         - SecureGroupSessionError.publicKeyIsNotVirgil
+    ///         - Rethrows from RatchetGroupSession
+    public func setParticipants(ticket: RatchetGroupMessage,
+                                cards: [Card]) throws {
         guard ticket.getType() == .groupInfo else {
-            throw NSError()
+            throw SecureGroupSessionError.invalidMessageType
         }
 
         let info = RatchetGroupParticipantsInfo(size: UInt32(cards.count))
 
         try cards.forEach { card in
             guard let participantId = Data(hexEncodedString: card.identifier) else {
-                throw NSError()
+                throw SecureGroupSessionError.invalidCardId
             }
 
             guard let publicKey = card.publicKey as? VirgilPublicKey else {
-                throw NSError()
+                throw SecureGroupSessionError.publicKeyIsNotVirgil
             }
 
             let publicKeyData = try self.crypto.exportPublicKey(publicKey)
@@ -210,15 +234,29 @@ import VirgilCryptoRatchet
                                                        participants: info)
     }
 
-    public func updateMembers(ticket: RatchetGroupMessage,
-                              addCards: [Card],
-                              removeCardIds: [String]) throws {
+    /// Updates incrementaly participants
+    /// NOTE: As this update is incremental, tickets should be applied strictly consequently
+    /// Otherwise, use setMembers()
+    ///
+    /// - Parameters:
+    ///   - ticket: ticket
+    ///   - addCards: participants to add
+    ///   - removeCardIds: participants to remove
+    /// - Throws:
+    ///         - SecureGroupSessionError.notConsequentTicket
+    ///         - SecureGroupSessionError.invalidMessageType
+    ///         - SecureGroupSessionError.invalidCardId
+    ///         - SecureGroupSessionError.publicKeyIsNotVirgil
+    ///         - Rethrows from RatchetGroupSession
+    public func updateParticipants(ticket: RatchetGroupMessage,
+                                   addCards: [Card],
+                                   removeCardIds: [String]) throws {
         guard ticket.getType() == .groupInfo else {
-            throw NSError()
+            throw SecureGroupSessionError.invalidMessageType
         }
 
         guard ticket.getEpoch() == self.ratchetGroupSession.getCurrentEpoch() + 1 else {
-            throw NSError()
+            throw SecureGroupSessionError.notConsequentTicket
         }
 
         let addInfo = RatchetGroupParticipantsInfo(size: UInt32(addCards.count))
@@ -226,11 +264,11 @@ import VirgilCryptoRatchet
 
         try addCards.forEach { card in
             guard let participantId = Data(hexEncodedString: card.identifier) else {
-                throw NSError()
+                throw SecureGroupSessionError.invalidCardId
             }
 
             guard let publicKey = card.publicKey as? VirgilPublicKey else {
-                throw NSError()
+                throw SecureGroupSessionError.publicKeyIsNotVirgil
             }
 
             let publicKeyData = try self.crypto.exportPublicKey(publicKey)
@@ -240,7 +278,7 @@ import VirgilCryptoRatchet
 
         try removeCardIds.forEach { id in
             guard let idData = Data(hexEncodedString: id) else {
-                throw NSError()
+                throw SecureGroupSessionError.invalidCardId
             }
 
             removeInfo.addId(id: idData)

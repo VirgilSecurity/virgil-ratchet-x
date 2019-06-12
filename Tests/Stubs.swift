@@ -67,7 +67,7 @@ class RamGroupSessionStorage: GroupSessionStorage {
     private var db: [String: SecureGroupSession] = [:]
     
     func storeSession(_ session: SecureGroupSession) throws {
-        self.db[session.identifier] = session
+        self.db[session.identifier.hexEncodedString()] = session
     }
     
     func retrieveSession(identifier: String) -> SecureGroupSession? {

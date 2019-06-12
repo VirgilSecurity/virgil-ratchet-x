@@ -67,7 +67,7 @@ import VirgilCrypto
         try self.queue.sync {
             let data = session.serialize()
 
-            try self.fileSystem.write(data: data, name: session.identifier)
+            try self.fileSystem.write(data: data, name: session.identifier.hexEncodedString())
         }
     }
 
