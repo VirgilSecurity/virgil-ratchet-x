@@ -89,6 +89,30 @@ class Utils {
         }
     }
     
+    static func encryptDecrypt100TimesRestored(groupSessions: [SecureGroupSession]) throws {
+        for _ in 0..<100 {
+            let senderNum = Int.random(in: 0..<groupSessions.count)
+            
+            let sender = groupSessions[senderNum]
+            
+            let plainText = UUID().uuidString
+            
+            let message = try sender.encrypt(string: plainText)
+            
+            for i in 0..<groupSessions.count {
+                if i == senderNum {
+                    continue
+                }
+                
+                let receiver = groupSessions[i]
+                
+                let decryptedMessage = try receiver.decryptString(from: message)
+                
+                XCTAssert(decryptedMessage == plainText)
+            }
+        }
+    }
+    
     static func encryptDecrypt100TimesRestored(senderSecureChat: SecureChat, senderIdentity: String, receiverSecureChat: SecureChat, receiverIdentity: String) throws {
         for _ in 0..<100 {
             let sender: SecureSession
@@ -110,6 +134,9 @@ class Utils {
             let decryptedMessage = try receiver.decryptString(from: message)
             
             XCTAssert(decryptedMessage == plainText)
+            
+            try senderSecureChat.storeSession(session: sender)
+            try receiverSecureChat.storeSession(session: receiver)
         }
     }
 }

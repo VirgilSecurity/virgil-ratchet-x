@@ -56,9 +56,6 @@ import VirgilCryptoRatchet
     /// Crypto
     @objc public let crypto: VirgilCrypto
 
-    /// SessionStorage
-    @objc public let sessionStorage: GroupSessionStorage
-
     /// Session id
     @objc public var identifier: Data {
         return self.ratchetGroupSession.getSessionId()
@@ -84,7 +81,6 @@ import VirgilCryptoRatchet
                   ratchetGroupMessage: RatchetGroupMessage,
                   cards: [Card]) throws {
         self.crypto = crypto
-        self.sessionStorage = sessionStorage
 
         let ratchetGroupSession = RatchetGroupSession()
         ratchetGroupSession.setRng(rng: crypto.rng)
@@ -142,8 +138,6 @@ import VirgilCryptoRatchet
         return try self.queue.sync {
             let msg = try self.ratchetGroupSession.encrypt(plainText: data)
 
-            try self.sessionStorage.storeSession(self)
-
             return msg
         }
     }
@@ -158,8 +152,6 @@ import VirgilCryptoRatchet
     public func decryptData(from message: RatchetGroupMessage) throws -> Data {
         return try self.queue.sync {
             let data = try self.ratchetGroupSession.decrypt(message: message)
-
-            try self.sessionStorage.storeSession(self)
 
             return data
         }
@@ -304,7 +296,6 @@ import VirgilCryptoRatchet
         try ratchetGroupSession.setPrivateKey(myPrivateKey: privateKeyData)
 
         self.ratchetGroupSession = ratchetGroupSession
-        self.sessionStorage = sessionStorage
 
         super.init()
     }

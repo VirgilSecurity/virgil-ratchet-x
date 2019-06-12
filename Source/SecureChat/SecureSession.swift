@@ -56,15 +56,11 @@ import VirgilCryptoRatchet
     /// Crypto
     @objc public let crypto: VirgilCrypto
 
-    /// SessionStorage
-    @objc public let sessionStorage: SessionStorage
-
     private let ratchetSession: RatchetSession
     private let queue = DispatchQueue(label: "SecureSessionQueue")
 
     // As receiver
     internal init(crypto: VirgilCrypto,
-                  sessionStorage: SessionStorage,
                   participantIdentity: String,
                   name: String,
                   receiverIdentityPrivateKey: VirgilPrivateKey,
@@ -73,7 +69,6 @@ import VirgilCryptoRatchet
                   senderIdentityPublicKey: Data,
                   ratchetMessage: RatchetMessage) throws {
         self.crypto = crypto
-        self.sessionStorage = sessionStorage
         self.participantIdentity = participantIdentity
         self.name = name
 
@@ -93,7 +88,6 @@ import VirgilCryptoRatchet
 
     // As sender
     internal init(crypto: VirgilCrypto,
-                  sessionStorage: SessionStorage,
                   participantIdentity: String,
                   name: String,
                   senderIdentityPrivateKey: Data,
@@ -101,7 +95,6 @@ import VirgilCryptoRatchet
                   receiverLongTermPublicKey: Data,
                   receiverOneTimePublicKey: Data?) throws {
         self.crypto = crypto
-        self.sessionStorage = sessionStorage
         self.participantIdentity = participantIdentity
         self.name = name
 
@@ -145,8 +138,6 @@ import VirgilCryptoRatchet
         return try self.queue.sync {
             let msg = try self.ratchetSession.encrypt(plainText: data)
 
-            try self.sessionStorage.storeSession(self)
-
             return msg
         }
     }
@@ -161,8 +152,6 @@ import VirgilCryptoRatchet
     public func decryptData(from message: RatchetMessage) throws -> Data {
         return try self.queue.sync {
             let data = try self.ratchetSession.decrypt(message: message)
-
-            try self.sessionStorage.storeSession(self)
 
             return data
         }
@@ -203,7 +192,6 @@ import VirgilCryptoRatchet
         ratchetSession.setRng(rng: crypto.rng)
 
         self.ratchetSession = ratchetSession
-        self.sessionStorage = sessionStorage
         self.participantIdentity = participantIdentity
         self.name = name
 

@@ -224,6 +224,14 @@ import VirgilCrypto
             queue.addOperations(operations, waitUntilFinished: false)
         }
     }
+    
+    @objc open func storeSession(session: SecureSession) throws {
+        try self.sessionStorage.storeSession(session)
+    }
+    
+    @objc open func storeGroupSession(session: SecureGroupSession) throws {
+        try self.groupSessionStorage.storeSession(session)
+    }
 
     /// Checks for existing session with given participent in the storage
     ///
@@ -449,15 +457,12 @@ import VirgilCrypto
         let privateKeyData = try self.crypto.exportPrivateKey(self.identityPrivateKey)
 
         let session = try SecureSession(crypto: self.crypto,
-                                        sessionStorage: self.sessionStorage,
                                         participantIdentity: identity,
                                         name: name ?? SecureChat.defaultSessionName,
                                         senderIdentityPrivateKey: privateKeyData,
                                         receiverIdentityPublicKey: identityPublicKeyData,
                                         receiverLongTermPublicKey: longTermPublicKey.publicKey,
                                         receiverOneTimePublicKey: oneTimePublicKey)
-
-        try self.sessionStorage.storeSession(session)
 
         return session
     }
@@ -584,7 +589,6 @@ import VirgilCrypto
         }
 
         let session = try SecureSession(crypto: self.crypto,
-                                        sessionStorage: self.sessionStorage,
                                         participantIdentity: senderCard.identity,
                                         name: name ?? SecureChat.defaultSessionName,
                                         receiverIdentityPrivateKey: self.identityPrivateKey,
@@ -598,8 +602,6 @@ import VirgilCrypto
 
             self.scheduleOneTimeKeyReplacement()
         }
-
-        try self.sessionStorage.storeSession(session)
 
         return session
     }
