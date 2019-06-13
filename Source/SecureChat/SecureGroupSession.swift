@@ -112,6 +112,7 @@ import VirgilCryptoRatchet
     }
 
     /// Encrypts string. Updates session in storage
+    /// NOTE: This operation changes session state, so session should be updated in storage.
     ///
     /// - Parameter message: message to encrypt
     /// - Returns: RatchetMessage
@@ -119,7 +120,7 @@ import VirgilCryptoRatchet
     ///         - SecureSessionError.invalidUtf8String if given string is not correct utf-8 string
     ///         - Rethrows from crypto RatchetSession
     ///         - Rethrows from SessionStorage
-    public func encrypt(string: String) throws -> RatchetGroupMessage {
+    @objc public func encrypt(string: String) throws -> RatchetGroupMessage {
         guard let data = string.data(using: .utf8) else {
             throw SecureSessionError.invalidUtf8String
         }
@@ -128,13 +129,14 @@ import VirgilCryptoRatchet
     }
 
     /// Encrypts data. Updates session in storage
+    /// NOTE: This operation changes session state, so session should be updated in storage.
     ///
     /// - Parameter message: message to encrypt
     /// - Returns: RatchetMessage
     /// - Throws:
     ///         - Rethrows from crypto RatchetSession
     ///         - Rethrows from SessionStorage
-    public func encrypt(data: Data) throws -> RatchetGroupMessage {
+    @objc public func encrypt(data: Data) throws -> RatchetGroupMessage {
         return try self.queue.sync {
             let msg = try self.ratchetGroupSession.encrypt(plainText: data)
 
@@ -143,13 +145,14 @@ import VirgilCryptoRatchet
     }
 
     /// Decrypts data from RatchetMessage. Updates session in storage
+    /// NOTE: This operation changes session state, so session should be updated in storage.
     ///
     /// - Parameter message: RatchetMessage
     /// - Returns: Decrypted data
     /// - Throws:
     ///         - Rethrows from crypto RatchetSession
     ///         - Rethrows from SessionStorage
-    public func decryptData(from message: RatchetGroupMessage) throws -> Data {
+    @objc public func decryptData(from message: RatchetGroupMessage) throws -> Data {
         return try self.queue.sync {
             let data = try self.ratchetGroupSession.decrypt(message: message)
 
@@ -158,6 +161,7 @@ import VirgilCryptoRatchet
     }
 
     /// Decrypts utf-8 string from RatchetMessage. Updates session in storage
+    /// NOTE: This operation changes session state, so session should be updated in storage.
     ///
     /// - Parameter message: RatchetMessage
     /// - Returns: Decrypted utf-8 string
@@ -165,7 +169,7 @@ import VirgilCryptoRatchet
     ///         - SecureSessionError.invalidUtf8String if decrypted data is not correct utf-8 string
     ///         - Rethrows from crypto RatchetSession
     ///         - Rethrows from SessionStorage
-    public func decryptString(from message: RatchetGroupMessage) throws -> String {
+    @objc public func decryptString(from message: RatchetGroupMessage) throws -> String {
         guard message.getType() == .regular else {
             throw SecureGroupSessionError.invalidMessageType
         }
@@ -179,17 +183,18 @@ import VirgilCryptoRatchet
         return string
     }
 
-    /// Creates ticket for adding/removing members, or just to rotate secret
+    /// Creates ticket for adding/removing participants, or just to rotate secret
     ///
     /// - Returns: RatchetGroupMessage
     /// - Throws: Rethrows from GroupSession
-    public func createChangeMembersTicket() throws -> RatchetGroupMessage {
+    @objc public func createChangeParticipantsTicket() throws -> RatchetGroupMessage {
         return try self.ratchetGroupSession.createGroupTicket().getTicketMessage()
     }
 
     /// Set participants
     /// NOTE: As this update is incremental, tickets should be applied strictly consequently
-    /// Otherwise, use setMembers()
+    /// NOTE: This operation changes session state, so session should be updated in storage.
+    /// Otherwise, use setParticipants()
     ///
     /// - Parameters:
     ///   - ticket: ticket
@@ -200,7 +205,7 @@ import VirgilCryptoRatchet
     ///         - SecureGroupSessionError.invalidCardId
     ///         - SecureGroupSessionError.publicKeyIsNotVirgil
     ///         - Rethrows from RatchetGroupSession
-    public func setParticipants(ticket: RatchetGroupMessage,
+    @objc public func setParticipants(ticket: RatchetGroupMessage,
                                 cards: [Card]) throws {
         guard ticket.getType() == .groupInfo else {
             throw SecureGroupSessionError.invalidMessageType
@@ -228,7 +233,8 @@ import VirgilCryptoRatchet
 
     /// Updates incrementaly participants
     /// NOTE: As this update is incremental, tickets should be applied strictly consequently
-    /// Otherwise, use setMembers()
+    /// NOTE: This operation changes session state, so session should be updated in storage.
+    /// Otherwise, use setParticipants()
     ///
     /// - Parameters:
     ///   - ticket: ticket
@@ -240,7 +246,7 @@ import VirgilCryptoRatchet
     ///         - SecureGroupSessionError.invalidCardId
     ///         - SecureGroupSessionError.publicKeyIsNotVirgil
     ///         - Rethrows from RatchetGroupSession
-    public func updateParticipants(ticket: RatchetGroupMessage,
+    @objc public func updateParticipants(ticket: RatchetGroupMessage,
                                    addCards: [Card],
                                    removeCardIds: [String]) throws {
         guard ticket.getType() == .groupInfo else {
@@ -286,10 +292,9 @@ import VirgilCryptoRatchet
     /// - Parameters:
     ///   - data: Serialized session
     ///   - participantIdentity: participant identity
-    ///   - sessionStorage: SessionStorage
     ///   - crypto: VirgilCrypto
     /// - Throws: Rethrows from SessionStorage
-    public init(data: Data, privateKeyData: Data, sessionStorage: GroupSessionStorage, crypto: VirgilCrypto) throws {
+    @objc public init(data: Data, privateKeyData: Data, crypto: VirgilCrypto) throws {
         self.crypto = crypto
         let ratchetGroupSession = try RatchetGroupSession.deserialize(input: data)
         ratchetGroupSession.setRng(rng: crypto.rng)
@@ -303,7 +308,7 @@ import VirgilCryptoRatchet
     /// Serialize session
     ///
     /// - Returns: Serialized data
-    public func serialize() -> Data {
+    @objc public func serialize() -> Data {
         return self.ratchetGroupSession.serialize()
     }
 }

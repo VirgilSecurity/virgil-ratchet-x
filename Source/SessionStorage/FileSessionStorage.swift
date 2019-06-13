@@ -37,7 +37,7 @@
 import Foundation
 import VirgilCrypto
 
-/// FileSessionStorage using files
+/// FileSessionStorage using encrypted files
 /// This class is thread-safe
 @objc(VSRFileSessionStorage) open class FileSessionStorage: NSObject, SessionStorage {
     private let fileSystem: FileSystem
@@ -49,6 +49,7 @@ import VirgilCrypto
     /// - Parameters:
     ///   - identity: identity of this user
     ///   - crypto: VirgilCrypto that will be forwarded to SecureSession
+    ///   - identityKeyPair: Key pair to encrypt session
     @objc public init(identity: String, crypto: VirgilCrypto, identityKeyPair: VirgilKeyPair) {
         let credentials = FileSystem.Credentials(crypto: crypto, keyPair: identityKeyPair)
         self.fileSystem = FileSystem(userIdentifier: identity, pathComponents: ["SESSIONS"], credentials: credentials)
@@ -71,8 +72,10 @@ import VirgilCrypto
 
     /// Retrieves session
     ///
-    /// - Parameter participantIdentity: participant identity
-    /// - Throws: Rethrows from FileSystem
+    /// - Parameters:
+    ///   - participantIdentity: participant identity
+    ///   - name: session name
+    /// - Returns: Stored session if found, nil otherwise
     public func retrieveSession(participantIdentity: String, name: String) -> SecureSession? {
         guard let data = try? self.fileSystem.read(name: name, subdir: participantIdentity), !data.isEmpty else {
             return nil
@@ -81,13 +84,14 @@ import VirgilCrypto
         return try? SecureSession(data: data,
                                   participantIdentity: participantIdentity,
                                   name: name,
-                                  sessionStorage: self,
                                   crypto: self.crypto)
     }
 
     /// Deletes session
     ///
-    /// - Parameter participantIdentity: participantIdentity: participant identity
+    /// - Parameters:
+    ///   - participantIdentity: participant identity
+    ///   - name: session name
     /// - Throws: Rethrows from FileSystem
     public func deleteSession(participantIdentity: String, name: String?) throws {
         try self.queue.sync {

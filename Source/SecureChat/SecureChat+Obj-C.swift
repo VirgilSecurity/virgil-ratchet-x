@@ -35,33 +35,44 @@
 //
 
 import Foundation
+import VirgilSDK
 
-/// Protocol for session storage
-@objc(VSRSessionStorage) public protocol SessionStorage: class {
-    /// Stores session
-    ///
-    /// - Parameter session: session to store
-    /// - Throws: Depends on implementation
-    @objc func storeSession(_ session: SecureSession) throws
-
-    /// Retrieves session
+/// MARK: - Extension with objective-c methods
+public extension SecureChat {
+    /// Starts new session with given participant using his identity card
     ///
     /// - Parameters:
-    ///   - participantIdentity: participant identity
-    ///   - name: session name
-    /// - Returns: Stored session if found, nil otherwise
-    @objc func retrieveSession(participantIdentity: String, name: String) -> SecureSession?
+    ///   - receiverCard: receiver identity cards
+    ///   - name: Session name
+    ///   - completion: completion handler
+    @objc func startNewSessionAsSender(receiverCard: Card, name: String? = nil,
+                                       completion: @escaping (SecureSession?, Error?) -> Void) {
+        self.startNewSessionAsSender(receiverCard: receiverCard, name: name).start(completion: completion)
+    }
 
-    /// Deletes session
+    /// Starts multiple new sessions with given participants using their identity cards
     ///
     /// - Parameters:
-    ///   - participantIdentity: participant identity
-    ///   - name: session name
-    /// - Throws: Depends on implementation
-    @objc func deleteSession(participantIdentity: String, name: String?) throws
+    ///   - receiverCard: receivers identity cards
+    ///   - completion: completion handler
+    @objc func startMultipleNewSessionsAsSender(receiverCards: [Card], name: String? = nil,
+                                                completion: @escaping ([SecureSession]?, Error?) -> Void) {
+        self.startMutipleNewSessionsAsSender(receiverCards: receiverCards, name: name).start(completion: completion)
+    }
 
-    /// Removes all sessions
+    /// Rotates keys. See rotateKeys() -> GenericOperation<RotationLog> for details
     ///
-    /// - Throws: Depends on implementation
-    @objc func reset() throws
+    /// - Parameter completion: completion handler
+    @objc func rotateKeys(completion: @escaping (RotationLog?, Error?) -> Void) {
+        self.rotateKeys().start(completion: completion)
+    }
+
+    /// Removes all data corresponding to this user: sessions and keys.
+    ///
+    /// - Parameter completion: completion handler
+    @objc func reset(completion: @escaping (Error?) -> Void) {
+        self.reset().start { _, error in
+            completion(error)
+        }
+    }
 }

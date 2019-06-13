@@ -229,6 +229,10 @@
 		42AB65EA2185097800AC4631 /* IntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65E82185095700AC4631 /* IntegrationTests.swift */; };
 		42BA8F3E21946CF100075827 /* FileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BA8F3D21946CF100075827 /* FileSystem.swift */; };
 		42BA8F402194771C00075827 /* FileSessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BA8F3F2194771C00075827 /* FileSessionStorage.swift */; };
+		42BD6F7F22B2591C00B3C2DA /* SecureChat+Obj-C.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BD6F7E22B2591C00B3C2DA /* SecureChat+Obj-C.swift */; };
+		42BD6F8022B2591C00B3C2DA /* SecureChat+Obj-C.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BD6F7E22B2591C00B3C2DA /* SecureChat+Obj-C.swift */; };
+		42BD6F8122B2591C00B3C2DA /* SecureChat+Obj-C.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BD6F7E22B2591C00B3C2DA /* SecureChat+Obj-C.swift */; };
+		42BD6F8222B2591C00B3C2DA /* SecureChat+Obj-C.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BD6F7E22B2591C00B3C2DA /* SecureChat+Obj-C.swift */; };
 		42C837632211B017008AFFD9 /* SecureChatContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42C837622211B017008AFFD9 /* SecureChatContext.swift */; };
 		42C837652211B283008AFFD9 /* KeysRotatorProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42C837642211B283008AFFD9 /* KeysRotatorProtocol.swift */; };
 		42CBE2AB21E656BE000F99E6 /* SecureSessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65A42183340A00AC4631 /* SecureSessionTests.swift */; };
@@ -450,6 +454,7 @@
 		42AB65E82185095700AC4631 /* IntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrationTests.swift; sourceTree = "<group>"; };
 		42BA8F3D21946CF100075827 /* FileSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileSystem.swift; sourceTree = "<group>"; };
 		42BA8F3F2194771C00075827 /* FileSessionStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileSessionStorage.swift; sourceTree = "<group>"; };
+		42BD6F7E22B2591C00B3C2DA /* SecureChat+Obj-C.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SecureChat+Obj-C.swift"; sourceTree = "<group>"; };
 		42C837622211B017008AFFD9 /* SecureChatContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureChatContext.swift; sourceTree = "<group>"; };
 		42C837642211B283008AFFD9 /* KeysRotatorProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysRotatorProtocol.swift; sourceTree = "<group>"; };
 		42FC668722087B74009D3764 /* VirgilCryptoFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilCryptoFoundation.framework; path = Carthage/Build/iOS/VirgilCryptoFoundation.framework; sourceTree = "<group>"; };
@@ -721,6 +726,7 @@
 				42AB65AB21834EA100AC4631 /* KeysRotation */,
 				42C837622211B017008AFFD9 /* SecureChatContext.swift */,
 				424FAAA82177520200622A3B /* SecureChat.swift */,
+				42BD6F7E22B2591C00B3C2DA /* SecureChat+Obj-C.swift */,
 				424FAAA92177520200622A3B /* SecureSession.swift */,
 				4258CD60225DDC8E003CFCBD /* SecureGroupSession.swift */,
 			);
@@ -1186,6 +1192,7 @@
 				4235247B221EE9690079DD2A /* RotationLog.swift in Sources */,
 				42352472221EE9690079DD2A /* FileOneTimeKeysStorage.swift in Sources */,
 				4235247C221EE9690079DD2A /* KeysRotatorProtocol.swift in Sources */,
+				42BD6F8022B2591C00B3C2DA /* SecureChat+Obj-C.swift in Sources */,
 				42352473221EE9690079DD2A /* SessionStorage.swift in Sources */,
 				4235247F221EE9690079DD2A /* SecureChat.swift in Sources */,
 				4235247D221EE9690079DD2A /* KeysRotator.swift in Sources */,
@@ -1218,6 +1225,7 @@
 				42352490221EE96A0079DD2A /* RotationLog.swift in Sources */,
 				42352487221EE96A0079DD2A /* FileOneTimeKeysStorage.swift in Sources */,
 				42352491221EE96A0079DD2A /* KeysRotatorProtocol.swift in Sources */,
+				42BD6F8122B2591C00B3C2DA /* SecureChat+Obj-C.swift in Sources */,
 				42352488221EE96A0079DD2A /* SessionStorage.swift in Sources */,
 				42352494221EE96A0079DD2A /* SecureChat.swift in Sources */,
 				42352492221EE96A0079DD2A /* KeysRotator.swift in Sources */,
@@ -1250,6 +1258,7 @@
 				423524A5221EE96A0079DD2A /* RotationLog.swift in Sources */,
 				4235249C221EE96A0079DD2A /* FileOneTimeKeysStorage.swift in Sources */,
 				423524A6221EE96A0079DD2A /* KeysRotatorProtocol.swift in Sources */,
+				42BD6F8222B2591C00B3C2DA /* SecureChat+Obj-C.swift in Sources */,
 				4235249D221EE96A0079DD2A /* SessionStorage.swift in Sources */,
 				423524A9221EE96A0079DD2A /* SecureChat.swift in Sources */,
 				423524A7221EE96A0079DD2A /* KeysRotator.swift in Sources */,
@@ -1321,6 +1330,7 @@
 				42C837652211B283008AFFD9 /* KeysRotatorProtocol.swift in Sources */,
 				42352442221D78B80079DD2A /* RotationLog.swift in Sources */,
 				42C837632211B017008AFFD9 /* SecureChatContext.swift in Sources */,
+				42BD6F7F22B2591C00B3C2DA /* SecureChat+Obj-C.swift in Sources */,
 				421B43CD2190650500D4F496 /* KeychainLongTermKeyStorage.swift in Sources */,
 				42AB65BE218350F700AC4631 /* RatchetClientProtocol.swift in Sources */,
 				42FC66A9220DEB63009D3764 /* OneTimeKey.swift in Sources */,

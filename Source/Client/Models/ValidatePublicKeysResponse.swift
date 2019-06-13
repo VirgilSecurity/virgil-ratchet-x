@@ -44,7 +44,6 @@ import Foundation
     /// Used one-time keys ids
     @objc public let usedOneTimeKeysIds: [Data]
 
-    /// Defines coding keys for encoding and decoding
     private enum CodingKeys: String, CodingKey {
         case usedLongTermKeyId = "used_long_term_key_id"
         case usedOneTimeKeysIds = "used_one_time_keys_ids"

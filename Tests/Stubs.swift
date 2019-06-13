@@ -64,17 +64,17 @@ class RamSessionStorage: SessionStorage {
 }
 
 class RamGroupSessionStorage: GroupSessionStorage {
-    private var db: [String: SecureGroupSession] = [:]
+    private var db: [Data: SecureGroupSession] = [:]
     
     func storeSession(_ session: SecureGroupSession) throws {
-        self.db[session.identifier.hexEncodedString()] = session
+        self.db[session.identifier] = session
     }
     
-    func retrieveSession(identifier: String) -> SecureGroupSession? {
+    func retrieveSession(identifier: Data) -> SecureGroupSession? {
         return self.db[identifier]
     }
     
-    func deleteSession(identifier: String) throws {
+    func deleteSession(identifier: Data) throws {
         guard self.db.removeValue(forKey: identifier) != nil else {
             throw NSError(domain: "Stub", code: -1, userInfo: nil)
         }

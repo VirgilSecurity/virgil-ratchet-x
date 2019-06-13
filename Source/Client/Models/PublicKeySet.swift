@@ -47,7 +47,6 @@ import Foundation
     /// One-time public key
     @objc public let oneTimePublicKey: Data?
 
-    /// Defines coding keys for encoding and decoding
     private enum CodingKeys: String, CodingKey {
         case identityPublicKey = "identity_key"
         case longTermPublicKey = "long_term_key"

@@ -37,7 +37,7 @@
 import Foundation
 import VirgilCrypto
 
-/// FileSessionStorage using files
+/// FileGroupSessionStorage using files encrypted files
 /// This class is thread-safe
 @objc(VSRFileGroupSessionStorage) open class FileGroupSessionStorage: NSObject, GroupSessionStorage {
     private let fileSystem: FileSystem
@@ -50,6 +50,7 @@ import VirgilCrypto
     /// - Parameters:
     ///   - identity: identity of this user
     ///   - crypto: VirgilCrypto that will be forwarded to SecureSession
+    ///   - identityKeyPair: Key pair to encrypt session
     @objc public init(identity: String, crypto: VirgilCrypto, identityKeyPair: VirgilKeyPair) throws {
         let credentials = FileSystem.Credentials(crypto: crypto, keyPair: identityKeyPair)
         self.fileSystem = FileSystem(userIdentifier: identity, pathComponents: ["GROUPS"], credentials: credentials)
@@ -74,25 +75,24 @@ import VirgilCrypto
     /// Retrieves session
     ///
     /// - Parameter identifier: session identifier
-    /// - Throws: Rethrows from FileSystem
-    public func retrieveSession(identifier: String) -> SecureGroupSession? {
-        guard let data = try? self.fileSystem.read(name: identifier), !data.isEmpty else {
+    /// - Returns: Stored session if found, nil otherwise
+    public func retrieveSession(identifier: Data) -> SecureGroupSession? {
+        guard let data = try? self.fileSystem.read(name: identifier.hexEncodedString()), !data.isEmpty else {
             return nil
         }
 
         return try? SecureGroupSession(data: data,
                                        privateKeyData: privateKeyData,
-                                       sessionStorage: self,
                                        crypto: self.crypto)
     }
 
     /// Deletes session
     ///
-    /// - Parameter participantIdentity: participantIdentity: participant identity
+    /// - Parameter identifier: session identifier
     /// - Throws: Rethrows from FileSystem
-    public func deleteSession(identifier: String) throws {
+    public func deleteSession(identifier: Data) throws {
         try self.queue.sync {
-            try self.fileSystem.delete(name: identifier)
+            try self.fileSystem.delete(name: identifier.hexEncodedString())
         }
     }
 
