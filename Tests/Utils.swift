@@ -82,33 +82,37 @@ class Utils {
                 
                 let receiver = groupSessions[i]
                 
-                let decryptedMessage = try receiver.decryptString(from: message)
+                let decryptedMessage = try receiver.decryptString(from: message, senderCardId: sender.myIdentifier)
                 
                 XCTAssert(decryptedMessage == plainText)
             }
         }
     }
     
-    static func encryptDecrypt100TimesRestored(groupSessions: [SecureGroupSession]) throws {
+    static func encryptDecrypt100TimesRestored(secureChats: [SecureChat], sessionId: Data) throws {
         for _ in 0..<100 {
-            let senderNum = Int.random(in: 0..<groupSessions.count)
+            let senderNum = Int.random(in: 0..<secureChats.count)
             
-            let sender = groupSessions[senderNum]
+            let sender = secureChats[senderNum].existingGroupSession(sessionId: sessionId)!
             
             let plainText = UUID().uuidString
             
             let message = try sender.encrypt(string: plainText)
             
-            for i in 0..<groupSessions.count {
+            try secureChats[senderNum].storeGroupSession(session: sender)
+            
+            for i in 0..<secureChats.count {
                 if i == senderNum {
                     continue
                 }
                 
-                let receiver = groupSessions[i]
+                let receiver = secureChats[i].existingGroupSession(sessionId: sessionId)!
                 
-                let decryptedMessage = try receiver.decryptString(from: message)
+                let decryptedMessage = try receiver.decryptString(from: message, senderCardId: sender.myIdentifier)
                 
                 XCTAssert(decryptedMessage == plainText)
+                
+                try secureChats[i].storeGroupSession(session: receiver)
             }
         }
     }

@@ -42,12 +42,18 @@ import VirgilCryptoRatchet
 /// SecureSession errors
 ///
 /// - invalidUtf8String: invalid convesion to/from utf-8 string
+/// - notConsequentTicket: consequent tickets should be passed to updateMembers
+/// - invalidMessageType: invalid message type
+/// - invalidCardId: invalid card id
+/// - publicKeyIsNotVirgil: public key is not VirgilPublicKey
+/// - wrongSender: message sender doesn't match
 @objc(VSCRSecureGroupSessionError) public enum SecureGroupSessionError: Int, Error {
     case invalidUtf8String = 1
     case notConsequentTicket = 2
     case invalidMessageType = 3
     case invalidCardId = 4
     case publicKeyIsNotVirgil = 5
+    case wrongSender = 6
 }
 
 /// SecureSession
@@ -146,34 +152,41 @@ import VirgilCryptoRatchet
     /// Decrypts data from RatchetMessage.
     /// NOTE: This operation changes session state, so session should be updated in storage.
     ///
-    /// - Parameter message: RatchetMessage
+    /// - Parameters:
+    ///   - message: RatchetMessage
+    ///   - senderCardId: Sender card id
     /// - Returns: Decrypted data
     /// - Throws:
     ///         - Rethrows from crypto RatchetSession
     ///         - Rethrows from SessionStorage
-    @objc public func decryptData(from message: RatchetGroupMessage) throws -> Data {
-        return try self.queue.sync {
-            let data = try self.ratchetGroupSession.decrypt(message: message)
+    @objc public func decryptData(from message: RatchetGroupMessage, senderCardId: String) throws -> Data {
+        guard message.getType() == .regular else {
+            throw SecureGroupSessionError.invalidMessageType
+        }
+        
+        guard message.getSenderId().hexEncodedString() == senderCardId else {
+            throw SecureGroupSessionError.wrongSender
+        }
 
-            return data
+        return try self.queue.sync {
+            return try self.ratchetGroupSession.decrypt(message: message)
         }
     }
 
     /// Decrypts utf-8 string from RatchetMessage.
     /// NOTE: This operation changes session state, so session should be updated in storage.
     ///
-    /// - Parameter message: RatchetMessage
+    /// - Parameters:
+    ///   - message: RatchetMessage
+    ///   - senderCardId: Sender card id
     /// - Returns: Decrypted utf-8 string
     /// - Throws:
+    ///         -
     ///         - SecureSessionError.invalidUtf8String if decrypted data is not correct utf-8 string
     ///         - Rethrows from crypto RatchetSession
     ///         - Rethrows from SessionStorage
-    @objc public func decryptString(from message: RatchetGroupMessage) throws -> String {
-        guard message.getType() == .regular else {
-            throw SecureGroupSessionError.invalidMessageType
-        }
-
-        let data = try self.decryptData(from: message)
+    @objc public func decryptString(from message: RatchetGroupMessage, senderCardId: String) throws -> String {
+        let data = try self.decryptData(from: message, senderCardId: senderCardId)
 
         guard let string = String(data: data, encoding: .utf8) else {
             throw SecureSessionError.invalidUtf8String

@@ -197,7 +197,7 @@ class IntegrationGroupTests: XCTestCase {
             // Encrypt plaintext
             let plainText = UUID().uuidString
             let message = try sessions.first!.encrypt(string: plainText)
-            let decryptedMessage1 = try sessions.last!.decryptString(from: message)
+            let decryptedMessage1 = try sessions.last!.decryptString(from: message, senderCardId: cards[0].identifier)
             XCTAssert(decryptedMessage1 == plainText)
 
             // Remove user
@@ -223,13 +223,13 @@ class IntegrationGroupTests: XCTestCase {
             sessions.append(newSession)
 
             // Decrypt with new session message, encrypted for old session
-            _ = try? sessions.last!.decryptString(from: message)
+            _ = try? sessions.last!.decryptString(from: message, senderCardId: cards[0].identifier)
         } catch {
             XCTFail(error.localizedDescription)
         }
     }
 
-    func test3__add_remove_user_100_times__should_not_crash() {
+    func test3__add_remove__user_100_times__should_not_crash() {
         do {
             // Start group chat
             let num = 3
@@ -272,6 +272,83 @@ class IntegrationGroupTests: XCTestCase {
                 let newSession = try chats.last!.startGroupSession(with: cards.dropLast(), using: addTicket)
                 sessions.append(newSession)
             }
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
+    func test4__decrypt__wrong_sender__should_return_error() {
+        do {
+            let num = 2
+            
+            let (cards, chats) = try self.initChat(numberOfParticipants: num)
+            
+            let initMsg = try chats.first!.startNewGroupSession()
+            
+            var sessions = [SecureGroupSession]()
+            
+            for i in 0..<num {
+                var localCards = cards
+                localCards.remove(at: i)
+                
+                let session = try chats[i].startGroupSession(with: localCards, using: initMsg)
+                
+                sessions.append(session)
+            }
+            
+            let str = UUID().uuidString
+            let message = try sessions[0].encrypt(string: str)
+            
+            let decrypted = try sessions[1].decryptString(from: message, senderCardId: sessions[0].myIdentifier)
+            XCTAssert(decrypted == str)
+            
+            let crypto = try! VirgilCrypto()
+            
+            do {
+                _ = try sessions[1].decryptString(from: message, senderCardId: sessions[1].myIdentifier)
+                XCTFail()
+            }
+            catch SecureGroupSessionError.wrongSender {}
+            catch {
+                XCTFail()
+            }
+            
+            do {
+                let randomCardId = try crypto.generateRandomData(ofSize: 32).hexEncodedString()
+                _ = try sessions[1].decryptString(from: message, senderCardId: randomCardId)
+                XCTFail()
+            }
+            catch SecureGroupSessionError.wrongSender {}
+            catch {
+                XCTFail()
+            }
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
+    func test5__session_persistence__random_uuid_messages__should_decrypt() {
+        do {
+            let num = 10
+            
+            let (cards1, chats1) = try self.initChat(numberOfParticipants: num)
+            
+            let initMsg = try chats1[0].startNewGroupSession()
+            
+            var sessions = [SecureGroupSession]()
+            
+            for i in 0..<num {
+                var localCards = cards1
+                localCards.remove(at: i)
+                
+                let session = try chats1[i].startGroupSession(with: localCards, using: initMsg)
+                
+                sessions.append(session)
+                
+                try chats1[i].storeGroupSession(session: session)
+            }
+            
+            try Utils.encryptDecrypt100TimesRestored(secureChats: chats1, sessionId: sessions[0].identifier)
         } catch {
             XCTFail(error.localizedDescription)
         }
