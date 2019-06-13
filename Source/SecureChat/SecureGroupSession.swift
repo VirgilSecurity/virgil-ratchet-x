@@ -75,7 +75,6 @@ import VirgilCryptoRatchet
     private let queue = DispatchQueue(label: "SecureGroupSessionQueue")
 
     internal init(crypto: VirgilCrypto,
-                  sessionStorage: GroupSessionStorage,
                   privateKeyData: Data,
                   myId: Data,
                   ratchetGroupMessage: RatchetGroupMessage,
@@ -111,7 +110,7 @@ import VirgilCryptoRatchet
         super.init()
     }
 
-    /// Encrypts string. Updates session in storage
+    /// Encrypts string.
     /// NOTE: This operation changes session state, so session should be updated in storage.
     ///
     /// - Parameter message: message to encrypt
@@ -128,7 +127,7 @@ import VirgilCryptoRatchet
         return try self.encrypt(data: data)
     }
 
-    /// Encrypts data. Updates session in storage
+    /// Encrypts data.
     /// NOTE: This operation changes session state, so session should be updated in storage.
     ///
     /// - Parameter message: message to encrypt
@@ -144,7 +143,7 @@ import VirgilCryptoRatchet
         }
     }
 
-    /// Decrypts data from RatchetMessage. Updates session in storage
+    /// Decrypts data from RatchetMessage.
     /// NOTE: This operation changes session state, so session should be updated in storage.
     ///
     /// - Parameter message: RatchetMessage
@@ -160,7 +159,7 @@ import VirgilCryptoRatchet
         }
     }
 
-    /// Decrypts utf-8 string from RatchetMessage. Updates session in storage
+    /// Decrypts utf-8 string from RatchetMessage.
     /// NOTE: This operation changes session state, so session should be updated in storage.
     ///
     /// - Parameter message: RatchetMessage
@@ -206,7 +205,7 @@ import VirgilCryptoRatchet
     ///         - SecureGroupSessionError.publicKeyIsNotVirgil
     ///         - Rethrows from RatchetGroupSession
     @objc public func setParticipants(ticket: RatchetGroupMessage,
-                                cards: [Card]) throws {
+                                      cards: [Card]) throws {
         guard ticket.getType() == .groupInfo else {
             throw SecureGroupSessionError.invalidMessageType
         }
@@ -247,8 +246,8 @@ import VirgilCryptoRatchet
     ///         - SecureGroupSessionError.publicKeyIsNotVirgil
     ///         - Rethrows from RatchetGroupSession
     @objc public func updateParticipants(ticket: RatchetGroupMessage,
-                                   addCards: [Card],
-                                   removeCardIds: [String]) throws {
+                                         addCards: [Card],
+                                         removeCardIds: [String]) throws {
         guard ticket.getType() == .groupInfo else {
             throw SecureGroupSessionError.invalidMessageType
         }

@@ -229,6 +229,8 @@ import VirgilCrypto
     /// - Parameter session: Session to store
     /// - Throws: Rethrows from SessionStorage
     @objc open func storeSession(session: SecureSession) throws {
+        Log.debug("Storing session with \(session.participantIdentity) name: \(session.name)")
+
         try self.sessionStorage.storeSession(session)
     }
 
@@ -240,6 +242,8 @@ import VirgilCrypto
     /// - Parameter session: GroupSession to store
     /// - Throws: Rethrows from GroupSessionStorage
     @objc open func storeGroupSession(session: SecureGroupSession) throws {
+        Log.debug("Storing group session with id \(session.identifier.hexEncodedString())")
+
         try self.groupSessionStorage.storeSession(session)
     }
 
@@ -285,6 +289,16 @@ import VirgilCrypto
         Log.debug("Deleting session with \(particpantIdentity)")
 
         try self.sessionStorage.deleteSession(participantIdentity: particpantIdentity, name: nil)
+    }
+
+    /// Deletes group session with given identifier
+    ///
+    /// - Parameter sessionId: session identifier
+    /// - Throws: Rethrows from SessionGroupStorage
+    @objc public func deleteGroupSession(sessionId: Data) throws {
+        Log.debug("Deleting group session with \(sessionId.hexEncodedString())")
+
+        try self.groupSessionStorage.deleteSession(identifier: sessionId)
     }
 
     /// Starts new session with given participant using his identity card
@@ -659,7 +673,6 @@ import VirgilCrypto
         }
 
         return try SecureGroupSession(crypto: self.crypto,
-                                      sessionStorage: self.groupSessionStorage,
                                       privateKeyData: privateKeyData,
                                       myId: myId,
                                       ratchetGroupMessage: ratchetMessage,
