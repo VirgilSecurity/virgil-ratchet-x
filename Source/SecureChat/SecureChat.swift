@@ -223,7 +223,7 @@ import VirgilCrypto
     }
 
     /// Stores session
-    /// NOTE: This method is used for storing new session as well as updating existing ones
+    /// - Note: This method is used for storing new session as well as updating existing ones
     ///       after operations that change session's state (encrypt and decrypt),
     ///       therefore is session already exists in storage, it will be overwritten
     ///
@@ -236,7 +236,7 @@ import VirgilCrypto
     }
 
     /// Stores group session
-    /// NOTE: This method is used for storing new session as well as updating existing ones
+    /// - Note: This method is used for storing new session as well as updating existing ones
     ///       after operations that change session's state (encrypt, decrypt, setParticipants, updateParticipants),
     ///       therefore is session already exists in storage, it will be overwritten
     ///
@@ -303,7 +303,7 @@ import VirgilCrypto
     }
 
     /// Starts new session with given participant using his identity card
-    /// NOTE: This operation doesn't store session to storage automatically. Use storeSession()
+    /// - Note: This operation doesn't store session to storage automatically. Use storeSession()
     ///
     /// - Parameters:
     ///   - receiverCard: receiver identity cards
@@ -364,7 +364,7 @@ import VirgilCrypto
     }
 
     /// Starts multiple new sessions with given participants using their identity cards
-    /// NOTE: This operation doesn't store sessions to storage automatically. Use storeSession()
+    /// - Note: This operation doesn't store sessions to storage automatically. Use storeSession()
     ///
     /// - Parameters:
     ///   - receiverCards: receivers identity cards
@@ -536,7 +536,7 @@ import VirgilCrypto
     }
 
     /// Responds with new session with given participant using his initiation message
-    /// NOTE: This operation doesn't store session to storage automatically. Use storeSession()
+    /// - Note: This operation doesn't store session to storage automatically. Use storeSession()
     ///
     /// - Parameters:
     ///   - senderCard: Sender identity card
@@ -624,7 +624,7 @@ import VirgilCrypto
     }
 
     /// Creates RatchetGroupMessage that starts new group chat
-    /// NOTE: Other participants should receive this message using encrypted channel (SecureSession)
+    /// - Note: Other participants should receive this message using encrypted channel (SecureSession)
     ///
     /// - Parameter customSessionId: optional session Id. Should be 32 byte.
     ///                              If nil passed random value will be generated
@@ -650,7 +650,7 @@ import VirgilCrypto
     }
 
     /// Creates secure group session that was initiated by someone.
-    /// NOTE: This operation doesn't store session to storage automatically. Use storeSession()
+    /// - Note: This operation doesn't store session to storage automatically. Use storeSession()
     /// RatchetGroupMessage should have .groupInfo type. Such messages should be sent encrypted (using SecureSession)
     ///
     /// - Parameters:
