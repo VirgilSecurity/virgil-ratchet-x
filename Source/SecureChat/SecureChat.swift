@@ -625,26 +625,22 @@ import VirgilCrypto
 
     /// Creates RatchetGroupMessage that starts new group chat
     /// - Note: Other participants should receive this message using encrypted channel (SecureSession)
+    /// - Important: Session id is REQUIRED to be unique and tied to transport layer (channel id or similar)
     ///
-    /// - Parameter customSessionId: optional session Id. Should be 32 byte.
-    ///                              If nil passed random value will be generated
+    /// - Parameter sessionId: Session Id. Should be 32 byte. T
     /// - Returns: RatchetGroupMessage that should be then passed to startGroupSession()
     /// - Throws:
     ///   - SecureChatError.invalidSessionIdLen
     ///   - Rethrows from RatchetGroupTicket
-    @objc public func startNewGroupSession(customSessionId: Data? = nil) throws -> RatchetGroupMessage {
+    @objc public func startNewGroupSession(sessionId: Data) throws -> RatchetGroupMessage {
         let ticket = RatchetGroupTicket()
         ticket.setRng(rng: self.crypto.rng)
 
-        try ticket.setupTicketAsNew()
-
-        if let sessionId = customSessionId {
-            guard sessionId.count == RatchetCommon.sessionIdLen else {
-                throw SecureChatError.invalidSessionIdLen
-            }
-
-            ticket.setSessionId(sessionId: sessionId)
+        guard sessionId.count == RatchetCommon.sessionIdLen else {
+            throw SecureChatError.invalidSessionIdLen
         }
+        
+        try ticket.setupTicketAsNew(sessionId: sessionId)
 
         return ticket.getTicketMessage()
     }

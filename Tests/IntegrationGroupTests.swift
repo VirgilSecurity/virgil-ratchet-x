@@ -50,10 +50,13 @@ class IntegrationGroupTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
     
+    private var crypto: VirgilCrypto!
+    
     private func initChat(numberOfParticipants: Int) throws -> ([Card], [SecureChat]) {
         let testConfig = TestConfig.readFromBundle()
         
         let crypto = try! VirgilCrypto()
+        self.crypto = crypto
         
         let cardVerifier = VirgilCardVerifier(cardCrypto: VirgilCardCrypto(virgilCrypto: crypto))!
         cardVerifier.verifyVirgilSignature = false
@@ -111,7 +114,7 @@ class IntegrationGroupTests: XCTestCase {
             
             let (cards1, chats1) = try self.initChat(numberOfParticipants: num)
             
-            let initMsg = try chats1[0].startNewGroupSession()
+            let initMsg = try chats1[0].startNewGroupSession(sessionId: self.crypto.generateRandomData(ofSize: 32))
             
             var sessions = [SecureGroupSession]()
             
@@ -181,7 +184,7 @@ class IntegrationGroupTests: XCTestCase {
 
             let (cards, chats) = try self.initChat(numberOfParticipants: num)
 
-            let initMsg = try chats.first!.startNewGroupSession()
+            let initMsg = try chats.first!.startNewGroupSession(sessionId: self.crypto.generateRandomData(ofSize: 32))
 
             var sessions = [SecureGroupSession]()
 
@@ -236,7 +239,7 @@ class IntegrationGroupTests: XCTestCase {
 
             let (cards, chats) = try self.initChat(numberOfParticipants: num)
 
-            let initMsg = try chats.first!.startNewGroupSession()
+            let initMsg = try chats.first!.startNewGroupSession(sessionId: self.crypto.generateRandomData(ofSize: 32))
 
             var sessions = [SecureGroupSession]()
 
@@ -283,7 +286,7 @@ class IntegrationGroupTests: XCTestCase {
             
             let (cards, chats) = try self.initChat(numberOfParticipants: num)
             
-            let initMsg = try chats.first!.startNewGroupSession()
+            let initMsg = try chats.first!.startNewGroupSession(sessionId: self.crypto.generateRandomData(ofSize: 32))
             
             var sessions = [SecureGroupSession]()
             
@@ -333,7 +336,7 @@ class IntegrationGroupTests: XCTestCase {
             
             let (cards1, chats1) = try self.initChat(numberOfParticipants: num)
             
-            let initMsg = try chats1[0].startNewGroupSession()
+            let initMsg = try chats1[0].startNewGroupSession(sessionId: self.crypto.generateRandomData(ofSize: 32))
             
             var sessions = [SecureGroupSession]()
             
