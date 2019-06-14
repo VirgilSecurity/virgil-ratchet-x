@@ -163,13 +163,13 @@ import VirgilCryptoRatchet
         guard message.getType() == .regular else {
             throw SecureGroupSessionError.invalidMessageType
         }
-        
+
         guard message.getSenderId().hexEncodedString() == senderCardId else {
             throw SecureGroupSessionError.wrongSender
         }
 
         return try self.queue.sync {
-            return try self.ratchetGroupSession.decrypt(message: message)
+            try self.ratchetGroupSession.decrypt(message: message)
         }
     }
 

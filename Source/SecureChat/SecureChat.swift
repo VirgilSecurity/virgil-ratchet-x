@@ -639,7 +639,7 @@ import VirgilCrypto
         guard sessionId.count == RatchetCommon.sessionIdLen else {
             throw SecureChatError.invalidSessionIdLen
         }
-        
+
         try ticket.setupTicketAsNew(sessionId: sessionId)
 
         return ticket.getTicketMessage()
