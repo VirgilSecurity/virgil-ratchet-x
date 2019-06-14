@@ -58,7 +58,7 @@ public class KeysRotator: KeysRotatorProtocol {
     private let oneTimeKeysStorage: OneTimeKeysStorage
     private let client: RatchetClientProtocol
     private let mutex = Mutex()
-    private let keyUtils = RatchetKeyUtils()
+    private let keyId = RatchetKeyId()
 
     /// Initializer
     ///
@@ -121,6 +121,8 @@ public class KeysRotator: KeysRotatorProtocol {
 
             Log.debug("Started keys' rotation operation")
 
+            var interactionStarted = false
+
             let completionWrapper: (RotationLog?, Error?) -> Void = {
                 do {
                     try self.mutex.unlock()
@@ -130,13 +132,15 @@ public class KeysRotator: KeysRotatorProtocol {
                     return
                 }
 
-                do {
-                    try self.oneTimeKeysStorage.stopInteraction()
-                }
-                catch {
-                    Log.debug("Completed keys' rotation with storage error")
-                    completion(nil, error)
-                    return
+                if interactionStarted {
+                    do {
+                        try self.oneTimeKeysStorage.stopInteraction()
+                    }
+                    catch {
+                        Log.debug("Completed keys' rotation with storage error")
+                        completion(nil, error)
+                        return
+                    }
                 }
 
                 if let error = $1 {
@@ -161,6 +165,8 @@ public class KeysRotator: KeysRotatorProtocol {
                 let rotationLog = RotationLog()
 
                 try self.oneTimeKeysStorage.startInteraction()
+                interactionStarted = true
+
                 let oneTimeKeys = try self.oneTimeKeysStorage.retrieveAllKeys()
                 var oneTimeKeysIds = [Data]()
                 oneTimeKeysIds.reserveCapacity(oneTimeKeys.count)
@@ -241,7 +247,7 @@ public class KeysRotator: KeysRotatorProtocol {
                     let longTermKeyPair = try self.crypto.generateKeyPair(ofType: .curve25519)
                     let longTermPrivateKey = try self.crypto.exportPrivateKey(longTermKeyPair.privateKey)
                     let longTermPublicKey = try self.crypto.exportPublicKey(longTermKeyPair.publicKey)
-                    let longTermKeyId = try self.keyUtils.computePublicKeyId(publicKey: longTermPublicKey)
+                    let longTermKeyId = try self.keyId.computePublicKeyId(publicKey: longTermPublicKey)
                     _ = try self.longTermKeysStorage.storeKey(longTermPrivateKey,
                                                               withId: longTermKeyId)
                     let longTermKeySignature = try self.crypto.generateSignature(of: longTermPublicKey,
@@ -265,7 +271,7 @@ public class KeysRotator: KeysRotatorProtocol {
                         let keyPair = try self.crypto.generateKeyPair(ofType: .curve25519)
                         let oneTimePrivateKey = try self.crypto.exportPrivateKey(keyPair.privateKey)
                         let oneTimePublicKey = try self.crypto.exportPublicKey(keyPair.publicKey)
-                        let keyId = try self.keyUtils.computePublicKeyId(publicKey: oneTimePublicKey)
+                        let keyId = try self.keyId.computePublicKeyId(publicKey: oneTimePublicKey)
                         _ = try self.oneTimeKeysStorage.storeKey(oneTimePrivateKey, withId: keyId)
 
                         publicKeys.append(oneTimePublicKey)

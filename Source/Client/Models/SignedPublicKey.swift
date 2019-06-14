@@ -44,7 +44,6 @@ import Foundation
     /// Signature
     @objc public let signature: Data
 
-    /// Defines coding keys for encoding and decoding
     private enum CodingKeys: String, CodingKey {
         case publicKey = "public_key"
         case signature = "signature"

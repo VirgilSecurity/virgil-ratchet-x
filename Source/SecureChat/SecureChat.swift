@@ -46,6 +46,9 @@ import VirgilCrypto
 /// - invalidLongTermKeySignature: Long-term key signature is invalid
 /// - invalidMessageType: Message type should be .prekey
 /// - invalidKeyType: Invalid key type
+/// - publicKeysSetsMismatch: PublicKeysSets mismatch
+/// - invalidSessionIdLen: Session Id should be 32-byte
+/// - invalidCardId: Invalid card id
 @objc public enum SecureChatError: Int, Error {
     case sessionAlreadyExists = 1
     case wrongIdentityPublicKeyCrypto = 2
@@ -53,6 +56,9 @@ import VirgilCrypto
     case invalidLongTermKeySignature = 4
     case invalidMessageType = 5
     case invalidKeyType = 6
+    case publicKeysSetsMismatch = 7
+    case invalidSessionIdLen = 8
+    case invalidCardId = 9
 }
 
 /// SecureChat. Class for rotating keys, starting and responding to conversation
@@ -75,11 +81,20 @@ import VirgilCrypto
     /// Session storage
     @objc public let sessionStorage: SessionStorage
 
+    /// Group session storage
+    @objc public let groupSessionStorage: GroupSessionStorage
+
     /// Client
     public let client: RatchetClientProtocol
 
-    private let keyUtils = RatchetKeyUtils()
+    // Identity card id
+    public let identityCard: Card
+
+    private let keyId = RatchetKeyId()
     private let keysRotator: KeysRotatorProtocol
+
+    /// Default session name (if nil is passed)
+    public static let defaultSessionName = "DEFAULT"
 
     /// Initializer
     ///
@@ -99,11 +114,18 @@ import VirgilCrypto
         }
 
         let longTermKeysStorage = try KeychainLongTermKeysStorage(identity: context.identity, params: params)
-        let oneTimeKeysStorage = FileOneTimeKeysStorage(identity: context.identity)
-        let sessionStorage = FileSessionStorage(identity: context.identity, crypto: crypto)
+        let oneTimeKeysStorage = FileOneTimeKeysStorage(identity: context.identity,
+                                                        crypto: crypto,
+                                                        identityKeyPair: context.identityKeyPair)
+        let sessionStorage = FileSessionStorage(identity: context.identity,
+                                                crypto: crypto,
+                                                identityKeyPair: context.identityKeyPair)
+        let groupSessionStorage = try FileGroupSessionStorage(identity: context.identity,
+                                                              crypto: crypto,
+                                                              identityKeyPair: context.identityKeyPair)
         let keysRotator = KeysRotator(crypto: crypto,
-                                      identityPrivateKey: context.identityPrivateKey,
-                                      identityCardId: context.identityCardId,
+                                      identityPrivateKey: context.identityKeyPair.privateKey,
+                                      identityCardId: context.identityCard.identifier,
                                       orphanedOneTimeKeyTtl: context.orphanedOneTimeKeyTtl,
                                       longTermKeyTtl: context.longTermKeyTtl,
                                       outdatedLongTermKeyTtl: context.outdatedLongTermKeyTtl,
@@ -113,50 +135,52 @@ import VirgilCrypto
                                       client: client)
 
         self.init(crypto: crypto,
-                  identityPrivateKey: context.identityPrivateKey,
+                  identityPrivateKey: context.identityKeyPair.privateKey,
+                  identityCard: context.identityCard,
                   accessTokenProvider: context.accessTokenProvider,
                   client: client,
                   longTermKeysStorage: longTermKeysStorage,
                   oneTimeKeysStorage: oneTimeKeysStorage,
                   sessionStorage: sessionStorage,
+                  groupSessionStorage: groupSessionStorage,
                   keysRotator: keysRotator)
     }
 
     /// Initializer
     ///
     /// - Parameters:
+    ///   - crypto: VirgilCrypto instance
     ///   - identityPrivateKey: identity private key
+    ///   - identityCard: Identity card
     ///   - accessTokenProvider: access token provider
     ///   - client: client
     ///   - longTermKeysStorage: long-term keys storage
     ///   - oneTimeKeysStorage: one-time keys storage
     ///   - sessionStorage: session storage
+    ///   - groupSessionStorage: group session storage
     ///   - keysRotator: keys rotation
     public init(crypto: VirgilCrypto,
                 identityPrivateKey: VirgilPrivateKey,
+                identityCard: Card,
                 accessTokenProvider: AccessTokenProvider,
                 client: RatchetClientProtocol,
                 longTermKeysStorage: LongTermKeysStorage,
                 oneTimeKeysStorage: OneTimeKeysStorage,
                 sessionStorage: SessionStorage,
+                groupSessionStorage: GroupSessionStorage,
                 keysRotator: KeysRotatorProtocol) {
         self.crypto = crypto
         self.identityPrivateKey = identityPrivateKey
+        self.identityCard = identityCard
         self.accessTokenProvider = accessTokenProvider
         self.client = client
         self.longTermKeysStorage = longTermKeysStorage
         self.oneTimeKeysStorage = oneTimeKeysStorage
         self.sessionStorage = sessionStorage
+        self.groupSessionStorage = groupSessionStorage
         self.keysRotator = keysRotator
 
         super.init()
-    }
-
-    /// Rotates keys. See rotateKeys() -> GenericOperation<RotationLog> for details
-    ///
-    /// - Parameter completion: completion handler
-    @objc public func rotateKeys(completion: @escaping (RotationLog?, Error?) -> Void) {
-        self.rotateKeys().start(completion: completion)
     }
 
     /// Rotates keys
@@ -173,7 +197,7 @@ import VirgilCrypto
     ///         - Generate needed number of one-time keys
     ///         - Upload keys to the cloud
     ///
-    /// - Returns: GenericOperation
+    /// - Returns: GenericOperation<RotationLog>
     public func rotateKeys() -> GenericOperation<RotationLog> {
         Log.debug("Keys rotation queued")
 
@@ -198,12 +222,42 @@ import VirgilCrypto
         }
     }
 
+    /// Stores session
+    /// NOTE: This method is used for storing new session as well as updating existing ones
+    ///       after operations that change session's state (encrypt and decrypt),
+    ///       therefore is session already exists in storage, it will be overwritten
+    ///
+    /// - Parameter session: Session to store
+    /// - Throws: Rethrows from SessionStorage
+    @objc open func storeSession(session: SecureSession) throws {
+        Log.debug("Storing session with \(session.participantIdentity) name: \(session.name)")
+
+        try self.sessionStorage.storeSession(session)
+    }
+
+    /// Stores group session
+    /// NOTE: This method is used for storing new session as well as updating existing ones
+    ///       after operations that change session's state (encrypt, decrypt, setParticipants, updateParticipants),
+    ///       therefore is session already exists in storage, it will be overwritten
+    ///
+    /// - Parameter session: GroupSession to store
+    /// - Throws: Rethrows from GroupSessionStorage
+    @objc open func storeGroupSession(session: SecureGroupSession) throws {
+        Log.debug("Storing group session with id \(session.identifier.hexEncodedString())")
+
+        try self.groupSessionStorage.storeSession(session)
+    }
+
     /// Checks for existing session with given participent in the storage
     ///
-    /// - Parameter particpantIdentity: participant identity
+    /// - Parameters:
+    ///   - particpantIdentity: participant identity
+    ///   - name: session name
     /// - Returns: SecureSession if exists
-    @objc open func existingSession(withParticpantIdentity particpantIdentity: String) -> SecureSession? {
-        if let session = self.sessionStorage.retrieveSession(participantIdentity: particpantIdentity) {
+    @objc open func existingSession(withParticpantIdentity particpantIdentity: String,
+                                    name: String? = nil) -> SecureSession? {
+        if let session = self.sessionStorage.retrieveSession(participantIdentity: particpantIdentity,
+                                                             name: name ?? SecureChat.defaultSessionName) {
             Log.debug("Found existing session with \(particpantIdentity)")
 
             return session
@@ -217,27 +271,43 @@ import VirgilCrypto
 
     /// Deletes session with given participant identity
     ///
-    /// - Parameter particpantIdentity: participant identity
+    /// - Parameters:
+    ///   - particpantIdentity: participant identity
+    ///   - name: Session name
     /// - Throws: Rethrows from SessionStorage
-    @objc public func deleteSession(withParticpantIdentity particpantIdentity: String) throws {
+    @objc public func deleteSession(withParticpantIdentity particpantIdentity: String, name: String? = nil) throws {
         Log.debug("Deleting session with \(particpantIdentity)")
 
-        try self.sessionStorage.deleteSession(participantIdentity: particpantIdentity)
+        try self.sessionStorage.deleteSession(participantIdentity: particpantIdentity,
+                                              name: name ?? SecureChat.defaultSessionName)
+    }
+
+    /// Deletes session with given participant identity
+    ///
+    /// - Parameter particpantIdentity: participant identity
+    /// - Throws: Rethrows from SessionStorage
+    @objc public func deleteAllSessions(withParticpantIdentity particpantIdentity: String) throws {
+        Log.debug("Deleting session with \(particpantIdentity)")
+
+        try self.sessionStorage.deleteSession(participantIdentity: particpantIdentity, name: nil)
+    }
+
+    /// Deletes group session with given identifier
+    ///
+    /// - Parameter sessionId: session identifier
+    /// - Throws: Rethrows from SessionGroupStorage
+    @objc public func deleteGroupSession(sessionId: Data) throws {
+        Log.debug("Deleting group session with \(sessionId.hexEncodedString())")
+
+        try self.groupSessionStorage.deleteSession(identifier: sessionId)
     }
 
     /// Starts new session with given participant using his identity card
+    /// NOTE: This operation doesn't store session to storage automatically. Use storeSession()
     ///
     /// - Parameters:
     ///   - receiverCard: receiver identity cards
-    ///   - completion: completion handler
-    @objc open func startNewSessionAsSender(receiverCard: Card,
-                                            completion: @escaping (SecureSession?, Error?) -> Void) {
-        self.startNewSessionAsSender(receiverCard: receiverCard).start(completion: completion)
-    }
-
-    /// Starts new session with given participant using his identity card
-    ///
-    /// - Parameter receiverCard: receiver identity cards
+    ///   - name: Session name
     /// - Returns: GenericOperation with SecureSession
     /// - Throws:
     ///   - `SecureChatError.sessionAlreadyExists` if session already exists.
@@ -249,14 +319,15 @@ import VirgilCrypto
     ///   - Rethrows from [RatchetClient](x-source-tag://RatchetClient)
     ///   - Rethrows form [SecureSession](x-source-tag://SecureSession)
     ///   - Rethrows form `AccessTokenProvider`
-    open func startNewSessionAsSender(receiverCard: Card) -> GenericOperation<SecureSession> {
+    open func startNewSessionAsSender(receiverCard: Card, name: String? = nil) -> GenericOperation<SecureSession> {
         Log.debug("Starting new session with \(receiverCard.identity) queued")
 
         return CallbackOperation { _, completion in
             do {
                 Log.debug("Starting new session with \(receiverCard.identity)")
 
-                guard self.existingSession(withParticpantIdentity: receiverCard.identity) == nil else {
+                guard self.existingSession(withParticpantIdentity: receiverCard.identity,
+                                           name: name ?? SecureChat.defaultSessionName) == nil else {
                     throw SecureChatError.sessionAlreadyExists
                 }
 
@@ -277,31 +348,12 @@ import VirgilCrypto
                 let publicKeySet = try self.client.getPublicKeySet(forRecipientIdentity: receiverCard.identity,
                                                                    token: token.stringRepresentation())
 
-                guard try self.crypto.exportPublicKey(identityPublicKey) == publicKeySet.identityPublicKey else {
-                    throw SecureChatError.identityKeyDoesntMatch
-                }
-
-                guard try self.crypto.verifySignature(publicKeySet.longTermPublicKey.signature,
-                                                      of: publicKeySet.longTermPublicKey.publicKey,
-                                                      with: identityPublicKey) else {
-                    throw SecureChatError.invalidLongTermKeySignature
-                }
-
-                if publicKeySet.oneTimePublicKey == nil {
-                    Log.error("Creating weak session with \(receiverCard.identity)")
-                }
-
-                let privateKeyData = try self.crypto.exportPrivateKey(self.identityPrivateKey)
-
-                let session = try SecureSession(crypto: self.crypto,
-                                                sessionStorage: self.sessionStorage,
-                                                participantIdentity: receiverCard.identity,
-                                                senderIdentityPrivateKey: privateKeyData,
-                                                receiverIdentityPublicKey: publicKeySet.identityPublicKey,
-                                                receiverLongTermPublicKey: publicKeySet.longTermPublicKey.publicKey,
-                                                receiverOneTimePublicKey: publicKeySet.oneTimePublicKey)
-
-                try self.sessionStorage.storeSession(session)
+                let session = try self.startNewSessionAsSender(identity: receiverCard.identity,
+                                                               identityPublicKey: identityPublicKey,
+                                                               name: name,
+                                                               identityPublicKeyData: publicKeySet.identityPublicKey,
+                                                               longTermPublicKey: publicKeySet.longTermPublicKey,
+                                                               oneTimePublicKey: publicKeySet.oneTimePublicKey)
 
                 completion(session, nil)
             }
@@ -309,6 +361,125 @@ import VirgilCrypto
                 completion(nil, error)
             }
         }
+    }
+
+    /// Starts multiple new sessions with given participants using their identity cards
+    /// NOTE: This operation doesn't store sessions to storage automatically. Use storeSession()
+    ///
+    /// - Parameters:
+    ///   - receiverCards: receivers identity cards
+    ///   - name: Session name
+    /// - Returns: GenericOperation with SecureSession array
+    /// - Throws:
+    ///         - SecureChatError.sessionAlreadyExists if session already exists.
+    ///             Try geting existing session or removing it
+    ///         - SecureChatError.wrongIdentityPublicKeyCrypto PublicKey is not VirgilPublicKey
+    ///         - SecureChatError.identityKeyDoesntMatch Identity key in the Card and on Ratchet Cloud doesn't match
+    ///         - SecureChatError.invalidLongTermKeySignature Long-term key signature is invalid
+    ///         - Rethrows from SessionStorage
+    ///         - Rethrows from RatchetClient
+    ///         - Rethrows form SecureSession
+    ///         - Rethrows form AccessTokenProvider
+    open func startMutipleNewSessionsAsSender(receiverCards: [Card],
+                                              name: String? = nil) -> GenericOperation<[SecureSession]> {
+        Log.debug("Starting new session with \(receiverCards.map { $0.identity }) queued")
+
+        return CallbackOperation { _, completion in
+            do {
+                Log.debug("Starting new session with \(receiverCards.map { $0.identity })")
+
+                for card in receiverCards {
+                    guard self.existingSession(withParticpantIdentity: card.identity,
+                                               name: name ?? SecureChat.defaultSessionName) == nil else {
+                        throw SecureChatError.sessionAlreadyExists
+                    }
+
+                    guard let identityPublicKey = card.publicKey as? VirgilPublicKey else {
+                        throw SecureChatError.wrongIdentityPublicKeyCrypto
+                    }
+
+                    guard identityPublicKey.keyType == .ed25519 else {
+                        throw SecureChatError.invalidKeyType
+                    }
+                }
+
+                let tokenContext = TokenContext(service: "ratchet", operation: "get")
+                let getTokenOperation = OperationUtils.makeGetTokenOperation(
+                    tokenContext: tokenContext, accessTokenProvider: self.accessTokenProvider)
+
+                let token = try getTokenOperation.startSync().getResult()
+
+                let publicKeysSets = try self.client
+                    .getMultiplePublicKeysSets(forRecipientsIdentities: receiverCards.map { $0.identity },
+                                               token: token.stringRepresentation())
+
+                guard publicKeysSets.count == receiverCards.count else {
+                    throw SecureChatError.publicKeysSetsMismatch
+                }
+
+                var sessions: [SecureSession] = []
+
+                for card in receiverCards {
+                    let set = publicKeysSets.first { $0.identity == card.identity }
+
+                    guard let publicKeySet = set else {
+                        throw SecureChatError.publicKeysSetsMismatch
+                    }
+
+                    guard let identityPublicKey = card.publicKey as? VirgilPublicKey else {
+                        throw SecureChatError.wrongIdentityPublicKeyCrypto
+                    }
+
+                    let session = try self
+                        .startNewSessionAsSender(identity: card.identity,
+                                                 identityPublicKey: identityPublicKey,
+                                                 name: name,
+                                                 identityPublicKeyData: publicKeySet.identityPublicKey,
+                                                 longTermPublicKey: publicKeySet.longTermPublicKey,
+                                                 oneTimePublicKey: publicKeySet.oneTimePublicKey)
+
+                    sessions.append(session)
+                }
+
+                completion(sessions, nil)
+            }
+            catch {
+                completion(nil, error)
+            }
+        }
+    }
+
+    private func startNewSessionAsSender(identity: String,
+                                         identityPublicKey: VirgilPublicKey,
+                                         name: String? = nil,
+                                         identityPublicKeyData: Data,
+                                         longTermPublicKey: SignedPublicKey,
+                                         oneTimePublicKey: Data?) throws -> SecureSession {
+        guard try self.crypto.exportPublicKey(identityPublicKey) == identityPublicKeyData else {
+            throw SecureChatError.identityKeyDoesntMatch
+        }
+
+        guard try self.crypto.verifySignature(longTermPublicKey.signature,
+                                              of: longTermPublicKey.publicKey,
+                                              with: identityPublicKey) else {
+                                                throw SecureChatError.invalidLongTermKeySignature
+        }
+
+        if oneTimePublicKey == nil {
+            Log.error("Creating weak session with \(identity)")
+        }
+
+        let privateKeyData = try self.crypto.exportPrivateKey(self.identityPrivateKey)
+
+        let session = try SecureSession(crypto: self.crypto,
+                                        participantIdentity: identity,
+                                        name: name ?? SecureChat.defaultSessionName,
+                                        senderIdentityPrivateKey: privateKeyData,
+                                        receiverIdentityPublicKey: identityPublicKeyData,
+                                        receiverLongTermPublicKey: longTermPublicKey.publicKey,
+                                        receiverOneTimePublicKey: oneTimePublicKey)
+
+        return session
     }
 
     private let queue = DispatchQueue(label: "VSRSecureChat", qos: .background)
@@ -333,7 +504,7 @@ import VirgilCrypto
 
                 let oneTimePrivateKey = try self.crypto.exportPrivateKey(keyPair.privateKey)
                 oneTimePublicKey = try self.crypto.exportPublicKey(keyPair.publicKey)
-                let keyId = try self.keyUtils.computePublicKeyId(publicKey: oneTimePublicKey)
+                let keyId = try self.keyId.computePublicKeyId(publicKey: oneTimePublicKey)
 
                 _ = try self.oneTimeKeysStorage.storeKey(oneTimePrivateKey, withId: keyId)
 
@@ -365,9 +536,11 @@ import VirgilCrypto
     }
 
     /// Responds with new session with given participant using his initiation message
+    /// NOTE: This operation doesn't store session to storage automatically. Use storeSession()
     ///
     /// - Parameters:
     ///   - senderCard: Sender identity card
+    ///   - name: session name (in case you want to have several sessions with same participant)
     ///   - ratchetMessage: Ratchet initiation message (should be prekey message)
     /// - Returns: SecureSession
     /// - Throws:
@@ -378,10 +551,11 @@ import VirgilCrypto
     ///   - Rethrows form [SecureSession](x-source-tag://SecureSession)
     ///   - Rethrows form `AccessTokenProvider`
     @objc public func startNewSessionAsReceiver(senderCard: Card,
+                                                name: String? = nil,
                                                 ratchetMessage: RatchetMessage) throws -> SecureSession {
         Log.debug("Responding to session with \(senderCard.identity) queued")
 
-        guard self.existingSession(withParticpantIdentity: senderCard.identity) == nil else {
+        guard self.existingSession(withParticpantIdentity: senderCard.identity, name: name) == nil else {
             throw SecureChatError.sessionAlreadyExists
         }
 
@@ -398,7 +572,7 @@ import VirgilCrypto
         }
 
         let receiverLongTermPublicKey = ratchetMessage.getLongTermPublicKey()
-        let longTermKeyId = try self.keyUtils.computePublicKeyId(publicKey: receiverLongTermPublicKey)
+        let longTermKeyId = try self.keyId.computePublicKeyId(publicKey: receiverLongTermPublicKey)
         let receiverLongTermPrivateKey = try self.longTermKeysStorage.retrieveKey(withId: longTermKeyId)
 
         let receiverOneTimePublicKey = ratchetMessage.getOneTimePublicKey()
@@ -408,13 +582,16 @@ import VirgilCrypto
             receiverOneTimeKeyId = nil
         }
         else {
-            receiverOneTimeKeyId = try self.keyUtils.computePublicKeyId(publicKey: receiverOneTimePublicKey)
+            receiverOneTimeKeyId = try self.keyId.computePublicKeyId(publicKey: receiverOneTimePublicKey)
         }
 
         let receiverOneTimePrivateKey: OneTimeKey?
 
+        var interactionStarted = false
+
         if let receiverOneTimeKeyId = receiverOneTimeKeyId {
             try self.oneTimeKeysStorage.startInteraction()
+            interactionStarted = true
 
             receiverOneTimePrivateKey = try self.oneTimeKeysStorage.retrieveKey(withId: receiverOneTimeKeyId)
         }
@@ -423,14 +600,14 @@ import VirgilCrypto
         }
 
         defer {
-            if receiverOneTimeKeyId != nil {
+            if interactionStarted {
                 try? self.oneTimeKeysStorage.stopInteraction()
             }
         }
 
         let session = try SecureSession(crypto: self.crypto,
-                                        sessionStorage: self.sessionStorage,
                                         participantIdentity: senderCard.identity,
+                                        name: name ?? SecureChat.defaultSessionName,
                                         receiverIdentityPrivateKey: self.identityPrivateKey,
                                         receiverLongTermPrivateKey: receiverLongTermPrivateKey,
                                         receiverOneTimePrivateKey: receiverOneTimePrivateKey,
@@ -443,17 +620,80 @@ import VirgilCrypto
             self.scheduleOneTimeKeyReplacement()
         }
 
-        try self.sessionStorage.storeSession(session)
-
         return session
     }
 
-    /// Removes all data corresponding to this user: sessions and keys.
+    /// Creates RatchetGroupMessage that starts new group chat
+    /// NOTE: Other participants should receive this message using encrypted channel (SecureSession)
     ///
-    /// - Parameter completion: completion handler
-    @objc public func reset(completion: @escaping (Error?) -> Void) {
-        self.reset().start { _, error in
-            completion(error)
+    /// - Parameter customSessionId: optional session Id. Should be 32 byte.
+    ///                              If nil passed random value will be generated
+    /// - Returns: RatchetGroupMessage that should be then passed to startGroupSession()
+    /// - Throws:
+    ///   - SecureChatError.invalidSessionIdLen
+    ///   - Rethrows from RatchetGroupTicket
+    @objc public func startNewGroupSession(customSessionId: Data? = nil) throws -> RatchetGroupMessage {
+        let ticket = RatchetGroupTicket()
+        ticket.setRng(rng: self.crypto.rng)
+
+        try ticket.setupTicketAsNew()
+
+        if let sessionId = customSessionId {
+            guard sessionId.count == RatchetCommon.sessionIdLen else {
+                throw SecureChatError.invalidSessionIdLen
+            }
+
+            ticket.setSessionId(sessionId: sessionId)
+        }
+
+        return ticket.getTicketMessage()
+    }
+
+    /// Creates secure group session that was initiated by someone.
+    /// NOTE: This operation doesn't store session to storage automatically. Use storeSession()
+    /// RatchetGroupMessage should have .groupInfo type. Such messages should be sent encrypted (using SecureSession)
+    ///
+    /// - Parameters:
+    ///   - receiversCards: participant cards (excluding creating user itself)
+    ///   - ratchetMessage: ratchet group message with .groupInfo type
+    /// - Returns: SecureGroupSession
+    /// - Throws:
+    ///   - SecureChatError.invalidMessageType
+    ///   - SecureChatError.invalidCardId
+    ///   - Rethrows from SecureGroupSession
+    @objc public func startGroupSession(with receiversCards: [Card],
+                                        using ratchetMessage: RatchetGroupMessage) throws -> SecureGroupSession {
+        guard ratchetMessage.getType() == .groupInfo else {
+            throw SecureChatError.invalidMessageType
+        }
+
+        let privateKeyData = try self.crypto.exportPrivateKey(self.identityPrivateKey)
+
+        guard let myId = Data(hexEncodedString: self.identityCard.identifier) else {
+            throw SecureChatError.invalidCardId
+        }
+
+        return try SecureGroupSession(crypto: self.crypto,
+                                      privateKeyData: privateKeyData,
+                                      myId: myId,
+                                      ratchetGroupMessage: ratchetMessage,
+                                      cards: receiversCards)
+    }
+
+    /// Returns existing group session
+    ///
+    /// - Parameter sessionId: session identifier
+    /// - Returns: Stored session if found, nil otherwise
+    @objc public func existingGroupSession(sessionId: Data) -> SecureGroupSession? {
+        if let session = self.groupSessionStorage.retrieveSession(identifier: sessionId) {
+            Log.debug("Found existing group session with identifier: \(sessionId)")
+
+            return session
+        }
+        else {
+            Log.debug("Existing session with identifier: \(sessionId) was not found")
+
+            return nil
         }
     }
 

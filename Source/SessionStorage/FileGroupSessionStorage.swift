@@ -37,12 +37,13 @@
 import Foundation
 import VirgilCrypto
 
-/// FileSessionStorage using files
-/// - Note: This class is thread-safe
-@objc(VSRFileSessionStorage) open class FileSessionStorage: NSObject, SessionStorage {
+/// FileGroupSessionStorage using files encrypted files
+/// This class is thread-safe
+@objc(VSRFileGroupSessionStorage) open class FileGroupSessionStorage: NSObject, GroupSessionStorage {
     private let fileSystem: FileSystem
-    private let queue = DispatchQueue(label: "FileSessionStorageQueue")
+    private let queue = DispatchQueue(label: "FileGroupSessionStorageQueue")
     private let crypto: VirgilCrypto
+    private let privateKeyData: Data
 
     /// Initializer
     ///
@@ -50,10 +51,11 @@ import VirgilCrypto
     ///   - identity: identity of this user
     ///   - crypto: VirgilCrypto that will be forwarded to SecureSession
     ///   - identityKeyPair: Key pair to encrypt session
-    @objc public init(identity: String, crypto: VirgilCrypto, identityKeyPair: VirgilKeyPair) {
+    @objc public init(identity: String, crypto: VirgilCrypto, identityKeyPair: VirgilKeyPair) throws {
         let credentials = FileSystem.Credentials(crypto: crypto, keyPair: identityKeyPair)
-        self.fileSystem = FileSystem(userIdentifier: identity, pathComponents: ["SESSIONS"], credentials: credentials)
+        self.fileSystem = FileSystem(userIdentifier: identity, pathComponents: ["GROUPS"], credentials: credentials)
         self.crypto = crypto
+        self.privateKeyData = try crypto.exportPrivateKey(identityKeyPair.privateKey)
 
         super.init()
     }
@@ -61,52 +63,42 @@ import VirgilCrypto
     /// Stores session
     ///
     /// - Parameter session: session to store
-    /// - Throws: Rethrows from [FileSystem](x-source-tag://FileSystem)
-    public func storeSession(_ session: SecureSession) throws {
+    /// - Throws: Rethrows from FileSystem
+    public func storeSession(_ session: SecureGroupSession) throws {
         try self.queue.sync {
             let data = session.serialize()
 
-            try self.fileSystem.write(data: data, name: session.name, subdir: session.participantIdentity)
+            try self.fileSystem.write(data: data, name: session.identifier.hexEncodedString())
         }
     }
 
     /// Retrieves session
     ///
-    /// - Parameters:
-    ///   - participantIdentity: participant identity
-    ///   - name: session name
+    /// - Parameter identifier: session identifier
     /// - Returns: Stored session if found, nil otherwise
-    public func retrieveSession(participantIdentity: String, name: String) -> SecureSession? {
-        guard let data = try? self.fileSystem.read(name: name, subdir: participantIdentity), !data.isEmpty else {
+    public func retrieveSession(identifier: Data) -> SecureGroupSession? {
+        guard let data = try? self.fileSystem.read(name: identifier.hexEncodedString()), !data.isEmpty else {
             return nil
         }
 
-        return try? SecureSession(data: data,
-                                  participantIdentity: participantIdentity,
-                                  name: name,
-                                  crypto: self.crypto)
+        return try? SecureGroupSession(data: data,
+                                       privateKeyData: privateKeyData,
+                                       crypto: self.crypto)
     }
 
     /// Deletes session
     ///
-    /// - Parameters:
-    ///   - participantIdentity: participant identity
-    ///   - name: session name
-    /// - Throws: Rethrows from [FileSystem](x-source-tag://FileSystem)
-    public func deleteSession(participantIdentity: String, name: String?) throws {
+    /// - Parameter identifier: session identifier
+    /// - Throws: Rethrows from FileSystem
+    public func deleteSession(identifier: Data) throws {
         try self.queue.sync {
-            if let name = name {
-                try self.fileSystem.delete(name: name, subdir: participantIdentity)
-            }
-            else {
-                try self.fileSystem.delete(subdir: participantIdentity)
-            }
+            try self.fileSystem.delete(name: identifier.hexEncodedString())
         }
     }
 
     /// Removes all sessions
     ///
-    /// - Throws: Rethrows from [FileSystem](x-source-tag://FileSystem)
+    /// - Throws: Rethrows from FileSystem
     public func reset() throws {
         try self.queue.sync {
             try self.fileSystem.delete()

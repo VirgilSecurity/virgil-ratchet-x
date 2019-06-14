@@ -35,6 +35,7 @@
 //
 
 import Foundation
+import VirgilCrypto
 
 /// FileOneTimeKeysStorage errors
 ///
@@ -54,14 +55,15 @@ import Foundation
     private let fileSystem: FileSystem
 
     private struct OneTimeKeys: Codable {
-        var oneTimeKeys: [OneTimeKey]
+        internal var oneTimeKeys: [OneTimeKey]
     }
 
     /// Initializer
     ///
     /// - Parameter identity: identity of this user
-    @objc public init(identity: String) {
-        self.fileSystem = FileSystem(identity: identity)
+    @objc public init(identity: String, crypto: VirgilCrypto, identityKeyPair: VirgilKeyPair) {
+        let credentials = FileSystem.Credentials(crypto: crypto, keyPair: identityKeyPair)
+        self.fileSystem = FileSystem(userIdentifier: identity, pathComponents: [], credentials: credentials)
 
         super.init()
     }
@@ -87,7 +89,7 @@ import Foundation
                 fatalError("oneTimeKeys should be nil")
             }
 
-            let data = try self.fileSystem.readOneTimeKeysFile()
+            let data = try self.fileSystem.read(name: "OTK")
 
             if !data.isEmpty {
                 self.oneTimeKeys = try PropertyListDecoder().decode(OneTimeKeys.self, from: data)
@@ -125,7 +127,7 @@ import Foundation
 
             let data = try PropertyListEncoder().encode(oneTimeKeys)
 
-            try self.fileSystem.writeOneTimeKeysFile(data: data)
+            try self.fileSystem.write(data: data, name: "OTK")
 
             self.oneTimeKeys = nil
         }
@@ -249,6 +251,6 @@ import Foundation
             fatalError("interactionCounter should be 0")
         }
 
-        try self.fileSystem.resetOneTimeKeys()
+        try self.fileSystem.delete()
     }
 }

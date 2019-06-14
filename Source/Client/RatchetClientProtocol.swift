@@ -49,9 +49,9 @@ public protocol RatchetClientProtocol: class {
     ///   - identityCardId: Identity cardId that should be available on Card service.
     ///             It's public key should be ED25519
     ///   - longTermPublicKey: long-term public key + its signature created using identity private key.
-    ///             Should be X25518 in PKCS#8
+    ///             Should be curve25519 in PKCS#8
     ///   - oneTimePublicKeys: one-time public keys (up to 150 keys in the cloud).
-    ///             Should be X25518 in PKCS#8
+    ///             Should be curve25519 in PKCS#8
     ///   - token: auth token (JWT)
     /// - Throws: Depends on implementation
     func uploadPublicKeys(identityCardId: String?,
@@ -81,6 +81,16 @@ public protocol RatchetClientProtocol: class {
     /// - Returns: Set of public keys
     /// - Throws: Depends on implementation
     func getPublicKeySet(forRecipientIdentity identity: String, token: String) throws -> PublicKeySet
+
+    /// Returns public keys sets for given identities.
+    ///
+    /// - Parameters:
+    ///   - identities: Users' identities
+    ///   - token: auth token (JWT)
+    /// - Returns: Sets of public keys
+    /// - Throws: Depends on implementation
+    func getMultiplePublicKeysSets(forRecipientsIdentities identities: [String],
+                                   token: String) throws -> [IdentityPublicKeySet]
 
     /// Deletes keys entity
     ///

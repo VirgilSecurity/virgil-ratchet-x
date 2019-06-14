@@ -35,33 +35,15 @@
 //
 
 import Foundation
+import VirgilCryptoRatchet
 
-/// Protocol for session storage
-@objc(VSRSessionStorage) public protocol SessionStorage: class {
-    /// Stores session
-    ///
-    /// - Parameter session: session to store
-    /// - Throws: Depends on implementation
-    @objc func storeSession(_ session: SecureSession) throws
+@objc(VSRSecureGroupSessionTicket) public final class SecureGroupSessionTicket: NSObject {
+    @objc public let ticket: RatchetGroupTicket
 
-    /// Retrieves session
-    ///
-    /// - Parameters:
-    ///   - participantIdentity: participant identity
-    ///   - name: session name
-    /// - Returns: Stored session if found, nil otherwise
-    @objc func retrieveSession(participantIdentity: String, name: String) -> SecureSession?
+    public init(ticket: RatchetGroupTicket) {
+        self.ticket = ticket
 
-    /// Deletes session
-    ///
-    /// - Parameters:
-    ///   - participantIdentity: participant identity
-    ///   - name: session name
-    /// - Throws: Depends on implementation
-    @objc func deleteSession(participantIdentity: String, name: String?) throws
+        super.init()
+    }
 
-    /// Removes all sessions
-    ///
-    /// - Throws: Depends on implementation
-    @objc func reset() throws
 }

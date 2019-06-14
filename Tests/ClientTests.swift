@@ -42,9 +42,9 @@ import VirgilCryptoFoundation
 @testable import VirgilSDKRatchet
 
 class ClientTests: XCTestCase {
-    let keyUtils = RatchetKeyUtils()
+    let keyId = RatchetKeyId()
     
-    private func initialize() -> (JwtGenerator, String, VirgilPrivateKey, Card, RatchetClient) {
+    private func initialize() throws -> (JwtGenerator, String, VirgilPrivateKey, Card, RatchetClient) {
         let testConfig = TestConfig.readFromBundle()
         
         let client = RatchetClient(serviceUrl: URL(string: testConfig.ServiceURL)!)
@@ -70,121 +70,199 @@ class ClientTests: XCTestCase {
         
         let cardManager = CardManager(params: cardManagerParams)
         
-        let card = try! cardManager.publishCard(privateKey: identityKeyPair.privateKey, publicKey: identityKeyPair.publicKey).startSync().getResult()
+        let card = try cardManager.publishCard(privateKey: identityKeyPair.privateKey, publicKey: identityKeyPair.publicKey).startSync().getResult()
         
         return (generator, identity, identityKeyPair.privateKey, card, client)
     }
     
     func test1__full_cycle__long_term_key__should_succeed() {
-        let (generator, identity, privateKey, card, client) = self.initialize()
-        
-        let crypto = try! VirgilCrypto()
-        
-        let longTermKey = try! crypto.generateKeyPair(ofType: .curve25519)
-        
-        let longTermPublicKey = try! crypto.exportPublicKey(longTermKey.publicKey)
-        let longTermKeyId = try! self.keyUtils.computePublicKeyId(publicKey: longTermPublicKey)
-        let signature = try! crypto.generateSignature(of: longTermPublicKey, using: privateKey)
-        
-        let signedLongTermKey = SignedPublicKey(publicKey: longTermPublicKey, signature: signature)
-        
-        let token = try! generator.generateToken(identity: identity).stringRepresentation()
-        
-        try! client.uploadPublicKeys(identityCardId: card.identifier, longTermPublicKey: signedLongTermKey, oneTimePublicKeys: [], token: token)
-        
-        let response1 = try! client.validatePublicKeys(longTermKeyId: longTermKeyId, oneTimeKeysIds: [], token: token)
-        
-        XCTAssert(response1.usedLongTermKeyId == nil)
-        
-        let response2 = try! client.getPublicKeySet(forRecipientIdentity: identity, token: token)
-        
-        XCTAssert(response2.longTermPublicKey.publicKey == signedLongTermKey.publicKey)
-        XCTAssert(response2.longTermPublicKey.signature == signedLongTermKey.signature)
-        XCTAssert(response2.oneTimePublicKey == nil)
+        do {
+            let (generator, identity, privateKey, card, client) = try self.initialize()
+            
+            let crypto = try VirgilCrypto()
+            
+            let longTermKey = try crypto.generateKeyPair(ofType: .curve25519)
+            
+            let longTermPublicKey = try crypto.exportPublicKey(longTermKey.publicKey)
+            let longTermKeyId = try self.keyId.computePublicKeyId(publicKey: longTermPublicKey)
+            let signature = try crypto.generateSignature(of: longTermPublicKey, using: privateKey)
+            
+            let signedLongTermKey = SignedPublicKey(publicKey: longTermPublicKey, signature: signature)
+            
+            let token = try generator.generateToken(identity: identity).stringRepresentation()
+            
+            try client.uploadPublicKeys(identityCardId: card.identifier, longTermPublicKey: signedLongTermKey, oneTimePublicKeys: [], token: token)
+            
+            let response1 = try client.validatePublicKeys(longTermKeyId: longTermKeyId, oneTimeKeysIds: [], token: token)
+            
+            XCTAssert(response1.usedLongTermKeyId == nil)
+            
+            let response2 = try client.getPublicKeySet(forRecipientIdentity: identity, token: token)
+            
+            XCTAssert(response2.longTermPublicKey.publicKey == signedLongTermKey.publicKey)
+            XCTAssert(response2.longTermPublicKey.signature == signedLongTermKey.signature)
+            XCTAssert(response2.oneTimePublicKey == nil)
+        }
+        catch {
+            XCTFail(error.localizedDescription)
+        }
     }
     
     func test2__full_cycle__all_keys__should_succeed() {
-        let (generator, identity, privateKey, card, client) = self.initialize()
-        
-        let crypto = try! VirgilCrypto()
-        
-        let longTermKey = try! crypto.generateKeyPair(ofType: .curve25519)
-        let oneTimeKey1 = try! crypto.exportPublicKey(try! crypto.generateKeyPair(ofType: .curve25519).publicKey)
-        let oneTimeKey2 = try! crypto.exportPublicKey(try! crypto.generateKeyPair(ofType: .curve25519).publicKey)
-        
-        let oneTimeKeyId1 = try! self.keyUtils.computePublicKeyId(publicKey: oneTimeKey1)
-        let oneTimeKeyId2 = try! self.keyUtils.computePublicKeyId(publicKey: oneTimeKey2)
-        
-        let longTermPublicKey = try! crypto.exportPublicKey(longTermKey.publicKey)
-        let longTermKeyId = try! self.keyUtils.computePublicKeyId(publicKey: longTermPublicKey)
-        let signature = try! crypto.generateSignature(of: longTermPublicKey, using: privateKey)
-        
-        let signedLongTermKey = SignedPublicKey(publicKey: longTermPublicKey, signature: signature)
-        
-        let token = try! generator.generateToken(identity: identity).stringRepresentation()
-        
-        try! client.uploadPublicKeys(identityCardId: card.identifier, longTermPublicKey: signedLongTermKey, oneTimePublicKeys: [oneTimeKey1, oneTimeKey2], token: token)
-        
-        let response1 = try! client.validatePublicKeys(longTermKeyId: longTermKeyId, oneTimeKeysIds: [oneTimeKeyId1, oneTimeKeyId2], token: token)
-        
-        XCTAssert(response1.usedLongTermKeyId == nil)
-        XCTAssert(response1.usedOneTimeKeysIds.isEmpty)
-        
-        let response2 = try! client.getPublicKeySet(forRecipientIdentity: identity, token: token)
-        
-        XCTAssert(response2.longTermPublicKey.publicKey == signedLongTermKey.publicKey)
-        XCTAssert(response2.longTermPublicKey.signature == signedLongTermKey.signature)
-        
-        let usedKeyId: Data
-        if (response2.oneTimePublicKey == oneTimeKey1) {
-            usedKeyId = oneTimeKeyId1
+        do {
+            let (generator, identity, privateKey, card, client) = try self.initialize()
+            
+            let crypto = try VirgilCrypto()
+            
+            let longTermKey = try crypto.generateKeyPair(ofType: .curve25519)
+            let oneTimeKey1 = try crypto.exportPublicKey(try crypto.generateKeyPair(ofType: .curve25519).publicKey)
+            let oneTimeKey2 = try crypto.exportPublicKey(try crypto.generateKeyPair(ofType: .curve25519).publicKey)
+            
+            let oneTimeKeyId1 = try self.keyId.computePublicKeyId(publicKey: oneTimeKey1)
+            let oneTimeKeyId2 = try self.keyId.computePublicKeyId(publicKey: oneTimeKey2)
+            
+            let longTermPublicKey = try crypto.exportPublicKey(longTermKey.publicKey)
+            let longTermKeyId = try self.keyId.computePublicKeyId(publicKey: longTermPublicKey)
+            let signature = try crypto.generateSignature(of: longTermPublicKey, using: privateKey)
+            
+            let signedLongTermKey = SignedPublicKey(publicKey: longTermPublicKey, signature: signature)
+            
+            let token = try generator.generateToken(identity: identity).stringRepresentation()
+            
+            try client.uploadPublicKeys(identityCardId: card.identifier, longTermPublicKey: signedLongTermKey, oneTimePublicKeys: [oneTimeKey1, oneTimeKey2], token: token)
+            
+            let response1 = try client.validatePublicKeys(longTermKeyId: longTermKeyId, oneTimeKeysIds: [oneTimeKeyId1, oneTimeKeyId2], token: token)
+            
+            XCTAssert(response1.usedLongTermKeyId == nil)
+            XCTAssert(response1.usedOneTimeKeysIds.isEmpty)
+            
+            let response2 = try client.getPublicKeySet(forRecipientIdentity: identity, token: token)
+            
+            XCTAssert(response2.longTermPublicKey.publicKey == signedLongTermKey.publicKey)
+            XCTAssert(response2.longTermPublicKey.signature == signedLongTermKey.signature)
+            
+            let usedKeyId: Data
+            if (response2.oneTimePublicKey == oneTimeKey1) {
+                usedKeyId = oneTimeKeyId1
+            }
+            else if (response2.oneTimePublicKey == oneTimeKey2) {
+                usedKeyId = oneTimeKeyId2
+            }
+            else {
+                usedKeyId = Data()
+                XCTFail()
+            }
+            
+            let response3 = try client.validatePublicKeys(longTermKeyId: longTermKeyId, oneTimeKeysIds: [oneTimeKeyId1, oneTimeKeyId2], token: token)
+            
+            XCTAssert(response3.usedLongTermKeyId == nil)
+            XCTAssert(response3.usedOneTimeKeysIds.count == 1)
+            XCTAssert(response3.usedOneTimeKeysIds[0] == usedKeyId)
         }
-        else if (response2.oneTimePublicKey == oneTimeKey2) {
-            usedKeyId = oneTimeKeyId2
+        catch {
+            XCTFail(error.localizedDescription)
         }
-        else {
-            usedKeyId = Data()
-            XCTFail()
-        }
-        
-        let response3 = try! client.validatePublicKeys(longTermKeyId: longTermKeyId, oneTimeKeysIds: [oneTimeKeyId1, oneTimeKeyId2], token: token)
-        
-        XCTAssert(response3.usedLongTermKeyId == nil)
-        XCTAssert(response3.usedOneTimeKeysIds.count == 1)
-        XCTAssert(response3.usedOneTimeKeysIds[0] == usedKeyId)
     }
     
-    func test3__reset__all_keys__should_succeed() {
-        let (generator, identity, privateKey, card, client) = self.initialize()
-        
-        let crypto = try! VirgilCrypto()
-        
-        let longTermKey = try! crypto.generateKeyPair(ofType: .curve25519)
-        let oneTimeKey = try! crypto.exportPublicKey(try! crypto.generateKeyPair(ofType: .curve25519).publicKey)
-        
-        let longTermPublicKey = try! crypto.exportPublicKey(longTermKey.publicKey)
-        let signature = try! crypto.generateSignature(of: longTermPublicKey, using: privateKey)
-        
-        let signedLongTermKey = SignedPublicKey(publicKey: longTermPublicKey, signature: signature)
-        
-        let token = try! generator.generateToken(identity: identity).stringRepresentation()
-        
-        try! client.uploadPublicKeys(identityCardId: card.identifier, longTermPublicKey: signedLongTermKey, oneTimePublicKeys: [oneTimeKey], token: token)
-        
-        try! client.deleteKeysEntity(token: token)
-        
+    func test3__full_cycle__multiple_identities__should_succeed() {
         do {
-            _ = try client.getPublicKeySet(forRecipientIdentity: identity, token: token)
-            XCTFail()
+            let crypto = try VirgilCrypto()
+            
+            struct Entry {
+                var identity: String
+                var token: String
+                var client: RatchetClient
+                var identityPublicKey: Data
+                var longTermKey: Data
+                var longTermKeySignature: Data
+                var oneTimeKey1: Data
+                var oneTimeKey2: Data
+            }
+            
+            var entries: [Entry] = []
+            
+            for _ in 0..<10 {
+                let (generator, identity, privateKey, card, client) = try self.initialize()
+                
+                let longTermKey = try crypto.generateKeyPair(ofType: .curve25519)
+                let oneTimeKey1 = try crypto.exportPublicKey(try crypto.generateKeyPair(ofType: .curve25519).publicKey)
+                let oneTimeKey2 = try crypto.exportPublicKey(try crypto.generateKeyPair(ofType: .curve25519).publicKey)
+                
+                let longTermPublicKey = try crypto.exportPublicKey(longTermKey.publicKey)
+                let signature = try crypto.generateSignature(of: longTermPublicKey, using: privateKey)
+                
+                let signedLongTermKey = SignedPublicKey(publicKey: longTermPublicKey, signature: signature)
+                
+                let token = try generator.generateToken(identity: identity).stringRepresentation()
+                
+                try client.uploadPublicKeys(identityCardId: card.identifier, longTermPublicKey: signedLongTermKey, oneTimePublicKeys: [oneTimeKey1, oneTimeKey2], token: token)
+                
+                let entry = Entry(identity: identity,
+                                  token: token,
+                                  client: client,
+                                  identityPublicKey: try crypto.exportPublicKey(crypto.extractPublicKey(from: privateKey)),
+                                  longTermKey: longTermPublicKey,
+                                  longTermKeySignature: signature,
+                                  oneTimeKey1: oneTimeKey1,
+                                  oneTimeKey2: oneTimeKey2)
+                
+                entries.append(entry)
+            }
+            
+            let response = try entries.last!.client.getMultiplePublicKeysSets(forRecipientsIdentities: entries.map { $0.identity }, token: entries.last!.token)
+            
+            XCTAssert(response.count == entries.count)
+            
+            for entry in entries {
+                let cloudEntry = response.first { $0.identity == entry.identity }!
+                
+                XCTAssert(cloudEntry.identityPublicKey == entry.identityPublicKey)
+                XCTAssert(cloudEntry.longTermPublicKey.publicKey == entry.longTermKey)
+                XCTAssert(cloudEntry.longTermPublicKey.signature == entry.longTermKeySignature)
+                XCTAssert(cloudEntry.oneTimePublicKey! == entry.oneTimeKey1 || cloudEntry.oneTimePublicKey! == entry.oneTimeKey2)
+            }
         }
-        catch { }
-        
-        try! client.uploadPublicKeys(identityCardId: card.identifier, longTermPublicKey: signedLongTermKey, oneTimePublicKeys: [oneTimeKey], token: token)
-        
-        let response = try! client.getPublicKeySet(forRecipientIdentity: identity, token: token)
-        
-        XCTAssert(response.longTermPublicKey.publicKey == signedLongTermKey.publicKey)
-        XCTAssert(response.longTermPublicKey.signature == signedLongTermKey.signature)
-        XCTAssert (response.oneTimePublicKey == oneTimeKey)
+        catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
+    func test4__reset__all_keys__should_succeed() {
+        do {
+            let (generator, identity, privateKey, card, client) = try self.initialize()
+            
+            let crypto = try VirgilCrypto()
+            
+            let longTermKey = try crypto.generateKeyPair(ofType: .curve25519)
+            let oneTimeKey = try crypto.exportPublicKey(try crypto.generateKeyPair(ofType: .curve25519).publicKey)
+            
+            let longTermPublicKey = try crypto.exportPublicKey(longTermKey.publicKey)
+            let signature = try crypto.generateSignature(of: longTermPublicKey, using: privateKey)
+            
+            let signedLongTermKey = SignedPublicKey(publicKey: longTermPublicKey, signature: signature)
+            
+            let token = try generator.generateToken(identity: identity).stringRepresentation()
+            
+            try client.uploadPublicKeys(identityCardId: card.identifier, longTermPublicKey: signedLongTermKey, oneTimePublicKeys: [oneTimeKey], token: token)
+            
+            try client.deleteKeysEntity(token: token)
+            
+            do {
+                _ = try client.getPublicKeySet(forRecipientIdentity: identity, token: token)
+                XCTFail()
+            }
+            catch { }
+            
+            try client.uploadPublicKeys(identityCardId: card.identifier, longTermPublicKey: signedLongTermKey, oneTimePublicKeys: [oneTimeKey], token: token)
+            
+            let response = try client.getPublicKeySet(forRecipientIdentity: identity, token: token)
+            
+            XCTAssert(response.longTermPublicKey.publicKey == signedLongTermKey.publicKey)
+            XCTAssert(response.longTermPublicKey.signature == signedLongTermKey.signature)
+            XCTAssert (response.oneTimePublicKey == oneTimeKey)
+        }
+        catch {
+            XCTFail(error.localizedDescription)
+        }
     }
 }

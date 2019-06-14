@@ -26,6 +26,14 @@
 /* Begin PBXBuildFile section */
 		16D942FA21A316410013E4DE /* RatchetClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D942F921A316410013E4DE /* RatchetClient.swift */; };
 		16D9430E21A321500013E4DE /* RatchetClient+Queries.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D9430D21A321500013E4DE /* RatchetClient+Queries.swift */; };
+		4219FACC2264C30000D4FBC7 /* GroupSessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4219FACB2264C30000D4FBC7 /* GroupSessionStorage.swift */; };
+		4219FACD2264C30000D4FBC7 /* GroupSessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4219FACB2264C30000D4FBC7 /* GroupSessionStorage.swift */; };
+		4219FACE2264C30000D4FBC7 /* GroupSessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4219FACB2264C30000D4FBC7 /* GroupSessionStorage.swift */; };
+		4219FACF2264C30000D4FBC7 /* GroupSessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4219FACB2264C30000D4FBC7 /* GroupSessionStorage.swift */; };
+		4219FAD12264C38800D4FBC7 /* FileGroupSessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4219FAD02264C38800D4FBC7 /* FileGroupSessionStorage.swift */; };
+		4219FAD22264C38800D4FBC7 /* FileGroupSessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4219FAD02264C38800D4FBC7 /* FileGroupSessionStorage.swift */; };
+		4219FAD32264C38800D4FBC7 /* FileGroupSessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4219FAD02264C38800D4FBC7 /* FileGroupSessionStorage.swift */; };
+		4219FAD42264C38800D4FBC7 /* FileGroupSessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4219FAD02264C38800D4FBC7 /* FileGroupSessionStorage.swift */; };
 		421B43CD2190650500D4F496 /* KeychainLongTermKeyStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421B43CC2190650500D4F496 /* KeychainLongTermKeyStorage.swift */; };
 		421B43EB2190AF5A00D4F496 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421B43EA2190AF5A00D4F496 /* AppDelegate.swift */; };
 		421B43ED2190AF5A00D4F496 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421B43EC2190AF5A00D4F496 /* ViewController.swift */; };
@@ -190,6 +198,17 @@
 		424FAA102177506100622A3B /* VirgilSDKRatchet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 424FAA062177506100622A3B /* VirgilSDKRatchet.framework */; };
 		424FAAAF2177520200622A3B /* SecureChat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424FAAA82177520200622A3B /* SecureChat.swift */; };
 		424FAAB02177520200622A3B /* SecureSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424FAAA92177520200622A3B /* SecureSession.swift */; };
+		4258CD61225DDC8E003CFCBD /* SecureGroupSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4258CD60225DDC8E003CFCBD /* SecureGroupSession.swift */; };
+		4258CD62225DDC8E003CFCBD /* SecureGroupSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4258CD60225DDC8E003CFCBD /* SecureGroupSession.swift */; };
+		4258CD63225DDC8E003CFCBD /* SecureGroupSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4258CD60225DDC8E003CFCBD /* SecureGroupSession.swift */; };
+		4258CD64225DDC8E003CFCBD /* SecureGroupSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4258CD60225DDC8E003CFCBD /* SecureGroupSession.swift */; };
+		4258CD66225DDF6D003CFCBD /* IntegrationGroupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4258CD65225DDF6D003CFCBD /* IntegrationGroupTests.swift */; };
+		4258CD67225DDF6D003CFCBD /* IntegrationGroupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4258CD65225DDF6D003CFCBD /* IntegrationGroupTests.swift */; };
+		4258CD68225DDF6D003CFCBD /* IntegrationGroupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4258CD65225DDF6D003CFCBD /* IntegrationGroupTests.swift */; };
+		428184DE2270F68D00E44A6B /* IdentityPublicKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 428184DD2270F68D00E44A6B /* IdentityPublicKeySet.swift */; };
+		428184DF2270F68D00E44A6B /* IdentityPublicKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 428184DD2270F68D00E44A6B /* IdentityPublicKeySet.swift */; };
+		428184E02270F68D00E44A6B /* IdentityPublicKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 428184DD2270F68D00E44A6B /* IdentityPublicKeySet.swift */; };
+		428184E12270F68D00E44A6B /* IdentityPublicKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 428184DD2270F68D00E44A6B /* IdentityPublicKeySet.swift */; };
 		429D79AE21779292003B56F8 /* VirgilCrypto.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 429D799F217791A2003B56F8 /* VirgilCrypto.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		429D79AF21779292003B56F8 /* VirgilCryptoAPI.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 429D799E217791A2003B56F8 /* VirgilCryptoAPI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		429D79B121779292003B56F8 /* VirgilSDK.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 429D79A0217791A2003B56F8 /* VirgilSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -210,6 +229,10 @@
 		42AB65EA2185097800AC4631 /* IntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65E82185095700AC4631 /* IntegrationTests.swift */; };
 		42BA8F3E21946CF100075827 /* FileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BA8F3D21946CF100075827 /* FileSystem.swift */; };
 		42BA8F402194771C00075827 /* FileSessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BA8F3F2194771C00075827 /* FileSessionStorage.swift */; };
+		42BD6F7F22B2591C00B3C2DA /* SecureChat+Obj-C.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BD6F7E22B2591C00B3C2DA /* SecureChat+Obj-C.swift */; };
+		42BD6F8022B2591C00B3C2DA /* SecureChat+Obj-C.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BD6F7E22B2591C00B3C2DA /* SecureChat+Obj-C.swift */; };
+		42BD6F8122B2591C00B3C2DA /* SecureChat+Obj-C.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BD6F7E22B2591C00B3C2DA /* SecureChat+Obj-C.swift */; };
+		42BD6F8222B2591C00B3C2DA /* SecureChat+Obj-C.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BD6F7E22B2591C00B3C2DA /* SecureChat+Obj-C.swift */; };
 		42C837632211B017008AFFD9 /* SecureChatContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42C837622211B017008AFFD9 /* SecureChatContext.swift */; };
 		42C837652211B283008AFFD9 /* KeysRotatorProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42C837642211B283008AFFD9 /* KeysRotatorProtocol.swift */; };
 		42CBE2AB21E656BE000F99E6 /* SecureSessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65A42183340A00AC4631 /* SecureSessionTests.swift */; };
@@ -351,6 +374,8 @@
 /* Begin PBXFileReference section */
 		16D942F921A316410013E4DE /* RatchetClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatchetClient.swift; sourceTree = "<group>"; };
 		16D9430D21A321500013E4DE /* RatchetClient+Queries.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RatchetClient+Queries.swift"; sourceTree = "<group>"; };
+		4219FACB2264C30000D4FBC7 /* GroupSessionStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupSessionStorage.swift; sourceTree = "<group>"; };
+		4219FAD02264C38800D4FBC7 /* FileGroupSessionStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileGroupSessionStorage.swift; sourceTree = "<group>"; };
 		421B43CC2190650500D4F496 /* KeychainLongTermKeyStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainLongTermKeyStorage.swift; sourceTree = "<group>"; };
 		421B43E82190AF5900D4F496 /* RatchetTestApp iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "RatchetTestApp iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		421B43EA2190AF5A00D4F496 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -371,34 +396,25 @@
 		423524BC221EE9E60079DD2A /* VSCCommon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VSCCommon.framework; path = Carthage/Build/Mac/VSCCommon.framework; sourceTree = "<group>"; };
 		423524BD221EE9E60079DD2A /* VSCFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VSCFoundation.framework; path = Carthage/Build/Mac/VSCFoundation.framework; sourceTree = "<group>"; };
 		423524BE221EE9E60079DD2A /* VSCRatchet.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VSCRatchet.framework; path = Carthage/Build/Mac/VSCRatchet.framework; sourceTree = "<group>"; };
-		423524BF221EE9E60079DD2A /* VirgilCryptoApiImpl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilCryptoApiImpl.framework; path = Carthage/Build/Mac/VirgilCryptoApiImpl.framework; sourceTree = "<group>"; };
 		423524C0221EE9E60079DD2A /* VirgilCryptoFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilCryptoFoundation.framework; path = Carthage/Build/Mac/VirgilCryptoFoundation.framework; sourceTree = "<group>"; };
 		423524C1221EE9E60079DD2A /* VirgilCryptoPythia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilCryptoPythia.framework; path = Carthage/Build/Mac/VirgilCryptoPythia.framework; sourceTree = "<group>"; };
 		423524C2221EE9E60079DD2A /* VirgilCryptoAPI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilCryptoAPI.framework; path = Carthage/Build/Mac/VirgilCryptoAPI.framework; sourceTree = "<group>"; };
-		423524C3221EE9E60079DD2A /* VirgilCryptoCommon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilCryptoCommon.framework; path = Carthage/Build/Mac/VirgilCryptoCommon.framework; sourceTree = "<group>"; };
-		423524C4221EE9E60079DD2A /* VSCCrypto.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VSCCrypto.framework; path = Carthage/Build/Mac/VSCCrypto.framework; sourceTree = "<group>"; };
 		423524C5221EE9E60079DD2A /* VirgilCrypto.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilCrypto.framework; path = Carthage/Build/Mac/VirgilCrypto.framework; sourceTree = "<group>"; };
 		423524C6221EE9E60079DD2A /* VirgilSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilSDK.framework; path = Carthage/Build/Mac/VirgilSDK.framework; sourceTree = "<group>"; };
 		423524D3221EEA0C0079DD2A /* VirgilCryptoAPI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilCryptoAPI.framework; path = Carthage/Build/tvOS/VirgilCryptoAPI.framework; sourceTree = "<group>"; };
-		423524D4221EEA0C0079DD2A /* VirgilCryptoApiImpl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilCryptoApiImpl.framework; path = Carthage/Build/tvOS/VirgilCryptoApiImpl.framework; sourceTree = "<group>"; };
 		423524D5221EEA0C0079DD2A /* VirgilCryptoFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilCryptoFoundation.framework; path = Carthage/Build/tvOS/VirgilCryptoFoundation.framework; sourceTree = "<group>"; };
 		423524D6221EEA0C0079DD2A /* VSCCommon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VSCCommon.framework; path = Carthage/Build/tvOS/VSCCommon.framework; sourceTree = "<group>"; };
 		423524D7221EEA0C0079DD2A /* VirgilSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilSDK.framework; path = Carthage/Build/tvOS/VirgilSDK.framework; sourceTree = "<group>"; };
-		423524DA221EEA0C0079DD2A /* VirgilCryptoCommon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilCryptoCommon.framework; path = Carthage/Build/tvOS/VirgilCryptoCommon.framework; sourceTree = "<group>"; };
 		423524DB221EEA0C0079DD2A /* VirgilCryptoRatchet.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilCryptoRatchet.framework; path = Carthage/Build/tvOS/VirgilCryptoRatchet.framework; sourceTree = "<group>"; };
-		423524DC221EEA0C0079DD2A /* VSCCrypto.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VSCCrypto.framework; path = Carthage/Build/tvOS/VSCCrypto.framework; sourceTree = "<group>"; };
 		423524DD221EEA0C0079DD2A /* VirgilCrypto.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilCrypto.framework; path = Carthage/Build/tvOS/VirgilCrypto.framework; sourceTree = "<group>"; };
 		423524E9221EEA1B0079DD2A /* VSCRatchet.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VSCRatchet.framework; path = Carthage/Build/tvOS/VSCRatchet.framework; sourceTree = "<group>"; };
 		423524EA221EEA1B0079DD2A /* VSCFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VSCFoundation.framework; path = Carthage/Build/tvOS/VSCFoundation.framework; sourceTree = "<group>"; };
 		423524ED221EEA530079DD2A /* VSCFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VSCFoundation.framework; path = Carthage/Build/watchOS/VSCFoundation.framework; sourceTree = "<group>"; };
-		423524EE221EEA530079DD2A /* VSCCrypto.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VSCCrypto.framework; path = Carthage/Build/watchOS/VSCCrypto.framework; sourceTree = "<group>"; };
 		423524EF221EEA530079DD2A /* VSCCommon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VSCCommon.framework; path = Carthage/Build/watchOS/VSCCommon.framework; sourceTree = "<group>"; };
 		423524F0221EEA530079DD2A /* VSCRatchet.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VSCRatchet.framework; path = Carthage/Build/watchOS/VSCRatchet.framework; sourceTree = "<group>"; };
 		423524F6221EEAA00079DD2A /* VirgilCrypto.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilCrypto.framework; path = Carthage/Build/watchOS/VirgilCrypto.framework; sourceTree = "<group>"; };
 		423524F7221EEAA00079DD2A /* VirgilCryptoAPI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilCryptoAPI.framework; path = Carthage/Build/watchOS/VirgilCryptoAPI.framework; sourceTree = "<group>"; };
 		423524F8221EEAA00079DD2A /* VirgilCryptoRatchet.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilCryptoRatchet.framework; path = Carthage/Build/watchOS/VirgilCryptoRatchet.framework; sourceTree = "<group>"; };
-		423524F9221EEAA00079DD2A /* VirgilCryptoCommon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilCryptoCommon.framework; path = Carthage/Build/watchOS/VirgilCryptoCommon.framework; sourceTree = "<group>"; };
-		423524FA221EEAA00079DD2A /* VirgilCryptoApiImpl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilCryptoApiImpl.framework; path = Carthage/Build/watchOS/VirgilCryptoApiImpl.framework; sourceTree = "<group>"; };
 		423524FB221EEAA10079DD2A /* VirgilSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilSDK.framework; path = Carthage/Build/watchOS/VirgilSDK.framework; sourceTree = "<group>"; };
 		423524FC221EEAA10079DD2A /* VirgilCryptoFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilCryptoFoundation.framework; path = Carthage/Build/watchOS/VirgilCryptoFoundation.framework; sourceTree = "<group>"; };
 		42352508221EED260079DD2A /* RatchetTestApp tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "RatchetTestApp tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -417,11 +433,12 @@
 		424FAA0F2177506100622A3B /* VirgilSDKRatchetTests iOS.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "VirgilSDKRatchetTests iOS.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		424FAAA82177520200622A3B /* SecureChat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecureChat.swift; sourceTree = "<group>"; };
 		424FAAA92177520200622A3B /* SecureSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecureSession.swift; sourceTree = "<group>"; };
+		4258CD60225DDC8E003CFCBD /* SecureGroupSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureGroupSession.swift; sourceTree = "<group>"; };
+		4258CD65225DDF6D003CFCBD /* IntegrationGroupTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntegrationGroupTests.swift; sourceTree = "<group>"; };
+		428184DD2270F68D00E44A6B /* IdentityPublicKeySet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentityPublicKeySet.swift; sourceTree = "<group>"; };
 		429D799E217791A2003B56F8 /* VirgilCryptoAPI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilCryptoAPI.framework; path = Carthage/Build/iOS/VirgilCryptoAPI.framework; sourceTree = "<group>"; };
 		429D799F217791A2003B56F8 /* VirgilCrypto.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilCrypto.framework; path = Carthage/Build/iOS/VirgilCrypto.framework; sourceTree = "<group>"; };
 		429D79A0217791A2003B56F8 /* VirgilSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilSDK.framework; path = Carthage/Build/iOS/VirgilSDK.framework; sourceTree = "<group>"; };
-		429D79A1217791A2003B56F8 /* VSCCrypto.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VSCCrypto.framework; path = Carthage/Build/iOS/VSCCrypto.framework; sourceTree = "<group>"; };
-		429D79A2217791A2003B56F8 /* VirgilCryptoApiImpl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilCryptoApiImpl.framework; path = Carthage/Build/iOS/VirgilCryptoApiImpl.framework; sourceTree = "<group>"; };
 		429D79C72178B71F003B56F8 /* TestConfig.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = TestConfig.plist; sourceTree = "<group>"; };
 		429D79C92178B7B2003B56F8 /* TestConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestConfig.swift; sourceTree = "<group>"; };
 		42AB658E21810D6C00AC4631 /* Stubs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stubs.swift; sourceTree = "<group>"; };
@@ -437,9 +454,9 @@
 		42AB65E82185095700AC4631 /* IntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrationTests.swift; sourceTree = "<group>"; };
 		42BA8F3D21946CF100075827 /* FileSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileSystem.swift; sourceTree = "<group>"; };
 		42BA8F3F2194771C00075827 /* FileSessionStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileSessionStorage.swift; sourceTree = "<group>"; };
+		42BD6F7E22B2591C00B3C2DA /* SecureChat+Obj-C.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SecureChat+Obj-C.swift"; sourceTree = "<group>"; };
 		42C837622211B017008AFFD9 /* SecureChatContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureChatContext.swift; sourceTree = "<group>"; };
 		42C837642211B283008AFFD9 /* KeysRotatorProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysRotatorProtocol.swift; sourceTree = "<group>"; };
-		42FC668622087B74009D3764 /* VirgilCryptoCommon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilCryptoCommon.framework; path = Carthage/Build/iOS/VirgilCryptoCommon.framework; sourceTree = "<group>"; };
 		42FC668722087B74009D3764 /* VirgilCryptoFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilCryptoFoundation.framework; path = Carthage/Build/iOS/VirgilCryptoFoundation.framework; sourceTree = "<group>"; };
 		42FC668822087B74009D3764 /* VirgilCryptoRatchet.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilCryptoRatchet.framework; path = Carthage/Build/iOS/VirgilCryptoRatchet.framework; sourceTree = "<group>"; };
 		42FC66A6220DE742009D3764 /* LongTermKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LongTermKey.swift; sourceTree = "<group>"; };
@@ -644,6 +661,7 @@
 				42AB65A42183340A00AC4631 /* SecureSessionTests.swift */,
 				42AB65E82185095700AC4631 /* IntegrationTests.swift */,
 				4235243E221C58F70079DD2A /* ClientTests.swift */,
+				4258CD65225DDF6D003CFCBD /* IntegrationGroupTests.swift */,
 				42352432221AAB710079DD2A /* Utils.swift */,
 			);
 			name = Test;
@@ -655,13 +673,10 @@
 			children = (
 				423524F6221EEAA00079DD2A /* VirgilCrypto.framework */,
 				423524F7221EEAA00079DD2A /* VirgilCryptoAPI.framework */,
-				423524FA221EEAA00079DD2A /* VirgilCryptoApiImpl.framework */,
-				423524F9221EEAA00079DD2A /* VirgilCryptoCommon.framework */,
 				423524FC221EEAA10079DD2A /* VirgilCryptoFoundation.framework */,
 				423524F8221EEAA00079DD2A /* VirgilCryptoRatchet.framework */,
 				423524FB221EEAA10079DD2A /* VirgilSDK.framework */,
 				423524EF221EEA530079DD2A /* VSCCommon.framework */,
-				423524EE221EEA530079DD2A /* VSCCrypto.framework */,
 				423524EA221EEA1B0079DD2A /* VSCFoundation.framework */,
 				423524E9221EEA1B0079DD2A /* VSCRatchet.framework */,
 				423524ED221EEA530079DD2A /* VSCFoundation.framework */,
@@ -669,25 +684,18 @@
 				423524C5221EE9E60079DD2A /* VirgilCrypto.framework */,
 				423524DD221EEA0C0079DD2A /* VirgilCrypto.framework */,
 				423524C2221EE9E60079DD2A /* VirgilCryptoAPI.framework */,
-				423524BF221EE9E60079DD2A /* VirgilCryptoApiImpl.framework */,
-				423524C3221EE9E60079DD2A /* VirgilCryptoCommon.framework */,
-				423524DA221EEA0C0079DD2A /* VirgilCryptoCommon.framework */,
 				423524C0221EE9E60079DD2A /* VirgilCryptoFoundation.framework */,
 				423524D3221EEA0C0079DD2A /* VirgilCryptoAPI.framework */,
-				423524D4221EEA0C0079DD2A /* VirgilCryptoApiImpl.framework */,
 				423524D5221EEA0C0079DD2A /* VirgilCryptoFoundation.framework */,
 				423524DB221EEA0C0079DD2A /* VirgilCryptoRatchet.framework */,
 				423524D7221EEA0C0079DD2A /* VirgilSDK.framework */,
 				423524D6221EEA0C0079DD2A /* VSCCommon.framework */,
-				423524DC221EEA0C0079DD2A /* VSCCrypto.framework */,
 				423524C1221EE9E60079DD2A /* VirgilCryptoPythia.framework */,
 				423524BB221EE9E60079DD2A /* VirgilCryptoRatchet.framework */,
 				423524C6221EE9E60079DD2A /* VirgilSDK.framework */,
 				423524BC221EE9E60079DD2A /* VSCCommon.framework */,
-				423524C4221EE9E60079DD2A /* VSCCrypto.framework */,
 				423524BD221EE9E60079DD2A /* VSCFoundation.framework */,
 				423524BE221EE9E60079DD2A /* VSCRatchet.framework */,
-				42FC668622087B74009D3764 /* VirgilCryptoCommon.framework */,
 				42FC668722087B74009D3764 /* VirgilCryptoFoundation.framework */,
 				42FC668822087B74009D3764 /* VirgilCryptoRatchet.framework */,
 				42499F6721EE36AE0076851C /* VSCCommon.framework */,
@@ -695,9 +703,7 @@
 				42499F6821EE36AE0076851C /* VSCRatchet.framework */,
 				429D799F217791A2003B56F8 /* VirgilCrypto.framework */,
 				429D799E217791A2003B56F8 /* VirgilCryptoAPI.framework */,
-				429D79A2217791A2003B56F8 /* VirgilCryptoApiImpl.framework */,
 				429D79A0217791A2003B56F8 /* VirgilSDK.framework */,
-				429D79A1217791A2003B56F8 /* VSCCrypto.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -720,7 +726,9 @@
 				42AB65AB21834EA100AC4631 /* KeysRotation */,
 				42C837622211B017008AFFD9 /* SecureChatContext.swift */,
 				424FAAA82177520200622A3B /* SecureChat.swift */,
+				42BD6F7E22B2591C00B3C2DA /* SecureChat+Obj-C.swift */,
 				424FAAA92177520200622A3B /* SecureSession.swift */,
+				4258CD60225DDC8E003CFCBD /* SecureGroupSession.swift */,
 			);
 			path = SecureChat;
 			sourceTree = "<group>";
@@ -760,6 +768,7 @@
 				42AB65B7218350F700AC4631 /* PublicKeySet.swift */,
 				42AB65B8218350F700AC4631 /* ValidatePublicKeysResponse.swift */,
 				42AB65B9218350F700AC4631 /* SignedPublicKey.swift */,
+				428184DD2270F68D00E44A6B /* IdentityPublicKeySet.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -790,6 +799,8 @@
 			children = (
 				42AB65DF2184F31F00AC4631 /* SessionStorage.swift */,
 				42BA8F3F2194771C00075827 /* FileSessionStorage.swift */,
+				4219FACB2264C30000D4FBC7 /* GroupSessionStorage.swift */,
+				4219FAD02264C38800D4FBC7 /* FileGroupSessionStorage.swift */,
 			);
 			path = SessionStorage;
 			sourceTree = "<group>";
@@ -1005,34 +1016,43 @@
 				TargetAttributes = {
 					421B43E72190AF5900D4F496 = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1020;
 					};
 					4235244A221EE9360079DD2A = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1020;
 					};
 					42352457221EE9460079DD2A = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1020;
 					};
 					42352464221EE9530079DD2A = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1020;
 					};
 					423524AF221EE98C0079DD2A = {
 						CreatedOnToolsVersion = 10.1;
 					};
 					42352507221EED260079DD2A = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1020;
 					};
 					4235251A221EEDCB0079DD2A = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1020;
 						TestTargetID = 42352507221EED260079DD2A;
 					};
 					42352528221EEDE70079DD2A = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1020;
 					};
 					424FAA052177506100622A3B = {
 						CreatedOnToolsVersion = 10.0;
+						LastSwiftMigration = 1020;
 					};
 					424FAA0E2177506100622A3B = {
 						CreatedOnToolsVersion = 10.0;
+						LastSwiftMigration = 1020;
 						TestTargetID = 421B43E72190AF5900D4F496;
 					};
 				};
@@ -1155,8 +1175,10 @@
 				42352471221EE9690079DD2A /* OneTimeKeysStorage.swift in Sources */,
 				4235246D221EE9690079DD2A /* LongTermKey.swift in Sources */,
 				42352477221EE9690079DD2A /* SignedPublicKey.swift in Sources */,
+				4219FACD2264C30000D4FBC7 /* GroupSessionStorage.swift in Sources */,
 				42352470221EE9690079DD2A /* OneTimeKey.swift in Sources */,
 				42352479221EE9690079DD2A /* RatchetClient.swift in Sources */,
+				428184DF2270F68D00E44A6B /* IdentityPublicKeySet.swift in Sources */,
 				42352480221EE9690079DD2A /* SecureSession.swift in Sources */,
 				4235246E221EE9690079DD2A /* LongTermKeysStorage.swift in Sources */,
 				42352481221EE9690079DD2A /* FileSystem.swift in Sources */,
@@ -1165,9 +1187,12 @@
 				42352474221EE9690079DD2A /* FileSessionStorage.swift in Sources */,
 				42352475221EE9690079DD2A /* PublicKeySet.swift in Sources */,
 				4235246F221EE9690079DD2A /* KeychainLongTermKeyStorage.swift in Sources */,
+				4219FAD22264C38800D4FBC7 /* FileGroupSessionStorage.swift in Sources */,
+				4258CD62225DDC8E003CFCBD /* SecureGroupSession.swift in Sources */,
 				4235247B221EE9690079DD2A /* RotationLog.swift in Sources */,
 				42352472221EE9690079DD2A /* FileOneTimeKeysStorage.swift in Sources */,
 				4235247C221EE9690079DD2A /* KeysRotatorProtocol.swift in Sources */,
+				42BD6F8022B2591C00B3C2DA /* SecureChat+Obj-C.swift in Sources */,
 				42352473221EE9690079DD2A /* SessionStorage.swift in Sources */,
 				4235247F221EE9690079DD2A /* SecureChat.swift in Sources */,
 				4235247D221EE9690079DD2A /* KeysRotator.swift in Sources */,
@@ -1183,8 +1208,10 @@
 				42352486221EE96A0079DD2A /* OneTimeKeysStorage.swift in Sources */,
 				42352482221EE96A0079DD2A /* LongTermKey.swift in Sources */,
 				4235248C221EE96A0079DD2A /* SignedPublicKey.swift in Sources */,
+				4219FACE2264C30000D4FBC7 /* GroupSessionStorage.swift in Sources */,
 				42352485221EE96A0079DD2A /* OneTimeKey.swift in Sources */,
 				4235248E221EE96A0079DD2A /* RatchetClient.swift in Sources */,
+				428184E02270F68D00E44A6B /* IdentityPublicKeySet.swift in Sources */,
 				42352495221EE96A0079DD2A /* SecureSession.swift in Sources */,
 				42352483221EE96A0079DD2A /* LongTermKeysStorage.swift in Sources */,
 				42352496221EE96A0079DD2A /* FileSystem.swift in Sources */,
@@ -1193,9 +1220,12 @@
 				42352489221EE96A0079DD2A /* FileSessionStorage.swift in Sources */,
 				4235248A221EE96A0079DD2A /* PublicKeySet.swift in Sources */,
 				42352484221EE96A0079DD2A /* KeychainLongTermKeyStorage.swift in Sources */,
+				4219FAD32264C38800D4FBC7 /* FileGroupSessionStorage.swift in Sources */,
+				4258CD63225DDC8E003CFCBD /* SecureGroupSession.swift in Sources */,
 				42352490221EE96A0079DD2A /* RotationLog.swift in Sources */,
 				42352487221EE96A0079DD2A /* FileOneTimeKeysStorage.swift in Sources */,
 				42352491221EE96A0079DD2A /* KeysRotatorProtocol.swift in Sources */,
+				42BD6F8122B2591C00B3C2DA /* SecureChat+Obj-C.swift in Sources */,
 				42352488221EE96A0079DD2A /* SessionStorage.swift in Sources */,
 				42352494221EE96A0079DD2A /* SecureChat.swift in Sources */,
 				42352492221EE96A0079DD2A /* KeysRotator.swift in Sources */,
@@ -1211,8 +1241,10 @@
 				4235249B221EE96A0079DD2A /* OneTimeKeysStorage.swift in Sources */,
 				42352497221EE96A0079DD2A /* LongTermKey.swift in Sources */,
 				423524A1221EE96A0079DD2A /* SignedPublicKey.swift in Sources */,
+				4219FACF2264C30000D4FBC7 /* GroupSessionStorage.swift in Sources */,
 				4235249A221EE96A0079DD2A /* OneTimeKey.swift in Sources */,
 				423524A3221EE96A0079DD2A /* RatchetClient.swift in Sources */,
+				428184E12270F68D00E44A6B /* IdentityPublicKeySet.swift in Sources */,
 				423524AA221EE96A0079DD2A /* SecureSession.swift in Sources */,
 				42352498221EE96A0079DD2A /* LongTermKeysStorage.swift in Sources */,
 				423524AB221EE96A0079DD2A /* FileSystem.swift in Sources */,
@@ -1221,9 +1253,12 @@
 				4235249E221EE96A0079DD2A /* FileSessionStorage.swift in Sources */,
 				4235249F221EE96A0079DD2A /* PublicKeySet.swift in Sources */,
 				42352499221EE96A0079DD2A /* KeychainLongTermKeyStorage.swift in Sources */,
+				4219FAD42264C38800D4FBC7 /* FileGroupSessionStorage.swift in Sources */,
+				4258CD64225DDC8E003CFCBD /* SecureGroupSession.swift in Sources */,
 				423524A5221EE96A0079DD2A /* RotationLog.swift in Sources */,
 				4235249C221EE96A0079DD2A /* FileOneTimeKeysStorage.swift in Sources */,
 				423524A6221EE96A0079DD2A /* KeysRotatorProtocol.swift in Sources */,
+				42BD6F8222B2591C00B3C2DA /* SecureChat+Obj-C.swift in Sources */,
 				4235249D221EE96A0079DD2A /* SessionStorage.swift in Sources */,
 				423524A9221EE96A0079DD2A /* SecureChat.swift in Sources */,
 				423524A7221EE96A0079DD2A /* KeysRotator.swift in Sources */,
@@ -1247,6 +1282,7 @@
 			files = (
 				4235253B221EEE3B0079DD2A /* TestConfig.swift in Sources */,
 				4235253E221EEE3B0079DD2A /* SecureSessionTests.swift in Sources */,
+				4258CD68225DDF6D003CFCBD /* IntegrationGroupTests.swift in Sources */,
 				4235253F221EEE3B0079DD2A /* IntegrationTests.swift in Sources */,
 				42352541221EEE3B0079DD2A /* Utils.swift in Sources */,
 				4235253C221EEE3B0079DD2A /* Stubs.swift in Sources */,
@@ -1261,6 +1297,7 @@
 			files = (
 				42352534221EEE3B0079DD2A /* TestConfig.swift in Sources */,
 				42352537221EEE3B0079DD2A /* SecureSessionTests.swift in Sources */,
+				4258CD67225DDF6D003CFCBD /* IntegrationGroupTests.swift in Sources */,
 				42352538221EEE3B0079DD2A /* IntegrationTests.swift in Sources */,
 				4235253A221EEE3B0079DD2A /* Utils.swift in Sources */,
 				42352535221EEE3B0079DD2A /* Stubs.swift in Sources */,
@@ -1276,8 +1313,10 @@
 				42BA8F402194771C00075827 /* FileSessionStorage.swift in Sources */,
 				42AB65BD218350F700AC4631 /* SignedPublicKey.swift in Sources */,
 				42AB65AD21834F0A00AC4631 /* KeysRotator.swift in Sources */,
+				4219FACC2264C30000D4FBC7 /* GroupSessionStorage.swift in Sources */,
 				42AB65E22184F31F00AC4631 /* LongTermKeysStorage.swift in Sources */,
 				16D9430E21A321500013E4DE /* RatchetClient+Queries.swift in Sources */,
+				428184DE2270F68D00E44A6B /* IdentityPublicKeySet.swift in Sources */,
 				42AB65BB218350F700AC4631 /* PublicKeySet.swift in Sources */,
 				42BA8F3E21946CF100075827 /* FileSystem.swift in Sources */,
 				16D942FA21A316410013E4DE /* RatchetClient.swift in Sources */,
@@ -1286,9 +1325,12 @@
 				421B440021912CA100D4F496 /* FileOneTimeKeysStorage.swift in Sources */,
 				424FAAB02177520200622A3B /* SecureSession.swift in Sources */,
 				42AB65E32184F31F00AC4631 /* OneTimeKeysStorage.swift in Sources */,
+				4219FAD12264C38800D4FBC7 /* FileGroupSessionStorage.swift in Sources */,
+				4258CD61225DDC8E003CFCBD /* SecureGroupSession.swift in Sources */,
 				42C837652211B283008AFFD9 /* KeysRotatorProtocol.swift in Sources */,
 				42352442221D78B80079DD2A /* RotationLog.swift in Sources */,
 				42C837632211B017008AFFD9 /* SecureChatContext.swift in Sources */,
+				42BD6F7F22B2591C00B3C2DA /* SecureChat+Obj-C.swift in Sources */,
 				421B43CD2190650500D4F496 /* KeychainLongTermKeyStorage.swift in Sources */,
 				42AB65BE218350F700AC4631 /* RatchetClientProtocol.swift in Sources */,
 				42FC66A9220DEB63009D3764 /* OneTimeKey.swift in Sources */,
@@ -1303,6 +1345,7 @@
 			files = (
 				42352440221C59130079DD2A /* ClientTests.swift in Sources */,
 				42352433221AAB710079DD2A /* Utils.swift in Sources */,
+				4258CD66225DDF6D003CFCBD /* IntegrationGroupTests.swift in Sources */,
 				42AB65EA2185097800AC4631 /* IntegrationTests.swift in Sources */,
 				42CBE2AB21E656BE000F99E6 /* SecureSessionTests.swift in Sources */,
 				42AB659021810D6F00AC4631 /* Stubs.swift in Sources */,
@@ -1402,7 +1445,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.virgilsecurity.RatchetTestApp-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -1420,7 +1463,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.virgilsecurity.RatchetTestApp-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -1448,12 +1491,12 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				PRODUCT_BUNDLE_IDENTIFIER = com.virgilsecurity.VirgilSDKRatchet;
 				PRODUCT_NAME = VirgilSDKRatchet;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -1480,12 +1523,12 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				PRODUCT_BUNDLE_IDENTIFIER = com.virgilsecurity.VirgilSDKRatchet;
 				PRODUCT_NAME = VirgilSDKRatchet;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -1514,7 +1557,7 @@
 				PRODUCT_NAME = VirgilSDKRatchet;
 				SDKROOT = appletvos;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 9.0;
 			};
@@ -1545,7 +1588,7 @@
 				PRODUCT_NAME = VirgilSDKRatchet;
 				SDKROOT = appletvos;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 9.0;
 			};
@@ -1576,7 +1619,7 @@
 				PRODUCT_NAME = VirgilSDKRatchet;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				WATCHOS_DEPLOYMENT_TARGET = 2.0;
 			};
@@ -1607,7 +1650,7 @@
 				PRODUCT_NAME = VirgilSDKRatchet;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				WATCHOS_DEPLOYMENT_TARGET = 2.0;
 			};
@@ -1643,7 +1686,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.virgilsecurity.RatchetTestApp-tvOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 12.1;
 			};
@@ -1663,7 +1706,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.virgilsecurity.RatchetTestApp-tvOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 12.1;
 			};
@@ -1685,7 +1728,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.virgilsecurity.VirgilSDKRatchetTests-tvOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 3;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RatchetTestApp tvOS.app/RatchetTestApp tvOS";
 				TVOS_DEPLOYMENT_TARGET = 12.1;
@@ -1708,7 +1751,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.virgilsecurity.VirgilSDKRatchetTests-tvOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 3;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RatchetTestApp tvOS.app/RatchetTestApp tvOS";
 				TVOS_DEPLOYMENT_TARGET = 12.1;
@@ -1734,7 +1777,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.virgilsecurity.VirgilSDKRatchetTests-macOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -1757,7 +1800,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.virgilsecurity.VirgilSDKRatchetTests-macOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -1911,7 +1954,7 @@
 				PRODUCT_MODULE_NAME = VirgilSDKRatchet;
 				PRODUCT_NAME = VirgilSDKRatchet;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -1942,7 +1985,7 @@
 				PRODUCT_MODULE_NAME = VirgilSDKRatchet;
 				PRODUCT_NAME = VirgilSDKRatchet;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -1963,7 +2006,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.virgilsecurity.VirgilSDKRatchetTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RatchetTestApp iOS.app/RatchetTestApp iOS";
 			};
@@ -1985,7 +2028,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.virgilsecurity.VirgilSDKRatchetTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RatchetTestApp iOS.app/RatchetTestApp iOS";
 			};
