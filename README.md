@@ -158,7 +158,7 @@ To begin communicating with PFS service, every user must run the initialization:
 import VirgilSDKRatchet
 
 let context = SecureChatContext(identity: card.identity,
-                                identityCardId: card.identifier,
+                                identityCard: card,
                                 identityPrivateKey: keyPair.privateKey,
                                 accessTokenProvider: provider)
 
