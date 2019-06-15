@@ -72,13 +72,13 @@ import VirgilCrypto
     private var interactionCounter = 0
 
     /// Starts interaction with storage
-    /// This method should be called before any other interaction with storage
-    /// This method can be called many times and works like a stack
+    /// - Important: This method should be called before any other interaction with storage
+    /// - Note: This method can be called many times and works like a stack
     ///
     /// - Throws:
     ///   - Rethrows from `PropertyListDecoder`
     ///   - Rethrows from [FileSystem](x-source-tag://FileSystem)
-    public func startInteraction() throws {
+    @objc public func startInteraction() throws {
         try self.queue.sync {
             if self.interactionCounter > 0 {
                 self.interactionCounter += 1
@@ -103,13 +103,13 @@ import VirgilCrypto
     }
 
     /// Stops interaction with storage
-    /// This method should be called after all interactions with storage
-    /// This method can be called many times and works like a stack
+    /// - Important: This method should be called after all interactions with storage
+    /// - Note: This method can be called many times and works like a stack
     ///
     /// - Throws:
     ///   - Rethrows from `PropertyListEncoder`
     ///   - Rethrows from [FileSystem](x-source-tag://FileSystem)
-    public func stopInteraction() throws {
+    @objc public func stopInteraction() throws {
         try self.queue.sync {
             guard self.interactionCounter > 0 else {
                 fatalError("interactionCounter should be > 0")
@@ -134,14 +134,14 @@ import VirgilCrypto
     }
 
     /// Stores key
-    /// Should be called inside startInteraction/stopInteraction scope
+    /// - Important: Should be called inside startInteraction/stopInteraction scope
     ///
     /// - Parameters:
     ///   - key: private key
     ///   - id: key id
     /// - Returns: One-time private key
     /// - Throws: `FileOneTimeKeysStorageError.keyAlreadyExists`
-    public func storeKey(_ key: Data, withId id: Data) throws -> OneTimeKey {
+    @objc public func storeKey(_ key: Data, withId id: Data) throws -> OneTimeKey {
         return try self.queue.sync {
             guard var oneTimeKeys = self.oneTimeKeys else {
                 fatalError("oneTimeKeys should not be nil")
@@ -160,12 +160,12 @@ import VirgilCrypto
     }
 
     /// Retrieves key
-    /// Should be called inside startInteraction/stopInteraction scope
+    /// - Important: Should be called inside startInteraction/stopInteraction scope
     ///
     /// - Parameter id: key id
     /// - Returns: One-time private key
     /// - Throws: `FileOneTimeKeysStorageError.keyNotFound`
-    public func retrieveKey(withId id: Data) throws -> OneTimeKey {
+    @objc public func retrieveKey(withId id: Data) throws -> OneTimeKey {
         guard let oneTimeKeys = self.oneTimeKeys else {
             fatalError("oneTimeKeys should not be nil")
         }
@@ -178,11 +178,11 @@ import VirgilCrypto
     }
 
     /// Deletes key
-    /// Should be called inside startInteraction/stopInteraction scope
+    /// - Important: Should be called inside startInteraction/stopInteraction scope
     ///
     /// - Parameter id: key id
     /// - Throws: `FileOneTimeKeysStorageError.keyNotFound`
-    public func deleteKey(withId id: Data) throws {
+    @objc public func deleteKey(withId id: Data) throws {
         try self.queue.sync {
             guard var oneTimeKeys = self.oneTimeKeys else {
                 fatalError("oneTimeKeys should not be nil")
@@ -198,11 +198,11 @@ import VirgilCrypto
     }
 
     /// Retrieves all keys
-    /// Should be called inside startInteraction/stopInteraction scope
+    /// - Important: Should be called inside startInteraction/stopInteraction scope
     ///
     /// - Returns: Returns all keys
     /// - Throws: Doesn't throw
-    public func retrieveAllKeys() throws -> [OneTimeKey] {
+    @objc public func retrieveAllKeys() throws -> [OneTimeKey] {
         guard let oneTimeKeys = self.oneTimeKeys else {
             fatalError("oneTimeKeys should not be nil")
         }
@@ -211,7 +211,7 @@ import VirgilCrypto
     }
 
     /// Marks key as orphaned
-    /// Should be called inside startInteraction/stopInteraction scope
+    /// - Important: Should be called inside startInteraction/stopInteraction scope
     ///
     /// - Parameters:
     ///   - date: date from which we found out that this key if orphaned
@@ -219,7 +219,7 @@ import VirgilCrypto
     /// - Throws:
     ///   - `FileOneTimeKeysStorageError.keyNotFound`
     ///   - `FileOneTimeKeysStorageError.keyAlreadyMarked`
-    public func markKeyOrphaned(startingFrom date: Date, keyId: Data) throws {
+    @objc public func markKeyOrphaned(startingFrom date: Date, keyId: Data) throws {
         try self.queue.sync {
             guard var oneTimeKeys = self.oneTimeKeys else {
                 fatalError("oneTimeKeys should not be nil")
@@ -243,10 +243,10 @@ import VirgilCrypto
     }
 
     /// Deletes all keys
-    /// Should be called after out of startInteraction/stopInteraction scope
+    /// - Important: Should be called after out of startInteraction/stopInteraction scope
     ///
     /// - Throws: Rethrows from [FileSystem](x-source-tag://FileSystem)
-    public func reset() throws {
+    @objc public func reset() throws {
         guard self.interactionCounter == 0 else {
             fatalError("interactionCounter should be 0")
         }

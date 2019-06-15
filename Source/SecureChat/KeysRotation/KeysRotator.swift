@@ -41,12 +41,12 @@ import VirgilCrypto
 /// KeysRotator errors
 ///
 /// - concurrentRotation: concurrent rotation is not allowed
-public enum KeysRotatorError: Int, Error {
+@objc public enum KeysRotatorError: Int, Error {
     case concurrentRotation = 1
 }
 
 /// Default implementation of `KeysRotatorProtocol`
-public class KeysRotator: KeysRotatorProtocol {
+@objc(VSRKeysRotator) public class KeysRotator: NSObject, KeysRotatorProtocol {
     private let crypto: VirgilCrypto
     private let identityPrivateKey: VirgilPrivateKey
     private let identityCardId: String
@@ -72,17 +72,17 @@ public class KeysRotator: KeysRotatorProtocol {
     ///   - desiredNumberOfOneTimeKeys: desired number of one-time keys
     ///   - longTermKeysStorage: long-term keys storage
     ///   - oneTimeKeysStorage: one-time keys storage
-    ///   - client: RatchetClient
-    public init(crypto: VirgilCrypto,
-                identityPrivateKey: VirgilPrivateKey,
-                identityCardId: String,
-                orphanedOneTimeKeyTtl: TimeInterval,
-                longTermKeyTtl: TimeInterval,
-                outdatedLongTermKeyTtl: TimeInterval,
-                desiredNumberOfOneTimeKeys: Int,
-                longTermKeysStorage: LongTermKeysStorage,
-                oneTimeKeysStorage: OneTimeKeysStorage,
-                client: RatchetClientProtocol) {
+    ///   - client: [RatchetClient](x-source-tag://RatchetClient)
+    @objc public init(crypto: VirgilCrypto,
+                      identityPrivateKey: VirgilPrivateKey,
+                      identityCardId: String,
+                      orphanedOneTimeKeyTtl: TimeInterval,
+                      longTermKeyTtl: TimeInterval,
+                      outdatedLongTermKeyTtl: TimeInterval,
+                      desiredNumberOfOneTimeKeys: Int,
+                      longTermKeysStorage: LongTermKeysStorage,
+                      oneTimeKeysStorage: OneTimeKeysStorage,
+                      client: RatchetClientProtocol) {
         self.crypto = crypto
         self.identityPrivateKey = identityPrivateKey
         self.identityCardId = identityCardId
@@ -93,6 +93,8 @@ public class KeysRotator: KeysRotatorProtocol {
         self.longTermKeysStorage = longTermKeysStorage
         self.oneTimeKeysStorage = oneTimeKeysStorage
         self.client = client
+
+        super.init()
     }
 
     /// Rotates keys

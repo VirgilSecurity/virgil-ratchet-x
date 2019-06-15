@@ -37,7 +37,7 @@
 import Foundation
 
 /// Client used to communicate with ratchet service
-public protocol RatchetClientProtocol: class {
+@objc(VSRRatchetClientProtocol) public protocol RatchetClientProtocol: class {
     /// Uploads public keys
     ///
     /// Long-term public key signature should be verified.
@@ -54,14 +54,14 @@ public protocol RatchetClientProtocol: class {
     ///             Should be curve25519 in PKCS#8
     ///   - token: auth token (JWT)
     /// - Throws: Depends on implementation
-    func uploadPublicKeys(identityCardId: String?,
-                          longTermPublicKey: SignedPublicKey?,
-                          oneTimePublicKeys: [Data],
-                          token: String) throws
+    @objc func uploadPublicKeys(identityCardId: String?,
+                                longTermPublicKey: SignedPublicKey?,
+                                oneTimePublicKeys: [Data],
+                                token: String) throws
 
     /// Checks list of keys ids and returns subset of that list with already used keys ids
     ///
-    /// keyId == SHA512(raw 32-byte publicKey)[0..<8]
+    /// - Note: keyId == SHA512(raw 32-byte publicKey)[0..<8]
     ///
     /// - Parameters:
     ///   - longTermKeyId: long-term public key id to validate
@@ -69,9 +69,9 @@ public protocol RatchetClientProtocol: class {
     ///   - token: auth token (JWT)
     /// - Returns: Object with used keys ids
     /// - Throws: Depends on implementation
-    func validatePublicKeys(longTermKeyId: Data?,
-                            oneTimeKeysIds: [Data],
-                            token: String) throws -> ValidatePublicKeysResponse
+    @objc func validatePublicKeys(longTermKeyId: Data?,
+                                  oneTimeKeysIds: [Data],
+                                  token: String) throws -> ValidatePublicKeysResponse
 
     /// Returns public keys set for given identity.
     ///
@@ -80,7 +80,7 @@ public protocol RatchetClientProtocol: class {
     ///   - token: auth token (JWT)
     /// - Returns: Set of public keys
     /// - Throws: Depends on implementation
-    func getPublicKeySet(forRecipientIdentity identity: String, token: String) throws -> PublicKeySet
+    @objc func getPublicKeySet(forRecipientIdentity identity: String, token: String) throws -> PublicKeySet
 
     /// Returns public keys sets for given identities.
     ///
@@ -89,12 +89,12 @@ public protocol RatchetClientProtocol: class {
     ///   - token: auth token (JWT)
     /// - Returns: Sets of public keys
     /// - Throws: Depends on implementation
-    func getMultiplePublicKeysSets(forRecipientsIdentities identities: [String],
-                                   token: String) throws -> [IdentityPublicKeySet]
+    @objc func getMultiplePublicKeysSets(forRecipientsIdentities identities: [String],
+                                         token: String) throws -> [IdentityPublicKeySet]
 
     /// Deletes keys entity
     ///
     /// - Parameter token: auth token (JWT)
     /// - Throws: Depends on implementation
-    func deleteKeysEntity(token: String) throws
+    @objc func deleteKeysEntity(token: String) throws
 }

@@ -36,51 +36,27 @@
 
 import Foundation
 
-/// This class shows the result of rotateKeys operation
-@objc(VSRRotationLog) public class RotationLog: NSObject, Encodable {
-    /// Number of unused one-time keys
-    @objc public var oneTimeKeysRelevant = 0
-
-    /// NUmber of one-time keys that were generated and uploaded to the cloud during this operation
-    @objc public var oneTimeKeysAdded = 0
-
-    /// Number of one-time keys that were deleted during this rotation
-    @objc public var oneTimeKeysDeleted = 0
-
-    /// Number of one-time keys that were marked orphaned during this operation
-    @objc public var oneTimeKeysMarkedOrphaned = 0
-
-    /// Number of one-time keys that were marked orphaned
-    @objc public var oneTimeKeysOrphaned = 0
-
-    /// Number of relevant long-term keys
-    @objc public var longTermKeysRelevant = 0
-
-    /// Number of long-term keys that were generated and uploaded to the cloud during this operation
-    @objc public var longTermKeysAdded = 0
-
-    /// Number of long-term keys that were deleted during this rotation
-    @objc public var longTermKeysDeleted = 0
-
-    /// Number of long-term keys that were marked orphaned outdated this operation
-    @objc public var longTermKeysMarkedOutdated = 0
-
-    /// Number of long-term keys that were marked orphaned
-    @objc public var longTermKeysOutdated = 0
-
-    /// Pretty print JSON
-    @objc override public var description: String {
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = .prettyPrinted
-
-        guard let data = try? encoder.encode(self) else {
-            return ""
-        }
-
-        guard let str = String(data: data, encoding: .utf8) else {
-            return ""
-        }
-
-        return str
+/// MARK: - Extension with objective-c methods
+public extension KeysRotator {
+    /// Rotates keys
+    ///
+    /// Rotation process:
+    ///   - Retrieve all one-time keys
+    ///   - Delete one-time keys that were marked as orphaned more than orphanedOneTimeKeyTtl seconds ago
+    ///   - Retrieve all long-term keys
+    ///   - Delete long-term keys that were marked as outdated more than outdatedLongTermKeyTtl seconds ago
+    ///   - Check that all relevant long-term and one-time keys are in the cloud
+    ///     (still persistent in the cloud and were not used)
+    ///   - Mark used one-time keys as used
+    ///   - Decide on long-term key roration
+    ///   - Generate needed number of one-time keys
+    ///   - Upload keys to the cloud
+    ///
+    /// - Parameters:
+    ///   - completion: completion handler
+    ///   - rotationLog: represents the result of rotateKeys operation
+    ///   - error: corresponding error
+    @objc func rotateKeysOperation(completion: @escaping (_ rotationLog: RotationLog?, _ error: Error?) -> Void) {
+        self.rotateKeysOperation().start(completion: completion)
     }
 }
