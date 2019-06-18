@@ -113,14 +113,15 @@ import VirgilCrypto
             params = nil
         }
 
-        let longTermKeysStorage = try KeychainLongTermKeysStorage(identity: context.identity, params: params)
-        let oneTimeKeysStorage = FileOneTimeKeysStorage(identity: context.identity,
+        let longTermKeysStorage = try KeychainLongTermKeysStorage(identity: context.identityCard.identifier,
+                                                                  params: params)
+        let oneTimeKeysStorage = FileOneTimeKeysStorage(identity: context.identityCard.identifier,
                                                         crypto: crypto,
                                                         identityKeyPair: context.identityKeyPair)
-        let sessionStorage = FileSessionStorage(identity: context.identity,
+        let sessionStorage = FileSessionStorage(identity: context.identityCard.identifier,
                                                 crypto: crypto,
                                                 identityKeyPair: context.identityKeyPair)
-        let groupSessionStorage = try FileGroupSessionStorage(identity: context.identity,
+        let groupSessionStorage = try FileGroupSessionStorage(identity: context.identityCard.identifier,
                                                               crypto: crypto,
                                                               identityKeyPair: context.identityKeyPair)
         let keysRotator = KeysRotator(crypto: crypto,

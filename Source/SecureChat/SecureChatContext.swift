@@ -40,8 +40,6 @@ import VirgilSDK
 /// SecureChat context
 /// - Tag: SecureChatContext
 @objc(VSRSecureChatContext) open class SecureChatContext: NSObject {
-    /// User's identity
-    @objc public let identity: String
 
     /// User's identity card id
     @objc public let identityCard: Card
@@ -70,15 +68,12 @@ import VirgilSDK
     /// Initializer
     ///
     /// - Parameters:
-    ///   - identity: user's identity
     ///   - identityCard: user's identity card
     ///   - identityKeyPair: user's identity key pair (corresponding to public key in identityCard)
     ///   - accessTokenProvider: access token provider
-    @objc public init(identity: String,
-                      identityCard: Card,
+    @objc public init(identityCard: Card,
                       identityKeyPair: VirgilKeyPair,
                       accessTokenProvider: AccessTokenProvider) {
-        self.identity = identity
         self.identityCard = identityCard
         self.identityKeyPair = identityKeyPair
         self.accessTokenProvider = accessTokenProvider
