@@ -45,32 +45,43 @@ public extension SecureChat {
     ///   - receiverCard: receiver identity cards
     ///   - name: Session name
     ///   - completion: completion handler
+    ///   - session: created [SecureSession](x-source-tag://SecureSession)
+    ///   - error: corresponding error
     @objc func startNewSessionAsSender(receiverCard: Card, name: String? = nil,
-                                       completion: @escaping (SecureSession?, Error?) -> Void) {
+                                       completion: @escaping (_ session: SecureSession?, _ error: Error?) -> Void) {
         self.startNewSessionAsSender(receiverCard: receiverCard, name: name).start(completion: completion)
     }
 
     /// Starts multiple new sessions with given participants using their identity cards
     ///
     /// - Parameters:
-    ///   - receiverCard: receivers identity cards
+    ///   - receiverCards: receivers identity cards
+    ///   - name: Session name
     ///   - completion: completion handler
+    ///   - sessions: array with created [SecureSessions](x-source-tag://SecureSession)
+    ///   - error: corresponding error
     @objc func startMultipleNewSessionsAsSender(receiverCards: [Card], name: String? = nil,
-                                                completion: @escaping ([SecureSession]?, Error?) -> Void) {
+                                                completion: @escaping (_ sessions: [SecureSession]?,
+                                                                       _ error: Error?) -> Void) {
         self.startMutipleNewSessionsAsSender(receiverCards: receiverCards, name: name).start(completion: completion)
     }
 
     /// Rotates keys. See rotateKeys() -> GenericOperation<RotationLog> for details
     ///
-    /// - Parameter completion: completion handler
-    @objc func rotateKeys(completion: @escaping (RotationLog?, Error?) -> Void) {
+    /// - Parameters:
+    ///   - completion: completion handler
+    ///   - rotationLog: represents the result of rotateKeys operation
+    ///   - error: corresponding error
+    @objc func rotateKeys(completion: @escaping (_ rotationLog: RotationLog?, _ error: Error?) -> Void) {
         self.rotateKeys().start(completion: completion)
     }
 
     /// Removes all data corresponding to this user: sessions and keys.
     ///
-    /// - Parameter completion: completion handler
-    @objc func reset(completion: @escaping (Error?) -> Void) {
+    /// - Parameters:
+    ///   - completion: completion handler
+    ///   - error: corresponding error
+    @objc func reset(completion: @escaping (_ error: Error?) -> Void) {
         self.reset().start { _, error in
             completion(error)
         }

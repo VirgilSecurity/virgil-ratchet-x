@@ -34,7 +34,6 @@
 // Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 //
 
-import Foundation
 import VirgilSDK
 import VirgilCryptoRatchet
 import VirgilCrypto
@@ -42,12 +41,12 @@ import VirgilCrypto
 /// KeysRotator errors
 ///
 /// - concurrentRotation: concurrent rotation is not allowed
-public enum KeysRotatorError: Int, Error {
+@objc public enum KeysRotatorError: Int, Error {
     case concurrentRotation = 1
 }
 
-/// Default implementation of KeysRotatorProtocol
-public class KeysRotator: KeysRotatorProtocol {
+/// Default implementation of `KeysRotatorProtocol`
+@objc(VSRKeysRotator) public class KeysRotator: NSObject, KeysRotatorProtocol {
     private let crypto: VirgilCrypto
     private let identityPrivateKey: VirgilPrivateKey
     private let identityCardId: String
@@ -73,17 +72,17 @@ public class KeysRotator: KeysRotatorProtocol {
     ///   - desiredNumberOfOneTimeKeys: desired number of one-time keys
     ///   - longTermKeysStorage: long-term keys storage
     ///   - oneTimeKeysStorage: one-time keys storage
-    ///   - client: RatchetClient
-    public init(crypto: VirgilCrypto,
-                identityPrivateKey: VirgilPrivateKey,
-                identityCardId: String,
-                orphanedOneTimeKeyTtl: TimeInterval,
-                longTermKeyTtl: TimeInterval,
-                outdatedLongTermKeyTtl: TimeInterval,
-                desiredNumberOfOneTimeKeys: Int,
-                longTermKeysStorage: LongTermKeysStorage,
-                oneTimeKeysStorage: OneTimeKeysStorage,
-                client: RatchetClientProtocol) {
+    ///   - client: [RatchetClient](x-source-tag://RatchetClient)
+    @objc public init(crypto: VirgilCrypto,
+                      identityPrivateKey: VirgilPrivateKey,
+                      identityCardId: String,
+                      orphanedOneTimeKeyTtl: TimeInterval,
+                      longTermKeyTtl: TimeInterval,
+                      outdatedLongTermKeyTtl: TimeInterval,
+                      desiredNumberOfOneTimeKeys: Int,
+                      longTermKeysStorage: LongTermKeysStorage,
+                      oneTimeKeysStorage: OneTimeKeysStorage,
+                      client: RatchetClientProtocol) {
         self.crypto = crypto
         self.identityPrivateKey = identityPrivateKey
         self.identityCardId = identityCardId
@@ -94,21 +93,23 @@ public class KeysRotator: KeysRotatorProtocol {
         self.longTermKeysStorage = longTermKeysStorage
         self.oneTimeKeysStorage = oneTimeKeysStorage
         self.client = client
+
+        super.init()
     }
 
     /// Rotates keys
     ///
     /// Rotation process:
-    ///         - Retrieve all one-time keys
-    ///         - Delete one-time keys that were marked as orphaned more than orphanedOneTimeKeyTtl seconds ago
-    ///         - Retrieve all long-term keys
-    ///         - Delete long-term keys that were marked as outdated more than outdatedLongTermKeyTtl seconds ago
-    ///         - Check that all relevant long-term and one-time keys are in the cloud
-    ///             (still persistent in the cloud and were not used)
-    ///         - Mark used one-time keys as used
-    ///         - Decide on long-term key roration
-    ///         - Generate needed number of one-time keys
-    ///         - Upload keys to the cloud
+    ///   - Retrieve all one-time keys
+    ///   - Delete one-time keys that were marked as orphaned more than orphanedOneTimeKeyTtl seconds ago
+    ///   - Retrieve all long-term keys
+    ///   - Delete long-term keys that were marked as outdated more than outdatedLongTermKeyTtl seconds ago
+    ///   - Check that all relevant long-term and one-time keys are in the cloud
+    ///     (still persistent in the cloud and were not used)
+    ///   - Mark used one-time keys as used
+    ///   - Decide on long-term key roration
+    ///   - Generate needed number of one-time keys
+    ///   - Upload keys to the cloud
     ///
     /// - Returns: GenericOperation
     public func rotateKeysOperation() -> GenericOperation<RotationLog> {

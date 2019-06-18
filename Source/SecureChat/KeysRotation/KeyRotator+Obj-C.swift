@@ -34,46 +34,29 @@
 // Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 //
 
-import VirgilSDK
+import Foundation
 
-/// Declares client error types and codes
-///
-/// - constructingUrl: constructing url of endpoint failed
-@objc(VSRRatchetClientError) public enum RatchetClientError: Int, Error {
-    case constructingUrl = 1
-}
-
-/// Implemetation of RatchetClientProtocol
-/// - Tag: RatchetClient
-@objc(VSRRatchetClient) open class RatchetClient: BaseClient {
-    // swiftlint:disable force_unwrapping
-    /// Default URL for service
-    @objc public static let defaultURL = URL(string: "https://api.virgilsecurity.com")!
-    // swiftlint:enable force_unwrapping
-
-    /// Initializes a new `RatchetClient` instance
+/// MARK: - Extension with objective-c methods
+public extension KeysRotator {
+    /// Rotates keys
+    ///
+    /// Rotation process:
+    ///   - Retrieve all one-time keys
+    ///   - Delete one-time keys that were marked as orphaned more than orphanedOneTimeKeyTtl seconds ago
+    ///   - Retrieve all long-term keys
+    ///   - Delete long-term keys that were marked as outdated more than outdatedLongTermKeyTtl seconds ago
+    ///   - Check that all relevant long-term and one-time keys are in the cloud
+    ///     (still persistent in the cloud and were not used)
+    ///   - Mark used one-time keys as used
+    ///   - Decide on long-term key roration
+    ///   - Generate needed number of one-time keys
+    ///   - Upload keys to the cloud
     ///
     /// - Parameters:
-    ///   - serviceUrl: URL of service client will use
-    ///   - connection: custom HTTPConnection
-    override public init(serviceUrl: URL = RatchetClient.defaultURL, connection: HttpConnectionProtocol) {
-        super.init(serviceUrl: serviceUrl, connection: connection)
-    }
-
-    /// Initializes a new `RatchetClient` instance
-    @objc public convenience init() {
-        self.init(serviceUrl: RatchetClient.defaultURL)
-    }
-
-    /// Initializes a new `RatchetClient` instance
-    ///
-    /// - Parameter serviceUrl: URL of service client will use
-    @objc public convenience init(serviceUrl: URL) {
-        let version = VersionUtils.getVersion(bundleIdentitifer: "com.virgilsecurity.VirgilSDKRatchet")
-        let adapter = VirgilAgentAdapter(product: "ratchet",
-                                         version: version)
-        let connection = HttpConnection(adapters: [adapter])
-
-        self.init(serviceUrl: serviceUrl, connection: connection)
+    ///   - completion: completion handler
+    ///   - rotationLog: represents the result of rotateKeys operation
+    ///   - error: corresponding error
+    @objc func rotateKeysOperation(completion: @escaping (_ rotationLog: RotationLog?, _ error: Error?) -> Void) {
+        self.rotateKeysOperation().start(completion: completion)
     }
 }

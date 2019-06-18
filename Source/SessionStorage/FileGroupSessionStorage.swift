@@ -49,7 +49,7 @@ import VirgilCrypto
     ///
     /// - Parameters:
     ///   - identity: identity of this user
-    ///   - crypto: VirgilCrypto that will be forwarded to SecureSession
+    ///   - crypto: VirgilCrypto that will be forwarded to [SecureGroupSession](x-source-tag://SecureGroupSession)
     ///   - identityKeyPair: Key pair to encrypt session
     @objc public init(identity: String, crypto: VirgilCrypto, identityKeyPair: VirgilKeyPair) throws {
         let credentials = FileSystem.Credentials(crypto: crypto, keyPair: identityKeyPair)
@@ -63,8 +63,8 @@ import VirgilCrypto
     /// Stores session
     ///
     /// - Parameter session: session to store
-    /// - Throws: Rethrows from FileSystem
-    public func storeSession(_ session: SecureGroupSession) throws {
+    /// - Throws: Rethrows from [FileSystem](x-source-tag://FileSystem)
+    @objc public func storeSession(_ session: SecureGroupSession) throws {
         try self.queue.sync {
             let data = session.serialize()
 
@@ -76,7 +76,7 @@ import VirgilCrypto
     ///
     /// - Parameter identifier: session identifier
     /// - Returns: Stored session if found, nil otherwise
-    public func retrieveSession(identifier: Data) -> SecureGroupSession? {
+    @objc public func retrieveSession(identifier: Data) -> SecureGroupSession? {
         guard let data = try? self.fileSystem.read(name: identifier.hexEncodedString()), !data.isEmpty else {
             return nil
         }
@@ -89,8 +89,8 @@ import VirgilCrypto
     /// Deletes session
     ///
     /// - Parameter identifier: session identifier
-    /// - Throws: Rethrows from FileSystem
-    public func deleteSession(identifier: Data) throws {
+    /// - Throws: Rethrows from [FileSystem](x-source-tag://FileSystem)
+    @objc public func deleteSession(identifier: Data) throws {
         try self.queue.sync {
             try self.fileSystem.delete(name: identifier.hexEncodedString())
         }
@@ -99,7 +99,7 @@ import VirgilCrypto
     /// Removes all sessions
     ///
     /// - Throws: Rethrows from FileSystem
-    public func reset() throws {
+    @objc public func reset() throws {
         try self.queue.sync {
             try self.fileSystem.delete()
         }

@@ -37,8 +37,8 @@
 import Foundation
 import VirgilCrypto
 
-/// FileSessionStorage using encrypted files
-/// This class is thread-safe
+/// FileSessionStorage using files
+/// - Note: This class is thread-safe
 @objc(VSRFileSessionStorage) open class FileSessionStorage: NSObject, SessionStorage {
     private let fileSystem: FileSystem
     private let queue = DispatchQueue(label: "FileSessionStorageQueue")
@@ -48,7 +48,7 @@ import VirgilCrypto
     ///
     /// - Parameters:
     ///   - identity: identity of this user
-    ///   - crypto: VirgilCrypto that will be forwarded to SecureSession
+    ///   - crypto: VirgilCrypto that will be forwarded to [SecureSession](x-source-tag://SecureSession)
     ///   - identityKeyPair: Key pair to encrypt session
     @objc public init(identity: String, crypto: VirgilCrypto, identityKeyPair: VirgilKeyPair) {
         let credentials = FileSystem.Credentials(crypto: crypto, keyPair: identityKeyPair)
@@ -61,8 +61,8 @@ import VirgilCrypto
     /// Stores session
     ///
     /// - Parameter session: session to store
-    /// - Throws: Rethrows from FileSystem
-    public func storeSession(_ session: SecureSession) throws {
+    /// - Throws: Rethrows from [FileSystem](x-source-tag://FileSystem)
+    @objc public func storeSession(_ session: SecureSession) throws {
         try self.queue.sync {
             let data = session.serialize()
 
@@ -76,7 +76,7 @@ import VirgilCrypto
     ///   - participantIdentity: participant identity
     ///   - name: session name
     /// - Returns: Stored session if found, nil otherwise
-    public func retrieveSession(participantIdentity: String, name: String) -> SecureSession? {
+    @objc public func retrieveSession(participantIdentity: String, name: String) -> SecureSession? {
         guard let data = try? self.fileSystem.read(name: name, subdir: participantIdentity), !data.isEmpty else {
             return nil
         }
@@ -92,8 +92,8 @@ import VirgilCrypto
     /// - Parameters:
     ///   - participantIdentity: participant identity
     ///   - name: session name
-    /// - Throws: Rethrows from FileSystem
-    public func deleteSession(participantIdentity: String, name: String?) throws {
+    /// - Throws: Rethrows from [FileSystem](x-source-tag://FileSystem)
+    @objc public func deleteSession(participantIdentity: String, name: String?) throws {
         try self.queue.sync {
             if let name = name {
                 try self.fileSystem.delete(name: name, subdir: participantIdentity)
@@ -106,8 +106,8 @@ import VirgilCrypto
 
     /// Removes all sessions
     ///
-    /// - Throws: Rethrows from FileSystem
-    public func reset() throws {
+    /// - Throws: Rethrows from [FileSystem](x-source-tag://FileSystem)
+    @objc public func reset() throws {
         try self.queue.sync {
             try self.fileSystem.delete()
         }

@@ -34,14 +34,13 @@
 // Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 //
 
-import Foundation
 import VirgilSDK
 
 /// One-time keys storage
 @objc(VSROneTimeKeysStorage) public protocol OneTimeKeysStorage: class {
     /// Starts interaction with storage
-    /// This method should be called before any other interaction with storage
-    /// This method can be called many times and works like a stack
+    /// - Important: This method should be called before any other interaction with storage
+    /// - Note: This method can be called many times and works like a stack
     ///
     /// - Throws: Depends on implementation
     @objc func startInteraction() throws

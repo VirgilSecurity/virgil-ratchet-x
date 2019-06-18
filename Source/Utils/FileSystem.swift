@@ -34,12 +34,12 @@
 // Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 //
 
-import Foundation
 import VirgilCrypto
 import VirgilSDK
 
 /// Class for saving Sessions and One-time keys to the filesystem
-/// NOTE: This class is not thread-safe
+/// - Note: This class is NOT thread-safe
+/// - Tag: FileSystem
 internal class FileSystem {
     internal struct Credentials {
         let crypto: VirgilCrypto

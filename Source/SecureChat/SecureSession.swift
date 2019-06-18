@@ -34,7 +34,6 @@
 // Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 //
 
-import Foundation
 import VirgilCrypto
 import VirgilCryptoRatchet
 
@@ -46,7 +45,8 @@ import VirgilCryptoRatchet
 }
 
 /// SecureSession
-/// NOTE: This class is thread-safe
+/// - Note: This class is thread-safe
+/// - Tag: SecureSession
 @objc(VSRSecureSession) public final class SecureSession: NSObject {
     /// Participant identity
     @objc public let participantIdentity: String
@@ -113,14 +113,13 @@ import VirgilCryptoRatchet
     }
 
     /// Encrypts string.
-    /// NOTE: This operation changes session state, so session should be updated in storage.
+    /// - Note: This operation changes session state, so session should be updated in storage.
     ///
-    /// - Parameter message: message to encrypt
+    /// - Parameter string: string to encrypt
     /// - Returns: RatchetMessage
     /// - Throws:
-    ///         - SecureSessionError.invalidUtf8String if given string is not correct utf-8 string
-    ///         - Rethrows from crypto RatchetSession
-    ///         - Rethrows from SessionStorage
+    ///   - `SecureSessionError.invalidUtf8String` if given string is not correct utf-8 string
+    ///   - Rethrows from crypto `RatchetSession`
     @objc public func encrypt(string: String) throws -> RatchetMessage {
         guard let data = string.data(using: .utf8) else {
             throw SecureSessionError.invalidUtf8String
@@ -130,13 +129,12 @@ import VirgilCryptoRatchet
     }
 
     /// Encrypts data.
-    /// NOTE: This operation changes session state, so session should be updated in storage.
+    /// - Note: This operation changes session state, so session should be updated in storage.
     ///
-    /// - Parameter message: message to encrypt
+    /// - Parameter data: data to encrypt
     /// - Returns: RatchetMessage
     /// - Throws:
-    ///         - Rethrows from crypto RatchetSession
-    ///         - Rethrows from SessionStorage
+    ///   - Rethrows from crypto `RatchetSession`
     @objc public func encrypt(data: Data) throws -> RatchetMessage {
         return try self.queue.sync {
             let msg = try self.ratchetSession.encrypt(plainText: data)
@@ -146,13 +144,12 @@ import VirgilCryptoRatchet
     }
 
     /// Decrypts data from RatchetMessage.
-    /// NOTE: This operation changes session state, so session should be updated in storage.
+    /// - Note: This operation changes session state, so session should be updated in storage.
     ///
     /// - Parameter message: RatchetMessage
     /// - Returns: Decrypted data
     /// - Throws:
-    ///         - Rethrows from crypto RatchetSession
-    ///         - Rethrows from SessionStorage
+    ///   - Rethrows from crypto `RatchetSession`
     @objc public func decryptData(from message: RatchetMessage) throws -> Data {
         return try self.queue.sync {
             let data = try self.ratchetSession.decrypt(message: message)
@@ -162,14 +159,13 @@ import VirgilCryptoRatchet
     }
 
     /// Decrypts utf-8 string from RatchetMessage.
-    /// NOTE: This operation changes session state, so session should be updated in storage.
+    /// - Note: This operation changes session state, so session should be updated in storage.
     ///
     /// - Parameter message: RatchetMessage
     /// - Returns: Decrypted utf-8 string
     /// - Throws:
-    ///         - SecureSessionError.invalidUtf8String if decrypted data is not correct utf-8 string
-    ///         - Rethrows from crypto RatchetSession
-    ///         - Rethrows from SessionStorage
+    ///   - `SecureSessionError.invalidUtf8String` if decrypted data is not correct utf-8 string
+    ///   - Rethrows from crypto `RatchetSession`
     @objc public func decryptString(from message: RatchetMessage) throws -> String {
         let data = try self.decryptData(from: message)
 
@@ -184,10 +180,10 @@ import VirgilCryptoRatchet
     ///
     /// - Parameters:
     ///   - data: Serialized session
-    ///   - participantIdentity: participant identity
+    ///   - participantIdentity: Participant identity
     ///   - name: Session name
     ///   - crypto: VirgilCrypto
-    /// - Throws: Rethrows from SessionStorage
+    /// - Throws: Rethrows from `RatchetSession`
     @objc public init(data: Data,
                       participantIdentity: String,
                       name: String,
