@@ -114,7 +114,9 @@ class IntegrationGroupTests: XCTestCase {
             
             let (cards1, chats1) = try self.initChat(numberOfParticipants: num)
             
-            let initMsg = try chats1[0].startNewGroupSession(sessionId: self.crypto.generateRandomData(ofSize: 32))
+            let sessionId = try self.crypto.generateRandomData(ofSize: 32)
+            
+            let initMsg = try chats1[0].startNewGroupSession(sessionId: sessionId)
             
             var sessions = [SecureGroupSession]()
             
@@ -122,7 +124,7 @@ class IntegrationGroupTests: XCTestCase {
                 var localCards = cards1
                 localCards.remove(at: i)
                 
-                let session = try chats1[i].startGroupSession(with: localCards, using: initMsg)
+                let session = try chats1[i].startGroupSession(with: localCards, sessionId: sessionId, using: initMsg)
                 
                 sessions.append(session)
             }
@@ -141,7 +143,7 @@ class IntegrationGroupTests: XCTestCase {
                     var localCards = cards2
                     localCards.remove(at: i - num)
                     
-                    let session = try chats2[i - num].startGroupSession(with: cards1 + localCards, using:
+                    let session = try chats2[i - num].startGroupSession(with: cards1 + localCards, sessionId: sessionId, using:
                         ticket1)
                     
                     sessions.append(session)
@@ -163,7 +165,7 @@ class IntegrationGroupTests: XCTestCase {
                     var localCards = cards3
                     localCards.remove(at: i - num)
                     
-                    let session = try chats3[i - num].startGroupSession(with: cards2 + localCards, using:
+                    let session = try chats3[i - num].startGroupSession(with: cards2 + localCards, sessionId: sessionId, using:
                         ticket2)
                     
                     sessions.append(session)
@@ -183,8 +185,10 @@ class IntegrationGroupTests: XCTestCase {
             let num = 3
 
             let (cards, chats) = try self.initChat(numberOfParticipants: num)
+            
+            let sessionId = try self.crypto.generateRandomData(ofSize: 32)
 
-            let initMsg = try chats.first!.startNewGroupSession(sessionId: self.crypto.generateRandomData(ofSize: 32))
+            let initMsg = try chats.first!.startNewGroupSession(sessionId: sessionId)
 
             var sessions = [SecureGroupSession]()
 
@@ -192,7 +196,7 @@ class IntegrationGroupTests: XCTestCase {
                 var localCards = cards
                 localCards.remove(at: i)
 
-                let session = try chats[i].startGroupSession(with: localCards, using: initMsg)
+                let session = try chats[i].startGroupSession(with: localCards, sessionId: sessionId, using: initMsg)
 
                 sessions.append(session)
             }
@@ -222,7 +226,7 @@ class IntegrationGroupTests: XCTestCase {
                 try session.updateParticipants(ticket: addTicket, addCards: [experimentalCard], removeCardIds: [])
             }
 
-            let newSession = try chats.last!.startGroupSession(with: cards.dropLast(), using: addTicket)
+            let newSession = try chats.last!.startGroupSession(with: cards.dropLast(), sessionId: sessionId, using: addTicket)
             sessions.append(newSession)
 
             // Decrypt with new session message, encrypted for old session
@@ -238,8 +242,10 @@ class IntegrationGroupTests: XCTestCase {
             let num = 3
 
             let (cards, chats) = try self.initChat(numberOfParticipants: num)
+            
+            let sessionId = try self.crypto.generateRandomData(ofSize: 32)
 
-            let initMsg = try chats.first!.startNewGroupSession(sessionId: self.crypto.generateRandomData(ofSize: 32))
+            let initMsg = try chats.first!.startNewGroupSession(sessionId: sessionId)
 
             var sessions = [SecureGroupSession]()
 
@@ -247,7 +253,7 @@ class IntegrationGroupTests: XCTestCase {
                 var localCards = cards
                 localCards.remove(at: i)
 
-                let session = try chats[i].startGroupSession(with: localCards, using: initMsg)
+                let session = try chats[i].startGroupSession(with: localCards, sessionId: sessionId, using: initMsg)
 
                 sessions.append(session)
             }
@@ -272,7 +278,7 @@ class IntegrationGroupTests: XCTestCase {
                     try session.updateParticipants(ticket: addTicket, addCards: [experimentalCard], removeCardIds: [])
                 }
 
-                let newSession = try chats.last!.startGroupSession(with: cards.dropLast(), using: addTicket)
+                let newSession = try chats.last!.startGroupSession(with: cards.dropLast(), sessionId: sessionId, using: addTicket)
                 sessions.append(newSession)
             }
         } catch {
@@ -286,7 +292,9 @@ class IntegrationGroupTests: XCTestCase {
             
             let (cards, chats) = try self.initChat(numberOfParticipants: num)
             
-            let initMsg = try chats.first!.startNewGroupSession(sessionId: self.crypto.generateRandomData(ofSize: 32))
+            let sessionId = try self.crypto.generateRandomData(ofSize: 32)
+            
+            let initMsg = try chats.first!.startNewGroupSession(sessionId: sessionId)
             
             var sessions = [SecureGroupSession]()
             
@@ -294,7 +302,7 @@ class IntegrationGroupTests: XCTestCase {
                 var localCards = cards
                 localCards.remove(at: i)
                 
-                let session = try chats[i].startGroupSession(with: localCards, using: initMsg)
+                let session = try chats[i].startGroupSession(with: localCards, sessionId: sessionId, using: initMsg)
                 
                 sessions.append(session)
             }
@@ -336,7 +344,9 @@ class IntegrationGroupTests: XCTestCase {
             
             let (cards1, chats1) = try self.initChat(numberOfParticipants: num)
             
-            let initMsg = try chats1[0].startNewGroupSession(sessionId: self.crypto.generateRandomData(ofSize: 32))
+            let sessionId = try self.crypto.generateRandomData(ofSize: 32)
+            
+            let initMsg = try chats1[0].startNewGroupSession(sessionId: sessionId)
             
             var sessions = [SecureGroupSession]()
             
@@ -344,7 +354,7 @@ class IntegrationGroupTests: XCTestCase {
                 var localCards = cards1
                 localCards.remove(at: i)
                 
-                let session = try chats1[i].startGroupSession(with: localCards, using: initMsg)
+                let session = try chats1[i].startGroupSession(with: localCards, sessionId: sessionId, using: initMsg)
                 
                 sessions.append(session)
                 

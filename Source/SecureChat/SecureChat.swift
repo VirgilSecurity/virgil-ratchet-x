@@ -49,6 +49,7 @@ import VirgilCrypto
 /// - publicKeysSetsMismatch: PublicKeysSets mismatch
 /// - invalidSessionIdLen: Session Id should be 32-byte
 /// - invalidCardId: Invalid card id
+/// - sessionIdMismatch: Session is mismatch
 @objc public enum SecureChatError: Int, Error {
     case sessionAlreadyExists = 1
     case wrongIdentityPublicKeyCrypto = 2
@@ -59,6 +60,7 @@ import VirgilCrypto
     case publicKeysSetsMismatch = 7
     case invalidSessionIdLen = 8
     case invalidCardId = 9
+    case sessionIdMismatch = 10
 }
 
 /// SecureChat. Class for rotating keys, starting and responding to conversation
@@ -650,10 +652,12 @@ import VirgilCrypto
     /// Creates secure group session that was initiated by someone.
     /// - Important: RatchetGroupMessage should have .groupInfo type.
     ///              Such messages should be sent encrypted (using [SecureSession](x-source-tag://SecureSession))
+    /// - Important: Session id is REQUIRED to be unique and tied to transport layer (channel id or similar)
     /// - Note: This operation doesn't store session to storage automatically. Use storeGroupSession()
     ///
     /// - Parameters:
     ///   - receiversCards: participant cards (excluding creating user itself)
+    ///   - sessionId: Session Id. Should be 32 byte.
     ///   - ratchetMessage: ratchet group message with .groupInfo type
     /// - Returns: [SecureGroupSession](x-source-tag://SecureGroupSession)
     /// - Throws:
@@ -661,9 +665,14 @@ import VirgilCrypto
     ///   - `SecureChatError.invalidCardId`
     ///   - Rethrows from [SecureGroupSession](x-source-tag://SecureGroupSession)
     @objc public func startGroupSession(with receiversCards: [Card],
+                                        sessionId: Data,
                                         using ratchetMessage: RatchetGroupMessage) throws -> SecureGroupSession {
         guard ratchetMessage.getType() == .groupInfo else {
             throw SecureChatError.invalidMessageType
+        }
+
+        guard ratchetMessage.getSessionId() == sessionId else {
+            throw SecureChatError.sessionIdMismatch
         }
 
         let privateKeyData = try self.crypto.exportPrivateKey(self.identityPrivateKey)
