@@ -214,7 +214,7 @@ import VirgilCrypto
     /// - Important: Should be called inside startInteraction/stopInteraction scope
     ///
     /// - Parameters:
-    ///   - date: date from which we found out that this key if orphaned
+    ///   - date: date from which we found out that this key is orphaned
     ///   - keyId: key id
     /// - Throws:
     ///   - `FileOneTimeKeysStorageError.keyNotFound`

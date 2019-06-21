@@ -83,7 +83,7 @@ import VirgilSDK
     /// Marks key as orphaned
     ///
     /// - Parameters:
-    ///   - date: date from which we found out that this key if orphaned
+    ///   - date: date from which we found out that this key is orphaned
     ///   - keyId: key id
     /// - Throws: Depends on implementation
     @objc func markKeyOrphaned(startingFrom date: Date, keyId: Data) throws
