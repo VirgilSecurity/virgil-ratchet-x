@@ -139,20 +139,23 @@ Click the “Destination” drop-down menu and select “Products Directory”. 
 
 Make sure that you have already registered at the [Virgil Dashboard][_dashboard] and created an E2EE V5 application.
 
-In Virgil every user has a **Private Key** and is represented with a **Virgil Card**, which contains a Public Key and user's identity.
+Besides from registering on your own server, your users must also be registered at Virgil Cloud. If they already are, you can skip this step and proceed to the next one.
 
-Using Identity Cards, we generate special Cards that have their own life-time:
-* **One-time Key (OTK)**
-* **Long-time Key (LTK)**
+At Virgil every user has a `Private Key` on their device and is represented with a `Virgil Card` which contains a `Public Key` and user's `identity`. `Virgil Card` is a synonym to `Identity Card` in context of Virgil Services, and has an unlimited life-time.
 
-For each session you can use new OTK and delete it after session is finished.
+In order to register your users at Virgil Cloud (i.e. create and publish their `Identity Cards`), you'll need to go through the following steps:
+- Set up your backend for generating JWT in order to provide your service and users with access to Virgil Cloud;
+- Set up you client side for authenticating users on Virgil Cloud;
+- Set up Cards Manager on your client side to generate and publish `Identity Cards` on Virgil Cards Service.
 
-To create user's Virgil Cards, you can use the following code from [this guide](https://developer.virgilsecurity.com/docs/how-to/public-key-management/v5/create-card).
+You can use [this guide](https://developer.virgilsecurity.com/docs/how-to/public-key-management/v5/create-card) for the steps described above (you don't need to install Virgil CDK and Virgil Crypto if you've already installed Virgil Ratchet SDK).
 
 
 ## Chat Example
 
-To begin communicating with PFS service, every user must run the initialization:
+### Initialize SDK
+
+To begin communicating with PFS service and establish secure session, each user must run the initialization. In order to do that, you need the Receiver's public key (identity card) from Virgil Cloud and Sender's private key from their local storage:
 
 ```swift
 import VirgilSDKRatchet
@@ -174,7 +177,16 @@ secureChat.rotateKeys().start { result in
 }
 ```
 
-Then Sender establishes a secure PFS conversation with Receiver, encrypts and sends the message:
+During the initialization process, using Identity Cards and `rotateKeys` method we generate special Keys that have their own life-time:
+
+* **One-time Key (OTK)** - expires each session (session life-time is determined on the client side by the Virgil Ratchet SDK) and is signed with the Identity Card. 
+* **Long-time Key (LTK)** - rotated periodically (on a daily or monthly basis depending on the application developer's security considerations) and is signed with the Identity Card.
+
+With the open session, which works in both directions, Sender and Receiver can continue PFS-encrypted communication. For each session you can use new OTK and delete it after session is finished.
+
+### Encrypt data
+
+After initializing Virgil Ratchet SDK, Sender establishes a secure PFS conversation with Receiver, encrypts and sends the message:
 
 ```swift
 import VirgilSDKRatchet
@@ -196,6 +208,8 @@ let ratchetMessage = try! session.encrypt(string: messageToEncrypt)
 let encryptedMessage = ratchetMessage.serialize()
 ```
 
+### Decrypt data
+
 Receiver decrypts the incoming message using the conversation he has just created:
 
 ```swift
@@ -216,7 +230,6 @@ if let existingSession = secureChat.existingSession(withParticpantIdentity: alic
 let decryptedMessage = try! session.decryptString(from: ratchetMessage)
 ```
 
-With the open session, which works in both directions, Sender and Receiver can continue PFS-encrypted communication.
 
 ## License
 
