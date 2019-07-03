@@ -235,63 +235,33 @@ let decryptedMessage = try! session.decryptString(from: ratchetMessage)
 In this section you'll find out how to build a group chat using the Virgil Ratchet SDK.
 
 ### Create Group Chat Ticket
-First of all, you have to create a new group session ticket by running the `startNewGroupSession` function. This ticket will be used by users to join to the group chat. Also, this function generates a session ID that is needed to start a group session.
+Let's assume Alice wants to start group chat with Bob and Carol. First of all, you have to create a new group session ticket by running the `startNewGroupSession` function. This ticket holds shared root key for further group encryption, therefore it should be encrypted and transmitted to other group participants. Every group chat should have unique 32-byte session identifier, we recommend to tie this identifier to your unique transport channel id. If your channel id is not 32-byte you can use SHA-256 to derive session id from it.
 
 ```Swift
-public func startNewGroupSession(sessionId: Data) throws -> RatchetGroupMessage {
-    let ticket = RatchetGroupTicket()
-    ticket.setRng(rng: self.crypto.rng)
+// Create transport channel according to your app logic and get session id from it
+let sessionId = Data(hexEncodedString: "7f4f96cedbbd192ddeb08fbf3a0f5db0da14310c287f630a551364c54864c7fb")!
 
-    guard sessionId.count == RatchetCommon.sessionIdLen else {
-       throw SecureChatError.invalidSessionIdLen
-    }
-
-    try ticket.setupTicketAsNew(sessionId: sessionId)
-
-    return ticket.getTicketMessage()
-}
-
+let ticket = try secureChat.startNewGroupSession(sessionId: sessionId)
 ```
 
 ### Start Group Chat Session
-Now, you have to start the group session by running the `startGroupSession` function. This function requires specifying the group chat session ID and the receivers' Virgil Cards.
+Now, you have to start the group session by running the `startGroupSession` function. This function requires specifying the group chat session ID, the receivers' Virgil Cards and ticket.
 
 ```Swift
-public func startGroupSession(with receiversCards: [Card],
-                                    sessionId: Data,
-                                    using ratchetMessage: RatchetGroupMessage) throws -> SecureGroupSession {
-    guard ratchetMessage.getType() == .groupInfo else {
-        throw SecureChatError.invalidMessageType
-    }
+let receiverCards = try cardManager.searchCards(["Bob", "Carol"]).startSync().getResult()
 
-    guard ratchetMessage.getSessionId() == sessionId else {
-        throw SecureChatError.sessionIdMismatch
-    }
-
-    let privateKeyData = try self.crypto.exportPrivateKey(self.identityPrivateKey)
-
-    guard let myId = Data(hexEncodedString: self.identityCard.identifier) else {
-        throw SecureChatError.invalidCardId
-    }
-
-    return try SecureGroupSession(crypto: self.crypto,
-                                  privateKeyData: privateKeyData,
-                                  myId: myId,
-                                  ratchetGroupMessage: ratchetMessage,
-                                  cards: receiversCards)
-}
+let groupSession = try secureChat.startGroupSession(with: receiverCards,
+                                                    sessionId: sessionId,
+                                                    using: ticket)
 ```
+
 ###  Store the Group Session
 The Ratchet SDK doesn't store and update the group chat session itself. That's why you need to use the `storeGroupSession` SDK function for storing the chat sessions.
 
 > Also, you need to use the store method for updating the existing session after operations that change the session's state (encrypt, decrypt, setParticipants, updateParticipants), therefore if the session already exists in storage, it will be overwritten
 
 ```swift
-func storeGroupSession(session: SecureGroupSession) throws {
-    Log.debug("Storing group session with id \(session.identifier.hexEncodedString())")
-
-    try self.groupSessionStorage.storeSession(session)
-}
+try secureChat.storeGroupSession(session: groupSession)
 ```
 
 ### Send the Group Ticket
@@ -300,31 +270,17 @@ Now, you have to provide your end-users with the group chat ticket.
 - First of all, let's serialize the ticket
 
 ```Swift
-public func serialize() -> Data {
-    return self.ratchetGroupSession.serialize()
-}
+let ticketData = ticket.serialize()
 ```
-- For security reasons, we can't send the unprotected ticket. Therefore, we have to encrypt the serialized ticket for the receivers using the encrypt method
+- For security reasons we can't send the unprotected ticket, because it contains unencrypted symmetric key. Therefore, we have to encrypt the serialized ticket for the receivers. The only proper secure way to do this, is to create Double Ratchet sessions with each of participants (or use existing ones) to send the ticket.
 
 ```Swift
-// prepare the serialized ticket
-let messageToEncrypt = "Hello, Bob!"
-let dataToEncrypt = messageToEncrypt.data(using: .utf8)!
+for card in receiverCards {
+    let session = secureChat.existingSession(withParticpantIdentity: card.identity)!
 
-// using the cardManager search for user cards in the Cards Service
-cardManager.searchCards(identity: "Bob").start { result in
-    switch result {
-    // Cards are obtained
-    case .success(let cards):
-        let bobRelevantCardsPublicKeys = cards
-            .map { $0.publicKey } as! [VirgilPublicKey]
+    let encryptedTicket = try session.encrypt(data: ticketData).serialize()
 
-        // encrypt the message with a public key
-        let encryptedData = try! crypto.Encrypt(dataToEncrypt, for: bobRelevantCardsPublicKeys)
-
-    // Error occurred
-    case .failure(let error): break
-    }
+    // Send ticket to receiver
 }
 ```
 - Now, use your application's business logic to share this encrypted ticket with the group chat participants.
@@ -335,115 +291,82 @@ Now, when we have the group chat created, other participants can join this chat 
 - First, we have to decrypt the encrypted ticket
 
 ```Swift
-// load a private key from the device storage
-let bobPrivateKeyEntry = try! privateKeyStorage.load(withName: "Bob")
-let bobPrivateKey = bobPrivateKeyEntry.privateKey as! VirgilPrivateKey
+let session = secureChat.existingSession(withParticpantIdentity: "Alice")!
 
-// decrypt with a private key
-let decryptedData = try! crypto.decryptThenVerify(encryptedData, with: bobPrivateKey)
-}
+let encryptedTicketMessage = try RatchetMessage.deserialize(input: encryptedTicket)
+
+let ticketData = session.decryptData(from: encryptedTicketMessage)
 ```
 
 - Then, use the `deserialize` function to deserialize the session ticket.
 
 ```Swift
-public init(data: Data, privateKeyData: Data, crypto: VirgilCrypto) throws {
-    self.crypto = crypto
-    let ratchetGroupSession = try RatchetGroupSession.deserialize(input: data)
-    ratchetGroupSession.setRng(rng: crypto.rng)
-    try ratchetGroupSession.setPrivateKey(myPrivateKey: privateKeyData)
-
-    self.ratchetGroupSession = ratchetGroupSession
-
-    super.init()
-}
+let ticket = try RatchetGroupMessage.deserialize(input: ticketData)
 ```
-- Join the group chat by running the `startGroupSession` function.
+- Join the group chat by running the `startGroupSession` function and store session.
 
 ```Swift
-public func startGroupSession(with receiversCards: [Card],
-                                    sessionId: Data,
-                                    using ratchetMessage: RatchetGroupMessage) throws -> SecureGroupSession {
-    guard ratchetMessage.getType() == .groupInfo else {
-        throw SecureChatError.invalidMessageType
-    }
+let receiverCards = try cardManager.searchCards(["Alice", "Bob"]).startSync().getResult()
 
-    guard ratchetMessage.getSessionId() == sessionId else {
-        throw SecureChatError.sessionIdMismatch
-    }
+let groupSession = try secureChat.startGroupSession(with: receiverCards,
+                                                    sessionId: sessionId,
+                                                    using: ticket)
 
-    let privateKeyData = try self.crypto.exportPrivateKey(self.identityPrivateKey)
-
-    guard let myId = Data(hexEncodedString: self.identityCard.identifier) else {
-        throw SecureChatError.invalidCardId
-    }
-
-    return try SecureGroupSession(crypto: self.crypto,
-                                  privateKeyData: privateKeyData,
-                                  myId: myId,
-                                  ratchetGroupMessage: ratchetMessage,
-                                  cards: receiversCards)
+try secureChat.storeGroupSession(session: groupSession)
 }
 ```
 
 ### Encrypt and decrypt messages
 
 #### Encrypting messages
-In order to encrypt messages for the group chat, use the `encrypt` function. This function allows you to encrypt data and strings.
+In order to encrypt messages for the group chat, use the `encrypt` function. This function allows you to encrypt data and strings. You still need to use message serialization to transfer encrypted messages between users. And do not forget to update session in storage as its state is changed on every encrypt operation!
 
 - Use the following code-snippets to encrypt strings:
 ```swift
-func encrypt(string: String) throws -> RatchetGroupMessage {
-    guard let data = string.data(using: .utf8) else {
-        throw SecureGroupSessionError.invalidUtf8String
-    }
+let message = try groupSession.encrypt(string: "Hello, Alice and Bob!")
 
-    return try self.encrypt(data: data)
-}
+try secureChat.storeGroupSession(session: groupSession)
+
+let messageData = message.serializel()
+// Send messageData to receivers
 ```
 
 - Use the following code-snippets to encrypt data:
 ```Swift
-public func encrypt(data: Data) throws -> RatchetGroupMessage {
-    return try self.queue.sync {
-        let msg = try self.ratchetGroupSession.encrypt(plainText: data)
+let message = try groupSession.encrypt(data: Data(hexEncodedString: "684b43aeb4c030229d27")!)
 
-        return msg
-    }
-}
+try secureChat.storeGroupSession(session: groupSession)
+
+let messageData = message.serializel()
+// Send messageData to receivers
 ```
-> Note: This operation changes the session state, so the session should be updated in storage.
 
 #### Decrypting Messages
-In order to decrypt messages, use the `decrypt` function. This function allows you to decrypt data and strings.
+In order to decrypt messages, use the `decrypt` function. This function allows you to decrypt data and strings. Do not forget to update session in storage as its state is changed on every encrypt operation!
 
 - Use the following code-snippets to decrypt strings:
 ```Swift
-public func decryptData(from message: RatchetGroupMessage, senderCardId: String) throws -> Data {
-    guard message.getType() == .regular else {
-        throw SecureGroupSessionError.invalidMessageType
-    }
+let message = RatchetGroupMessage.deserialize(input: messageData)
 
-    guard message.getSenderId().hexEncodedString() == senderCardId else {
-        throw SecureGroupSessionError.wrongSender
-    }
+let carolCard = receiversCard.first { $0.identity == "Carol" }!
 
-    return try self.queue.sync {
-        try self.ratchetGroupSession.decrypt(message: message)
-    }
-}
+let str = try secureChat.decryptData(from: message, senderCardId: carolCard.identifier)
+
+try secureChat.storeGroupSession(session: groupSession)
+
+print(str) // Prints "Hello, Alice and Bob!"
 ```
 - Use the following code-snippets to decrypt data:
 ```swift
-public func decryptString(from message: RatchetGroupMessage, senderCardId: String) throws -> String {
-    let data = try self.decryptData(from: message, senderCardId: senderCardId)
+let message = RatchetGroupMessage.deserialize(input: messageData)
 
-    guard let string = String(data: data, encoding: .utf8) else {
-        throw SecureGroupSessionError.invalidUtf8String
-    }
+let carolCard = receiversCard.first { $0.identity == "Carol" }!
 
-    return string
-}
+let data = try secureChat.decryptData(from: message, senderCardId: carolCard.identifier)
+
+try secureChat.storeGroupSession(session: groupSession)
+
+print(data.hexEncodedString()) // Prints "684b43aeb4c030229d27"
 ```
 
 
