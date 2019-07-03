@@ -6,7 +6,7 @@
 [![Platform](https://img.shields.io/cocoapods/p/VirgilSDKRatchet.svg?style=flat)](https://cocoapods.org/pods/VirgilSDKRatchet)
 [![GitHub license](https://img.shields.io/badge/license-BSD%203--Clause-blue.svg)](https://github.com/VirgilSecurity/virgil/blob/master/LICENSE)
 
-[Introduction](#introduction) | [SDK Features](#sdk-features) | [Installation](#installation) | [Register Users](#register-users) | [Chat Example](#chat-example) | [Support](#support)
+[Introduction](#introduction) | [SDK Features](#sdk-features) | [Installation](#installation) | [Register Users](#register-users) | [Peer-to-peer Chat Example](#peer-to-peer-chat-example) | [Group Chat Example](#group-chat-example) | [Support](#support)
 
 ## Introduction
 
@@ -151,9 +151,6 @@ In order to register your users at Virgil Cloud (i.e. create and publish their `
 You can use [this guide](https://developer.virgilsecurity.com/docs/how-to/public-key-management/v5/create-card) for the steps described above (you don't need to install Virgil CDK and Virgil Crypto if you've already installed Virgil Ratchet SDK).
 
 
-## Peer-to-peer Chat Example
-In this section you'll find out examples that can be used while building a peer-to-peer chat application using Virgil Ratchet SDK.
-
 ### Initialize SDK
 
 To begin communicating with PFS service and establish secure session, each user must run the initialization. In order to do that, you need the Receiver's public key (identity card) from Virgil Cloud and Sender's private key from their local storage:
@@ -185,9 +182,13 @@ During the initialization process, using Identity Cards and `rotateKeys` method 
 
 With the open session, which works in both directions, Sender and Receiver can continue PFS-encrypted communication. For each session you can use new OTK and delete it after session is finished.
 
-### Encrypt data
+## Peer-to-peer Chat Example
+In this section you'll find out on hoe to build a peer-to-peer chat using Virgil Ratchet SDK.
 
-After initializing Virgil Ratchet SDK, Sender establishes a secure PFS conversation with Receiver, encrypts and sends the message:
+### Send initial encrypted message
+Let's assume Alice wants to start communicating with Bob and wants to send the first message:
+- first of all, Alice has to create a new chat session by running the `startNewSessionAsSender` function and specify Bob's Identity Card
+- then, Alice encrypts the initial message using the `encrypt` SDK function
 
 ```swift
 import VirgilSDKRatchet
@@ -209,9 +210,19 @@ let ratchetMessage = try! session.encrypt(string: messageToEncrypt)
 let encryptedMessage = ratchetMessage.serialize()
 ```
 
-### Decrypt data
+As a result, Alice gets Session ID that has to be stored locally.  The Ratchet SDK doesn't store and update the group chat session itself. That's why you need to use the `storeSession` SDK function for storing the chat sessions.
 
-Receiver decrypts the incoming message using the conversation he has just created:
+> Also, you need to use the store method for updating the existing session after operations that change the session's state (encrypt, decrypt), therefore if the session already exists in storage, it will be overwritten
+
+```swift
+try secureChat.storeSession(session: Session)
+```
+
+### Decrypt the initial message
+
+After Alice generated and stored the chat session, Bob also has to:
+- start the chat session by running the `startNewSessionAsReceiver` function
+- decrypt the encrypted message using the using the `decrypt` SDK function
 
 ```swift
 import VirgilCryptoRatchet
@@ -230,6 +241,76 @@ if let existingSession = secureChat.existingSession(withParticpantIdentity: alic
 
 let decryptedMessage = try! session.decryptString(from: ratchetMessage)
 ```
+
+As a result, the SDK will retrieve the Session ID that has to be stored locally on Bob's device using the `storeSession` SDK function.
+
+> Also, you need to use the store method for updating the existing session after operations that change the session's state (encrypt, decrypt), therefore if the session already exists in storage, it will be overwritten
+
+```swift
+try secureChat.storeSession(session: Session)
+```
+
+### Encrypt and decrypt messages
+
+#### Encrypting messages
+In order to encrypt further messages, use the `encrypt` function. This function allows you to encrypt data and strings.
+
+> You also need to use message serialization to transfer encrypted messages between users. And do not forget to update session in storage as its state is changed on every encrypt operation!
+
+- Use the following code-snippets to encrypt strings:
+
+```swift
+let message = try groupSession.encrypt(string: "Hello, Bob!")
+
+try secureChat.storeSession(session: groupSession)
+
+let messageData = message.serializel()
+// Send messageData to receivers
+```
+
+- Use the following code-snippets to encrypt data:
+
+```Swift
+let message = try Session.encrypt(data: Data(hexEncodedString: "684b43aeb4c030229d27")!)
+
+try secureChat.storeSession(session: Session)
+
+let messageData = message.serializel()
+// Send messageData to receivers
+```
+
+#### Decrypting Messages
+In order to decrypt messages, use the `decrypt` function. This function allows you to decrypt data and strings.
+
+> You also need to use message serialization to transfer encrypted messages between users. And do not forget to update session in storage as its state is changed on every encrypt operation!
+
+- Use the following code-snippets to decrypt strings:
+
+```Swift
+let message = RatchetGroupMessage.deserialize(input: messageData)
+
+let bobCard = receiversCard.first { $0.identity == "Bob" }!
+
+let decryptedMessage = try! session.decryptString(from: ratchetMessage)
+
+try secureChat.storeSession(session: Session)
+
+print(str) // Prints "Hello, Bob!"
+```
+- Use the following code-snippets to decrypt data:
+
+```swift
+let message = RatchetGroupMessage.deserialize(input: messageData)
+
+let bobCard = receiverCard.first { $0.identity == "Bob" }!
+
+let decryptedMessage = try! session.decryptData(from: ratchetMessage)
+
+try secureChat.storeSession(session: Session)
+
+print(data.hexEncodedString()) // Prints "684b43aeb4c030229d27"
+```
+
 
 ## Group Chat Example
 In this section you'll find out how to build a group chat using the Virgil Ratchet SDK.
