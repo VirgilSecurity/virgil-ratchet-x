@@ -158,9 +158,8 @@ To begin communicating with PFS service and establish secure session, each user 
 ```swift
 import VirgilSDKRatchet
 
-let context = SecureChatContext(identity: card.identity,
-                                identityCard: card,
-                                identityPrivateKey: keyPair.privateKey,
+let context = SecureChatContext(identityCard: card,
+                                identityKeyPair: keyPair,
                                 accessTokenProvider: provider)
 
 let secureChat = try! SecureChat(context: context)
@@ -177,10 +176,10 @@ secureChat.rotateKeys().start { result in
 
 During the initialization process, using Identity Cards and `rotateKeys` method we generate special Keys that have their own life-time:
 
-* **One-time Key (OTK)** - expires each session (session life-time is determined on the client side by the Virgil Ratchet SDK) and is signed with the Identity Card.
-* **Long-time Key (LTK)** - rotated periodically (on a daily or monthly basis depending on the application developer's security considerations) and is signed with the Identity Card.
+* **One-time Key (OTK)** - each time someone wants to create session with use, one one-time key is obtained and discarded from the server.
+* **Long-time Key (LTK)** - rotated periodically (on a daily or monthly basis depending on the application developer's security considerations) and is signed with the Identity Private Key.
 
-With the open session, which works in both directions, Sender and Receiver can continue PFS-encrypted communication. For each session you can use new OTK and delete it after session is finished.
+With the open session, which works in both directions, Sender and Receiver can continue PFS-encrypted communication.
 
 ## Peer-to-peer Chat Example
 In this section you'll find out on hoe to build a peer-to-peer chat using Virgil Ratchet SDK.
@@ -242,12 +241,10 @@ if let existingSession = secureChat.existingSession(withParticpantIdentity: alic
 let decryptedMessage = try! session.decryptString(from: ratchetMessage)
 ```
 
-As a result, the SDK will retrieve the Session ID that has to be stored locally on Bob's device using the `storeSession` SDK function.
-
 > Also, you need to use the store method for updating the existing session after operations that change the session's state (encrypt, decrypt), therefore if the session already exists in storage, it will be overwritten
 
 ```swift
-try secureChat.storeSession(session: Session)
+try secureChat.storeSession(session: session)
 ```
 
 ### Encrypt and decrypt messages
@@ -260,53 +257,49 @@ In order to encrypt further messages, use the `encrypt` function. This function 
 - Use the following code-snippets to encrypt strings:
 
 ```swift
-let message = try groupSession.encrypt(string: "Hello, Bob!")
+let message = try session.encrypt(string: "Hello, Bob!")
 
-try secureChat.storeSession(session: groupSession)
+try secureChat.storeSession(session: session)
 
-let messageData = message.serializel()
-// Send messageData to receivers
+let messageData = message.serialize()
+// Send messageData to Bob
 ```
 
 - Use the following code-snippets to encrypt data:
 
 ```Swift
-let message = try Session.encrypt(data: Data(hexEncodedString: "684b43aeb4c030229d27")!)
+let message = try session.encrypt(data: Data(hexEncodedString: "684b43aeb4c030229d27")!)
 
-try secureChat.storeSession(session: Session)
+try secureChat.storeSession(session: session)
 
-let messageData = message.serializel()
-// Send messageData to receivers
+let messageData = message.serialize()
+// Send messageData to Bob
 ```
 
 #### Decrypting Messages
 In order to decrypt messages, use the `decrypt` function. This function allows you to decrypt data and strings.
 
-> You also need to use message serialization to transfer encrypted messages between users. And do not forget to update session in storage as its state is changed on every encrypt operation!
+> You also need to use message serialization to transfer encrypted messages between users. And do not forget to update session in storage as its state is changed on every decrypt operation!
 
 - Use the following code-snippets to decrypt strings:
 
 ```Swift
-let message = RatchetGroupMessage.deserialize(input: messageData)
-
-let bobCard = receiversCard.first { $0.identity == "Bob" }!
+let message = try RatchetGroupMessage.deserialize(input: messageData)
 
 let decryptedMessage = try! session.decryptString(from: ratchetMessage)
 
-try secureChat.storeSession(session: Session)
+try secureChat.storeSession(session: session)
 
 print(str) // Prints "Hello, Bob!"
 ```
 - Use the following code-snippets to decrypt data:
 
 ```swift
-let message = RatchetGroupMessage.deserialize(input: messageData)
+let message = try RatchetGroupMessage.deserialize(input: messageData)
 
-let bobCard = receiverCard.first { $0.identity == "Bob" }!
+let decryptedMessage = try session.decryptData(from: ratchetMessage)
 
-let decryptedMessage = try! session.decryptData(from: ratchetMessage)
-
-try secureChat.storeSession(session: Session)
+try secureChat.storeSession(session: session)
 
 print(data.hexEncodedString()) // Prints "684b43aeb4c030229d27"
 ```
