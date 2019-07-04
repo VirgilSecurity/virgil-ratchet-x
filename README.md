@@ -380,7 +380,6 @@ let groupSession = try! secureChat.startGroupSession(with: receiverCards,
                                                      using: ticket)
 
 try! secureChat.storeGroupSession(session: groupSession)
-}
 ```
 
 ### Encrypt and decrypt messages
