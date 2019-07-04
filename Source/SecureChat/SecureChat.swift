@@ -232,7 +232,7 @@ import VirgilCrypto
     ///
     /// - Parameter session: [SecureSession](x-source-tag://SecureSession) to store
     /// - Throws: Rethrows from `SessionStorage`
-    @objc open func storeSession(session: SecureSession) throws {
+    @objc open func storeSession(_ session: SecureSession) throws {
         Log.debug("Storing session with \(session.participantIdentity) name: \(session.name)")
 
         try self.sessionStorage.storeSession(session)
@@ -245,7 +245,7 @@ import VirgilCrypto
     ///
     /// - Parameter session: [SecureGroupSession](x-source-tag://SecureGroupSession) to store
     /// - Throws: Rethrows from `GroupSessionStorage`
-    @objc open func storeGroupSession(session: SecureGroupSession) throws {
+    @objc open func storeGroupSession(_ session: SecureGroupSession) throws {
         Log.debug("Storing group session with id \(session.identifier.hexEncodedString())")
 
         try self.groupSessionStorage.storeSession(session)
