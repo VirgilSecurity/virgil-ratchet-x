@@ -12,24 +12,24 @@
 
 <a href="https://developer.virgilsecurity.com/docs"><img width="230px" src="https://cdn.virgilsecurity.com/assets/images/github/logos/virgil-logo-red.png" align="left" hspace="10" vspace="6"></a> [Virgil Security](https://virgilsecurity.com) provides a set of services and open source libraries for adding security to any application.
 Virgil Security is presenting an implementation of the [Double Ratchet](https://signal.org/docs/specifications/doubleratchet/) algorithm, which is used by parties to exchange encrypted messages based on a shared secret key. The implementation includes:
-- **Virgil Perfect Forward Secrecy (PFS) service** – a standalone web-service that is dedicated to managing one-time keys and long-time keys that are based on their Identity Public Keys (public keys that are contained in user cards published on Virgil Cards service);
-- **Ratchet SDK** – interacts with PFS service for publishing and managing one-time keys and long-time keys and interacts with Virgil Cards service for retrieving user's indentity cards which the OTK and LTK are based on. The parties derive new keys for every Double Ratchet message so that previous private keys cannot be calculated from new ones. The parties that participate in the communication also send Diffie-Hellman public values attached to their messages. The results of Diffie-Hellman calculations are mixed into the derived keys so that the new private keys cannot be calculated from the previous ones.
+- **Virgil Perfect Forward Secrecy (PFS) service** – a standalone web-service designed to manage one-time keys and long-term keys that are based on their Identity Public Keys (public keys in user cards published on Virgil Cards service);
+- **Ratchet SDK** – interacts with PFS service in order to publish and manage one-time keys (OTK) and long-term keys (LTK) and interacts with Virgil Cards service to retrieve user's identity cards which the OTK and LTK are based on. The parties derive new keys for every Double Ratchet message so that previous private keys cannot be calculated from new ones. The parties that participate in the communication also send Diffie-Hellman public values attached to their messages. The results of Diffie-Hellman calculations are mixed into the derived keys so that the new private keys cannot be calculated from the previous ones.
 
-Following this, the parties will use the Double Ratchet SDK to initialize chat session and send and receive encrypted messages. And as a result, by adding Virgil Perfect Forward Secrecy (PFS) to your encrypted communication you prevent a possibly compromised user's long time private key (private key) from affecting the confidentiality of past communications.
+Following this, the parties will use the Double Ratchet SDK to initialize chat session, send and receive encrypted messages. And as a result by adding Virgil Perfect Forward Secrecy (PFS) to your encrypted communication, you prevent a possibly compromised user's long-term private key from affecting the confidentiality of past communications.
 
 
 # SDK Features
 - communicate with Virgil PFS Service
-- manage users' OTK and LTK keys
+- manage users' one-time keys (OTK) and long-term keys (LTK)
 - use Virgil [Crypto library][_virgil_crypto]
 
 ## Installation
 
-Virgil SDK Ratchet is provided as a set of frameworks. These frameworks are distributed via Carthage and CocoaPods. Also in this guide, you find one more package called VirgilCrypto (Virgil Crypto Library) that is used by the Virgil SDK Ratchet to perform cryptographic operations.
+Virgil SDK Ratchet is provided as a set of frameworks. These frameworks are distributed via Carthage and CocoaPods. Also in this guide, you find two more packages called VirgilCrypto (Virgil Crypto Library) that is used by the Virgil SDK Ratchet to perform cryptographic operations and VirgilSDK.
 
 All frameworks are available for:
 - iOS 9.0+
-- macOS 10.10+
+- macOS 10.11+
 - tvOS 9.0+
 - watchOS 2.0+
 
@@ -148,7 +148,7 @@ In order to register your users at Virgil Cloud (i.e. create and publish their `
 - Set up you client side for authenticating users on Virgil Cloud;
 - Set up Cards Manager on your client side to generate and publish `Identity Cards` on Virgil Cards Service.
 
-You can use [this guide](https://developer.virgilsecurity.com/docs/how-to/public-key-management/v5/create-card) for the steps described above (you don't need to install Virgil CDK and Virgil Crypto if you've already installed Virgil Ratchet SDK).
+You can use [this guide](https://developer.virgilsecurity.com/docs/how-to/public-key-management/v5/create-card) for the steps described above (you don't need to install Virgil SDK and Virgil Crypto if you've already installed Virgil Ratchet SDK).
 
 
 ### Initialize SDK
@@ -176,18 +176,17 @@ secureChat.rotateKeys().start { result in
 
 During the initialization process, using Identity Cards and `rotateKeys` method we generate special Keys that have their own life-time:
 
-* **One-time Key (OTK)** - each time someone wants to create session with use, one one-time key is obtained and discarded from the server.
-* **Long-time Key (LTK)** - rotated periodically (on a daily or monthly basis depending on the application developer's security considerations) and is signed with the Identity Private Key.
-
-With the open session, which works in both directions, Sender and Receiver can continue PFS-encrypted communication.
+* **One-time Key (OTK)** - each time someone wants to create session with user, single one-time key is obtained and discarded from the server.
+* **Long-term Key (LTK)** - rotated periodically (daily or monthly based on the application developer's security considerations) and is signed with the Identity Private Key.
 
 ## Peer-to-peer Chat Example
-In this section you'll find out on hoe to build a peer-to-peer chat using Virgil Ratchet SDK.
+In this section you'll find out how to build a peer-to-peer chat using Virgil Ratchet SDK.
 
 ### Send initial encrypted message
-Let's assume Alice wants to start communicating with Bob and wants to send the first message:
-- first of all, Alice has to create a new chat session by running the `startNewSessionAsSender` function and specify Bob's Identity Card
+Let's assume Alice wants to start communication with Bob and wants to send the first message:
+- first, Alice has to create a new chat session by running the `startNewSessionAsSender` function and specify Bob's Identity Card
 - then, Alice encrypts the initial message using the `encrypt` SDK function
+- finally, Alice has to store generated session locally. The Ratchet SDK doesn't store and update sessions itself. That's why you need to use the `storeSession` SDK function for storing the chat sessions.
 
 ```swift
 import VirgilSDKRatchet
@@ -195,27 +194,17 @@ import VirgilSDKRatchet
 // prepare a message
 let messageToEncrypt = "Hello, Bob!"
 
-let session: SecureSession
-
-if let existingSession = secureChat.existingSession(withParticpantIdentity: bobCard.identity) {
-    session = existingSession
-} else {
-    // start new session with recipient if session wasn't initialized yet
-    session = try! secureChat.startNewSessionAsSender(receiverCard: bobCard).startSync().getResult()
-}
+// start new secure session with Bob
+let session = try! secureChat.startNewSessionAsSender(receiverCard: bobCard).startSync().getResult()
 
 let ratchetMessage = try! session.encrypt(string: messageToEncrypt)
+
+try! secureChat.storeSession(session: session)
 
 let encryptedMessage = ratchetMessage.serialize()
 ```
 
-As a result, Alice gets Session ID that has to be stored locally.  The Ratchet SDK doesn't store and update the group chat session itself. That's why you need to use the `storeSession` SDK function for storing the chat sessions.
-
-> Also, you need to use the store method for updating the existing session after operations that change the session's state (encrypt, decrypt), therefore if the session already exists in storage, it will be overwritten
-
-```swift
-try secureChat.storeSession(session: Session)
-```
+**Important**: Also, you need to store session after operations that change the session's state (encrypt, decrypt), therefore if the session already exists in storage, it will be overwritten
 
 ### Decrypt the initial message
 
@@ -229,23 +218,14 @@ import VirgilSDKRatchet
 
 let ratchetMessage = try! RatchetMessage.deserialize(input: encryptedMessage)
 
-let session: SecureSession
-
-if let existingSession = secureChat.existingSession(withParticpantIdentity: aliceCard.identity) {
-    session = existingSession
-} else {
-    // start new session with sender if session wasn't initialized yet
-    session = try! secureChat.startNewSessionAsReceiver(senderCard: aliceCard, ratchetMessage: ratchetMessage)
-}
+let session = try! secureChat.startNewSessionAsReceiver(senderCard: aliceCard, ratchetMessage: ratchetMessage)
 
 let decryptedMessage = try! session.decryptString(from: ratchetMessage)
+
+try! secureChat.storeSession(session: session)
 ```
 
-> Also, you need to use the store method for updating the existing session after operations that change the session's state (encrypt, decrypt), therefore if the session already exists in storage, it will be overwritten
-
-```swift
-try secureChat.storeSession(session: session)
-```
+**Important**: Also, you need to store session after operations that change the session's state (encrypt, decrypt), therefore if the session already exists in storage, it will be overwritten
 
 ### Encrypt and decrypt messages
 
@@ -257,9 +237,11 @@ In order to encrypt further messages, use the `encrypt` function. This function 
 - Use the following code-snippets to encrypt strings:
 
 ```swift
-let message = try session.encrypt(string: "Hello, Bob!")
+let session = secureChat.existingSession(withParticpantIdentity: bobCard.identity)!
 
-try secureChat.storeSession(session: session)
+let message = try! session.encrypt(string: "Hello, Bob!")
+
+try! secureChat.storeSession(session: session)
 
 let messageData = message.serialize()
 // Send messageData to Bob
@@ -268,9 +250,11 @@ let messageData = message.serialize()
 - Use the following code-snippets to encrypt data:
 
 ```Swift
-let message = try session.encrypt(data: Data(hexEncodedString: "684b43aeb4c030229d27")!)
+let session = secureChat.existingSession(withParticpantIdentity: bobCard.identity)!
 
-try secureChat.storeSession(session: session)
+let message = try! session.encrypt(data: data)
+
+try! secureChat.storeSession(session: session)
 
 let messageData = message.serialize()
 // Send messageData to Bob
@@ -284,24 +268,24 @@ In order to decrypt messages, use the `decrypt` function. This function allows y
 - Use the following code-snippets to decrypt strings:
 
 ```Swift
-let message = try RatchetGroupMessage.deserialize(input: messageData)
+let session = secureChat.existingSession(withParticpantIdentity: aliceCard.identity)!
+
+let message = try! RatchetGroupMessage.deserialize(input: messageData)
 
 let decryptedMessage = try! session.decryptString(from: ratchetMessage)
 
-try secureChat.storeSession(session: session)
-
-print(str) // Prints "Hello, Bob!"
+try! secureChat.storeSession(session: session)
 ```
 - Use the following code-snippets to decrypt data:
 
 ```swift
-let message = try RatchetGroupMessage.deserialize(input: messageData)
+let session = secureChat.existingSession(withParticpantIdentity: aliceCard.identity)
 
-let decryptedMessage = try session.decryptData(from: ratchetMessage)
+let message = try! RatchetGroupMessage.deserialize(input: messageData)
 
-try secureChat.storeSession(session: session)
+let decryptedMessage = try! session.decryptData(from: ratchetMessage)
 
-print(data.hexEncodedString()) // Prints "684b43aeb4c030229d27"
+try! secureChat.storeSession(session: session)
 ```
 
 
@@ -309,50 +293,56 @@ print(data.hexEncodedString()) // Prints "684b43aeb4c030229d27"
 In this section you'll find out how to build a group chat using the Virgil Ratchet SDK.
 
 ### Create Group Chat Ticket
-Let's assume Alice wants to start group chat with Bob and Carol. First of all, you have to create a new group session ticket by running the `startNewGroupSession` function. This ticket holds shared root key for further group encryption, therefore it should be encrypted and transmitted to other group participants. Every group chat should have unique 32-byte session identifier, we recommend to tie this identifier to your unique transport channel id. If your channel id is not 32-byte you can use SHA-256 to derive session id from it.
+Let's assume Alice wants to start group chat with Bob and Carol. First of all, you have to create a new group session ticket by running the `startNewGroupSession` method. This ticket holds shared root key for further group encryption, therefore it should be encrypted and transmitted to other group participants. Every group chat should have unique 32-byte session identifier, we recommend to tie this identifier to your unique transport channel id. If your channel id is not 32-byte you can use SHA-256 to derive session id from it.
 
 ```Swift
 // Create transport channel according to your app logic and get session id from it
 let sessionId = Data(hexEncodedString: "7f4f96cedbbd192ddeb08fbf3a0f5db0da14310c287f630a551364c54864c7fb")!
 
-let ticket = try secureChat.startNewGroupSession(sessionId: sessionId)
+let ticket = try! secureChat.startNewGroupSession(sessionId: sessionId)
 ```
 
 ### Start Group Chat Session
 Now, you have to start the group session by running the `startGroupSession` function. This function requires specifying the group chat session ID, the receivers' Virgil Cards and ticket.
 
 ```Swift
-let receiverCards = try cardManager.searchCards(["Bob", "Carol"]).startSync().getResult()
+let receiverCards = try! cardManager.searchCards(["Bob", "Carol"]).startSync().getResult()
 
-let groupSession = try secureChat.startGroupSession(with: receiverCards,
-                                                    sessionId: sessionId,
-                                                    using: ticket)
+let groupSession = try! secureChat.startGroupSession(with: receiverCards,
+                                                     sessionId: sessionId,
+                                                     using: ticket)
 ```
 
 ###  Store the Group Session
 The Ratchet SDK doesn't store and update the group chat session itself. That's why you need to use the `storeGroupSession` SDK function for storing the chat sessions.
 
-> Also, you need to use the store method for updating the existing session after operations that change the session's state (encrypt, decrypt, setParticipants, updateParticipants), therefore if the session already exists in storage, it will be overwritten
+> Also, you need to store existing session after operations that change the session's state (encrypt, decrypt, setParticipants, updateParticipants), therefore if the session already exists in storage, it will be overwritten
 
 ```swift
-try secureChat.storeGroupSession(session: groupSession)
+try! secureChat.storeGroupSession(session: groupSession)
 ```
 
 ### Send the Group Ticket
-Now, you have to provide your end-users with the group chat ticket.
+Now, you have to provide the group chat ticket to other members.
 
 - First of all, let's serialize the ticket
 
 ```Swift
 let ticketData = ticket.serialize()
 ```
-- For security reasons we can't send the unprotected ticket, because it contains unencrypted symmetric key. Therefore, we have to encrypt the serialized ticket for the receivers. The only proper secure way to do this, is to create Double Ratchet sessions with each of participants (or use existing ones) to send the ticket.
+
+- For security reasons we can't send the unprotected ticket, because it contains unencrypted symmetric key. Therefore, we have to encrypt the serialized ticket for the receivers. The only proper secure way to do this, is to use peer-to-peer Double Ratchet sessions with each of participants to send the ticket.
 
 ```Swift
 for card in receiverCards {
-    let session = secureChat.existingSession(withParticpantIdentity: card.identity)!
+    guard let session = secureChat.existingSession(withParticpantIdentity: card.identity) else {
+        // If you don't have session, see Peer-to-peer Chat Example on how to create it as Sender.
+        return
+    }
 
-    let encryptedTicket = try session.encrypt(data: ticketData).serialize()
+    let encryptedTicket = try! session.encrypt(data: ticketData).serialize()
+    
+    try! secureChat.storeGroupSession(session: groupSession)
 
     // Send ticket to receiver
 }
@@ -365,9 +355,12 @@ Now, when we have the group chat created, other participants can join this chat 
 - First, we have to decrypt the encrypted ticket
 
 ```Swift
-let session = secureChat.existingSession(withParticpantIdentity: "Alice")!
+guard let session = secureChat.existingSession(withParticpantIdentity: "Alice") else {
+    // If you don't have session, see Peer-to-peer Chat Example on how to create it as Receiver.
+    return
+}
 
-let encryptedTicketMessage = try RatchetMessage.deserialize(input: encryptedTicket)
+let encryptedTicketMessage = try! RatchetMessage.deserialize(input: encryptedTicket)
 
 let ticketData = session.decryptData(from: encryptedTicketMessage)
 ```
@@ -375,18 +368,18 @@ let ticketData = session.decryptData(from: encryptedTicketMessage)
 - Then, use the `deserialize` function to deserialize the session ticket.
 
 ```Swift
-let ticket = try RatchetGroupMessage.deserialize(input: ticketData)
+let ticket = try! RatchetGroupMessage.deserialize(input: ticketData)
 ```
 - Join the group chat by running the `startGroupSession` function and store session.
 
 ```Swift
-let receiverCards = try cardManager.searchCards(["Alice", "Bob"]).startSync().getResult()
+let receiverCards = try! cardManager.searchCards(["Alice", "Bob"]).startSync().getResult()
 
-let groupSession = try secureChat.startGroupSession(with: receiverCards,
-                                                    sessionId: sessionId,
-                                                    using: ticket)
+let groupSession = try! secureChat.startGroupSession(with: receiverCards,
+                                                     sessionId: sessionId,
+                                                     using: ticket)
 
-try secureChat.storeGroupSession(session: groupSession)
+try! secureChat.storeGroupSession(session: groupSession)
 }
 ```
 
@@ -397,21 +390,21 @@ In order to encrypt messages for the group chat, use the `encrypt` function. Thi
 
 - Use the following code-snippets to encrypt strings:
 ```swift
-let message = try groupSession.encrypt(string: "Hello, Alice and Bob!")
+let message = try! groupSession.encrypt(string: "Hello, Alice and Bob!")
 
-try secureChat.storeGroupSession(session: groupSession)
+try! secureChat.storeGroupSession(session: groupSession)
 
-let messageData = message.serializel()
+let messageData = message.serialize()
 // Send messageData to receivers
 ```
 
 - Use the following code-snippets to encrypt data:
 ```Swift
-let message = try groupSession.encrypt(data: Data(hexEncodedString: "684b43aeb4c030229d27")!)
+let message = try! groupSession.encrypt(data: data)
 
-try secureChat.storeGroupSession(session: groupSession)
+try! secureChat.storeGroupSession(session: groupSession)
 
-let messageData = message.serializel()
+let messageData = message.serialize()
 // Send messageData to receivers
 ```
 
@@ -424,11 +417,9 @@ let message = RatchetGroupMessage.deserialize(input: messageData)
 
 let carolCard = receiversCard.first { $0.identity == "Carol" }!
 
-let str = try secureChat.decryptData(from: message, senderCardId: carolCard.identifier)
+let decryptedMessage = try! groupSession.decryptString(from: message, senderCardId: carolCard.identifier)
 
-try secureChat.storeGroupSession(session: groupSession)
-
-print(str) // Prints "Hello, Alice and Bob!"
+try! secureChat.storeGroupSession(session: groupSession)
 ```
 - Use the following code-snippets to decrypt data:
 ```swift
@@ -436,11 +427,9 @@ let message = RatchetGroupMessage.deserialize(input: messageData)
 
 let carolCard = receiversCard.first { $0.identity == "Carol" }!
 
-let data = try secureChat.decryptData(from: message, senderCardId: carolCard.identifier)
+let data = try! groupSession.decryptData(from: message, senderCardId: carolCard.identifier)
 
-try secureChat.storeGroupSession(session: groupSession)
-
-print(data.hexEncodedString()) // Prints "684b43aeb4c030229d27"
+try! groupSession.storeGroupSession(session: groupSession)
 ```
 
 
