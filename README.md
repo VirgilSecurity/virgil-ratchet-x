@@ -13,7 +13,7 @@
 <a href="https://developer.virgilsecurity.com/docs"><img width="230px" src="https://cdn.virgilsecurity.com/assets/images/github/logos/virgil-logo-red.png" align="left" hspace="10" vspace="6"></a> 
 [Virgil Security](https://virgilsecurity.com) provides a set of services and open source libraries for adding security to any application. If you're developing a chat application, you'll understand the need for a  high level of data protection to ensure confidentiality and data integrity. 
 
-You may have heard of our [e3kit](https://github.com/VirgilSecurity/virgil-e3kit-x) which offers a high level of end-to-end encription, but if you need maximum protection with your application, Virgil Security presents the Double Ratchet SDK – an implementation of the [Double Ratchet Algorithm](https://signal.org/docs/specifications/doubleratchet/). With the powerful tools in this SDK, you can protect encrypted data, even if user messages or a private key has been stolen. The Double Ratchet SDK not only assigns a private encryption key with each chat session, but also allows the developer to limit the lifecycle of these keys. In the event an active key is stolen, it will expire according to the predetermined life-cycle you had set in your application.  
+You may have heard of our [e3kit](https://github.com/VirgilSecurity/virgil-e3kit-x) which offers a high level of end-to-end encription, but if you need maximum protection with your application, Virgil Security presents the Double Ratchet SDK – an implementation of the [Double Ratchet Algorithm](https://signal.org/docs/specifications/doubleratchet/). With the powerful tools in this SDK, you can protect encrypted data, even if user messages or a private key has been stolen. The Double Ratchet SDK not only assigns a private encryption key with each chat session, but also allows the developer to limit the lifecycle of these keys. In the event an active key is stolen, it will expire according to the predetermined lifecycle you had set in your application.  
 
 Ratchet SDK interacts with the [PFS service](https://developer.virgilsecurity.com/docs/api-reference/pfs-service/v4) to publish and manage one-time keys (OTK), long-term keys (LTK), and interacts with Virgil Cards service to retrieve the user identity cards the OTK and LTK are based on. The Ratchet SDK issues chat participants new keys for every chat session. As a result new session keys cannot be used to compromise past session keys. 
 
@@ -211,7 +211,7 @@ let encryptedMessage = ratchetMessage.serialize()
 
 After Alice generates and stores the chat session, Bob also has to:
 - start the chat session by running the `startNewSessionAsReceiver` function
-- decrypt the encrypted message using the using the `decrypt` SDK function
+- decrypt the encrypted message using the `decrypt` SDK function
 
 ```swift
 import VirgilCryptoRatchet
@@ -291,7 +291,7 @@ try! secureChat.storeSession(session)
 
 
 ## Group Chat Example
-In this section you'll find out how to build a group chat using the Virgil Ratchet SDK.
+In this section, you'll find out how to build a group chat using the Virgil Ratchet SDK.
 
 ### Create Group Chat Ticket
 Let's assume Alice wants to start a group chat with Bob and Carol. First, create a new group session ticket by running the `startNewGroupSession` method. This ticket holds a shared root key for future group encryption. Therefore, it should be encrypted and then transmitted to other group participants. Every group chat should have a unique 32-byte session identifier. We recommend tying this identifier to your unique transport channel id. If your channel id is not 32-bytes you can use SHA-256 to derive a session id from it.
