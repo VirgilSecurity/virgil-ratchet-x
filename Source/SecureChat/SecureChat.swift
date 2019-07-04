@@ -91,9 +91,6 @@ import VirgilCrypto
 
 /// SecureChat. Class for rotating keys, starting and responding to conversation
 @objc(VSRSecureChat) open class SecureChat: NSObject {
-    /// Access token provider
-    @objc public let accessTokenProvider: AccessTokenProvider
-
     /// Identity private key
     @objc public let identityPrivateKey: VirgilPrivateKey
 
@@ -131,7 +128,7 @@ import VirgilCrypto
     ///   - Rethrows from `KeychainLongTermKeysStorage`
     @objc public convenience init(context: SecureChatContext) throws {
         let crypto = try VirgilCrypto()
-        let client = RatchetClient()
+        let client = RatchetClient(accessTokenProvider: context.accessTokenProvider)
 
         let params: KeychainStorageParams?
         if let appName = context.appName {
@@ -141,19 +138,20 @@ import VirgilCrypto
             params = nil
         }
 
+        let identityKeyPair = VirgilKeyPair(privateKey: context.identityPrivateKey, publicKey: context.identityCard.publicKey)
         let longTermKeysStorage = try KeychainLongTermKeysStorage(identity: context.identityCard.identifier,
                                                                   params: params)
         let oneTimeKeysStorage = FileOneTimeKeysStorage(identity: context.identityCard.identifier,
                                                         crypto: crypto,
-                                                        identityKeyPair: context.identityKeyPair)
+                                                        identityKeyPair: identityKeyPair)
         let sessionStorage = FileSessionStorage(identity: context.identityCard.identifier,
                                                 crypto: crypto,
-                                                identityKeyPair: context.identityKeyPair)
+                                                identityKeyPair: identityKeyPair)
         let groupSessionStorage = try FileGroupSessionStorage(identity: context.identityCard.identifier,
                                                               crypto: crypto,
-                                                              identityKeyPair: context.identityKeyPair)
+                                                              identityKeyPair: identityKeyPair)
         let keysRotator = KeysRotator(crypto: crypto,
-                                      identityPrivateKey: context.identityKeyPair.privateKey,
+                                      identityPrivateKey: context.identityPrivateKey,
                                       identityCardId: context.identityCard.identifier,
                                       orphanedOneTimeKeyTtl: context.orphanedOneTimeKeyTtl,
                                       longTermKeyTtl: context.longTermKeyTtl,
@@ -164,9 +162,8 @@ import VirgilCrypto
                                       client: client)
 
         self.init(crypto: crypto,
-                  identityPrivateKey: context.identityKeyPair.privateKey,
+                  identityPrivateKey: context.identityPrivateKey,
                   identityCard: context.identityCard,
-                  accessTokenProvider: context.accessTokenProvider,
                   client: client,
                   longTermKeysStorage: longTermKeysStorage,
                   oneTimeKeysStorage: oneTimeKeysStorage,
@@ -181,7 +178,6 @@ import VirgilCrypto
     ///   - crypto: VirgilCrypto instance
     ///   - identityPrivateKey: identity private key
     ///   - identityCard: Identity card
-    ///   - accessTokenProvider: access token provider
     ///   - client: client
     ///   - longTermKeysStorage: long-term keys storage
     ///   - oneTimeKeysStorage: one-time keys storage
@@ -191,7 +187,6 @@ import VirgilCrypto
     public init(crypto: VirgilCrypto,
                 identityPrivateKey: VirgilPrivateKey,
                 identityCard: Card,
-                accessTokenProvider: AccessTokenProvider,
                 client: RatchetClientProtocol,
                 longTermKeysStorage: LongTermKeysStorage,
                 oneTimeKeysStorage: OneTimeKeysStorage,
@@ -201,7 +196,6 @@ import VirgilCrypto
         self.crypto = crypto
         self.identityPrivateKey = identityPrivateKey
         self.identityCard = identityCard
-        self.accessTokenProvider = accessTokenProvider
         self.client = client
         self.longTermKeysStorage = longTermKeysStorage
         self.oneTimeKeysStorage = oneTimeKeysStorage
@@ -230,25 +224,7 @@ import VirgilCrypto
     public func rotateKeys() -> GenericOperation<RotationLog> {
         Log.debug("Keys rotation queued")
 
-        return CallbackOperation { _, completion in
-            Log.debug("Started keys rotation")
-
-            let tokenContext = TokenContext(service: "ratchet", operation: "rotate", forceReload: false)
-            let getTokenOperation = OperationUtils.makeGetTokenOperation(tokenContext: tokenContext,
-                                                                         accessTokenProvider: self.accessTokenProvider)
-            let rotateKeysOperation = self.keysRotator.rotateKeysOperation()
-
-            let completionOperation = OperationUtils.makeCompletionOperation(completion: completion)
-
-            rotateKeysOperation.addDependency(getTokenOperation)
-
-            completionOperation.addDependency(getTokenOperation)
-            completionOperation.addDependency(rotateKeysOperation)
-
-            let queue = OperationQueue()
-            let operations = [getTokenOperation, rotateKeysOperation, completionOperation]
-            queue.addOperations(operations, waitUntilFinished: false)
-        }
+        return self.keysRotator.rotateKeysOperation()
     }
 
     /// Stores session
@@ -360,22 +336,13 @@ import VirgilCrypto
                     throw SecureChatError.sessionAlreadyExists
                 }
 
-                guard let identityPublicKey = receiverCard.publicKey as? VirgilPublicKey else {
-                    throw SecureChatError.wrongIdentityPublicKeyCrypto
-                }
+                let identityPublicKey = receiverCard.publicKey
 
                 guard identityPublicKey.keyType == .ed25519 else {
                     throw SecureChatError.invalidKeyType
                 }
 
-                let tokenContext = TokenContext(service: "ratchet", operation: "get")
-                let getTokenOperation = OperationUtils.makeGetTokenOperation(
-                    tokenContext: tokenContext, accessTokenProvider: self.accessTokenProvider)
-
-                let token = try getTokenOperation.startSync().getResult()
-
-                let publicKeySet = try self.client.getPublicKeySet(forRecipientIdentity: receiverCard.identity,
-                                                                   token: token.stringRepresentation())
+                let publicKeySet = try self.client.getPublicKeySet(forRecipientIdentity: receiverCard.identity)
 
                 let session = try self.startNewSessionAsSender(identity: receiverCard.identity,
                                                                identityPublicKey: identityPublicKey,
@@ -423,24 +390,15 @@ import VirgilCrypto
                         throw SecureChatError.sessionAlreadyExists
                     }
 
-                    guard let identityPublicKey = card.publicKey as? VirgilPublicKey else {
-                        throw SecureChatError.wrongIdentityPublicKeyCrypto
-                    }
+                    let identityPublicKey = card.publicKey
 
                     guard identityPublicKey.keyType == .ed25519 else {
                         throw SecureChatError.invalidKeyType
                     }
                 }
 
-                let tokenContext = TokenContext(service: "ratchet", operation: "get")
-                let getTokenOperation = OperationUtils.makeGetTokenOperation(
-                    tokenContext: tokenContext, accessTokenProvider: self.accessTokenProvider)
-
-                let token = try getTokenOperation.startSync().getResult()
-
                 let publicKeysSets = try self.client
-                    .getMultiplePublicKeysSets(forRecipientsIdentities: receiverCards.map { $0.identity },
-                                               token: token.stringRepresentation())
+                    .getMultiplePublicKeysSets(forRecipientsIdentities: receiverCards.map { $0.identity })
 
                 guard publicKeysSets.count == receiverCards.count else {
                     throw SecureChatError.publicKeysSetsMismatch
@@ -455,9 +413,7 @@ import VirgilCrypto
                         throw SecureChatError.publicKeysSetsMismatch
                     }
 
-                    guard let identityPublicKey = card.publicKey as? VirgilPublicKey else {
-                        throw SecureChatError.wrongIdentityPublicKeyCrypto
-                    }
+                    let identityPublicKey = card.publicKey
 
                     let session = try self
                         .startNewSessionAsSender(identity: card.identity,
@@ -545,16 +501,9 @@ import VirgilCrypto
             }
 
             do {
-                let tokenContext = TokenContext(service: "ratchet", operation: "post")
-                let token = try OperationUtils.makeGetTokenOperation(tokenContext: tokenContext,
-                                                                     accessTokenProvider: self.accessTokenProvider)
-                    .startSync()
-                    .getResult()
-
                 try self.client.uploadPublicKeys(identityCardId: nil,
                                                  longTermPublicKey: nil,
-                                                 oneTimePublicKeys: [oneTimePublicKey],
-                                                 token: token.stringRepresentation())
+                                                 oneTimePublicKeys: [oneTimePublicKey])
 
                 Log.debug("Added one-time key successfully")
             }
@@ -588,9 +537,7 @@ import VirgilCrypto
             throw SecureChatError.sessionAlreadyExists
         }
 
-        guard let senderIdentityPublicKey = senderCard.publicKey as? VirgilPublicKey else {
-            throw SecureChatError.wrongIdentityPublicKeyCrypto
-        }
+        let senderIdentityPublicKey = senderCard.publicKey
 
         guard senderIdentityPublicKey.keyType == .ed25519 else {
             throw SecureChatError.invalidKeyType
@@ -741,14 +688,8 @@ import VirgilCrypto
             do {
                 Log.debug("Started reset")
 
-                let tokenContext = TokenContext(service: "ratchet", operation: "delete")
-                let tokenOp = OperationUtils.makeGetTokenOperation(
-                    tokenContext: tokenContext, accessTokenProvider: self.accessTokenProvider)
-
-                let token = try tokenOp.startSync().getResult()
-
                 Log.debug("Reseting cloud")
-                try self.client.deleteKeysEntity(token: token.stringRepresentation())
+                try self.client.deleteKeysEntity()
 
                 Log.debug("Reseting one-time keys")
                 try self.oneTimeKeysStorage.reset()

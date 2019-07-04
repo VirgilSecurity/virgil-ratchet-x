@@ -52,7 +52,7 @@ class KeysRotatorTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
     
-    private func compareCloudAndStorage(userStore: RamClient.UserStore, longTermStorage: RamLongTermKeysStorage, oneTimeStorage: RamOneTimeKeysStorage) -> Bool {
+    private func compareCloudAndStorage(userStore: RamClient.UserEntry, longTermStorage: RamLongTermKeysStorage, oneTimeStorage: RamOneTimeKeysStorage) -> Bool {
         
         do {
             if let longTermKey = userStore.longTermPublicKey?.publicKey {
@@ -80,7 +80,7 @@ class KeysRotatorTests: XCTestCase {
         return true
     }
     
-    private func initialize() throws -> (CardManager, AccessTokenProvider, JwtGenerator, String, VirgilPrivateKey, Card) {
+    private func initialize() throws -> (CardManager, String, VirgilPrivateKey, Card) {
         let testConfig = TestConfig.readFromBundle()
         
         let crypto = try! VirgilCrypto()
@@ -90,50 +90,43 @@ class KeysRotatorTests: XCTestCase {
         
         let privateKey = try! crypto.importPrivateKey(from: Data(base64Encoded: testConfig.ApiPrivateKey)!).privateKey
         
-        let generator = JwtGenerator(apiKey: privateKey, apiPublicKeyIdentifier: testConfig.ApiPublicKeyId, accessTokenSigner: VirgilAccessTokenSigner(virgilCrypto: crypto), appId: testConfig.AppId, ttl: 10050)
+        let generator = try! JwtGenerator(apiKey: privateKey, crypto: crypto, appId: testConfig.AppId, ttl: 10050)
         
         let tokenProvider = CachingJwtProvider(renewJwtCallback: { context, completion in
             completion(try! generator.generateToken(identity: identity), nil)
         })
         
-        let cardVerifier = VirgilCardVerifier(cardCrypto: VirgilCardCrypto(virgilCrypto: crypto))!
+        let cardVerifier = VirgilCardVerifier(crypto: crypto)!
         cardVerifier.verifyVirgilSignature = false
         
-        let cardManagerParams = CardManagerParams(cardCrypto: VirgilCardCrypto(virgilCrypto: crypto), accessTokenProvider: tokenProvider, cardVerifier: cardVerifier)
-        cardManagerParams.cardClient = CardClient(serviceUrl: URL(string: testConfig.ServiceURL)!)
+        let cardManagerParams = CardManagerParams(crypto: crypto, accessTokenProvider: tokenProvider, cardVerifier: cardVerifier)
+        cardManagerParams.cardClient = CardClient(accessTokenProvider: tokenProvider, serviceUrl: URL(string: testConfig.ServiceURL)!)
         
         let cardManager = CardManager(params: cardManagerParams)
         
-        let card = try cardManager.publishCard(privateKey: identityKeyPair.privateKey, publicKey: identityKeyPair.publicKey).startSync().getResult()
+        let card = try cardManager.publishCard(privateKey: identityKeyPair.privateKey, publicKey: identityKeyPair.publicKey, identity: identity).startSync().getResult()
         
-        return (cardManager, tokenProvider, generator, identity, identityKeyPair.privateKey, card)
+        return (cardManager, identity, identityKeyPair.privateKey, card)
     }
     
-    private func rotate(rotator: KeysRotator, tokenProvider: AccessTokenProvider) throws -> RotationLog {
-        let getTokenOperation = VirgilSDK.OperationUtils.makeGetTokenOperation(tokenContext: TokenContext(service: "ratchet", operation: "rotate"), accessTokenProvider: tokenProvider)
+    private func rotate(rotator: KeysRotator) throws -> RotationLog {
         
-        let rotateOperation = rotator.rotateKeysOperation()
-        rotateOperation.addDependency(getTokenOperation)
-        
-        let queue = OperationQueue()
-        queue.addOperations([getTokenOperation, rotateOperation], waitUntilFinished: true)
-        
-        return try rotateOperation.result!.getResult()
+        return try rotator.rotateKeysOperation().startSync().getResult()
     }
     
     func test1__rotate__empty_storage__should_create_keys() {
         do {
-            let (cardManager, tokenProvider, _, identity, privateKey, card) = try self.initialize()
+            let (cardManager, identity, privateKey, card) = try self.initialize()
             
             let numberOfOneTimeKeys = 5
             
             let fakeLongTermKeysStorage = RamLongTermKeysStorage(db: [:])
             let fakeOneTimeKeysStorage = RamOneTimeKeysStorage(db: [:])
-            let fakeClient = RamClient(cardManager: cardManager)
+            let fakeClient = RamClient(identity: identity, storage: RamClient.Storage(), cardManager: cardManager)
             
             let rotator = KeysRotator(crypto: crypto, identityPrivateKey: privateKey, identityCardId: card.identifier, orphanedOneTimeKeyTtl: 100, longTermKeyTtl: 100, outdatedLongTermKeyTtl: 100, desiredNumberOfOneTimeKeys: numberOfOneTimeKeys, longTermKeysStorage: fakeLongTermKeysStorage, oneTimeKeysStorage: fakeOneTimeKeysStorage, client: fakeClient)
             
-            let log = try self.rotate(rotator: rotator, tokenProvider: tokenProvider)
+            let log = try self.rotate(rotator: rotator)
             
             XCTAssert(log.longTermKeysRelevant == 1)
             XCTAssert(log.longTermKeysAdded == 1)
@@ -149,9 +142,9 @@ class KeysRotatorTests: XCTestCase {
             
             XCTAssert(fakeOneTimeKeysStorage.db.count == numberOfOneTimeKeys)
             XCTAssert(fakeLongTermKeysStorage.db.count == 1)
-            XCTAssert(fakeClient.users.count == 1)
+            XCTAssert(fakeClient.storage.users.count == 1)
             
-            let user = fakeClient.users.first!
+            let user = fakeClient.storage.users.first!
             XCTAssert(user.key == identity)
             
             XCTAssert(self.compareCloudAndStorage(userStore: user.value, longTermStorage: fakeLongTermKeysStorage, oneTimeStorage: fakeOneTimeKeysStorage))
@@ -163,21 +156,21 @@ class KeysRotatorTests: XCTestCase {
     
     func test2__rotate__old_long_term_key__should_recreate_key() {
         do {
-            let (cardManager, tokenProvider, _, identity, privateKey, card) = try self.initialize()
+            let (cardManager, identity, privateKey, card) = try self.initialize()
             
             let numberOfOneTimeKeys = 5
             
             let fakeLongTermKeysStorage = RamLongTermKeysStorage(db: [:])
             let fakeOneTimeKeysStorage = RamOneTimeKeysStorage(db: [:])
-            let fakeClient = RamClient(cardManager: cardManager)
+            let fakeClient = RamClient(identity: identity, storage: RamClient.Storage(), cardManager: cardManager)
             
             let rotator = KeysRotator(crypto: crypto, identityPrivateKey: privateKey, identityCardId: card.identifier, orphanedOneTimeKeyTtl: 100, longTermKeyTtl: 5, outdatedLongTermKeyTtl: 2, desiredNumberOfOneTimeKeys: numberOfOneTimeKeys, longTermKeysStorage: fakeLongTermKeysStorage, oneTimeKeysStorage: fakeOneTimeKeysStorage, client: fakeClient)
             
-            _ = try self.rotate(rotator: rotator, tokenProvider: tokenProvider)
+            _ = try self.rotate(rotator: rotator)
             
             sleep(6)
             
-            let log1 = try self.rotate(rotator: rotator, tokenProvider: tokenProvider)
+            let log1 = try self.rotate(rotator: rotator)
             
             XCTAssert(log1.longTermKeysRelevant == 1)
             XCTAssert(log1.longTermKeysAdded == 1)
@@ -187,16 +180,16 @@ class KeysRotatorTests: XCTestCase {
             
             XCTAssert(fakeOneTimeKeysStorage.db.count == numberOfOneTimeKeys)
             XCTAssert(fakeLongTermKeysStorage.db.count == 2)
-            XCTAssert(fakeClient.users.count == 1)
+            XCTAssert(fakeClient.storage.users.count == 1)
             
-            let user = fakeClient.users.first!
+            let user = fakeClient.storage.users.first!
             XCTAssert(user.key == identity)
             
             XCTAssert(self.compareCloudAndStorage(userStore: user.value, longTermStorage: fakeLongTermKeysStorage, oneTimeStorage: fakeOneTimeKeysStorage))
             
             sleep(2)
             
-            let log2 = try self.rotate(rotator: rotator, tokenProvider: tokenProvider)
+            let log2 = try self.rotate(rotator: rotator)
             
             XCTAssert(log2.longTermKeysRelevant == 1)
             XCTAssert(log2.longTermKeysAdded == 0)
@@ -206,7 +199,7 @@ class KeysRotatorTests: XCTestCase {
             
             XCTAssert(fakeOneTimeKeysStorage.db.count == numberOfOneTimeKeys)
             XCTAssert(fakeLongTermKeysStorage.db.count == 1)
-            XCTAssert(fakeClient.users.count == 1)
+            XCTAssert(fakeClient.storage.users.count == 1)
             
             XCTAssert(self.compareCloudAndStorage(userStore: user.value, longTermStorage: fakeLongTermKeysStorage, oneTimeStorage: fakeOneTimeKeysStorage))
         }
@@ -217,23 +210,21 @@ class KeysRotatorTests: XCTestCase {
     
     func test3__rotate__used_one_time_key___should_recreate_key() {
         do {
-            let (cardManager, tokenProvider, generator, identity, privateKey, card) = try self.initialize()
+            let (cardManager, identity, privateKey, card) = try self.initialize()
             
             let numberOfOneTimeKeys = 5
             
             let fakeLongTermKeysStorage = RamLongTermKeysStorage(db: [:])
             let fakeOneTimeKeysStorage = RamOneTimeKeysStorage(db: [:])
-            let fakeClient = RamClient(cardManager: cardManager)
+            let fakeClient = RamClient(identity: identity, storage: RamClient.Storage(), cardManager: cardManager)
             
             let rotator = KeysRotator(crypto: crypto, identityPrivateKey: privateKey, identityCardId: card.identifier, orphanedOneTimeKeyTtl: 5, longTermKeyTtl: 100, outdatedLongTermKeyTtl: 100, desiredNumberOfOneTimeKeys: numberOfOneTimeKeys, longTermKeysStorage: fakeLongTermKeysStorage, oneTimeKeysStorage: fakeOneTimeKeysStorage, client: fakeClient)
             
-            _ = try self.rotate(rotator: rotator, tokenProvider: tokenProvider)
+            _ = try self.rotate(rotator: rotator)
             
-            let token = try generator.generateToken(identity: identity)
+            _ = try fakeClient.getPublicKeySet(forRecipientIdentity: identity)
             
-            _ = try fakeClient.getPublicKeySet(forRecipientIdentity: token.identity(), token: token.stringRepresentation())
-            
-            let log1 = try self.rotate(rotator: rotator, tokenProvider: tokenProvider)
+            let log1 = try self.rotate(rotator: rotator)
             
             XCTAssert(log1.oneTimeKeysRelevant == numberOfOneTimeKeys)
             XCTAssert(log1.oneTimeKeysAdded == 1)
@@ -246,7 +237,7 @@ class KeysRotatorTests: XCTestCase {
             
             sleep(6)
             
-            let log2 = try self.rotate(rotator: rotator, tokenProvider: tokenProvider)
+            let log2 = try self.rotate(rotator: rotator)
             
             XCTAssert(log2.oneTimeKeysRelevant == numberOfOneTimeKeys)
             XCTAssert(log2.oneTimeKeysAdded == 0)
@@ -256,9 +247,9 @@ class KeysRotatorTests: XCTestCase {
             
             XCTAssert(fakeOneTimeKeysStorage.db.count == numberOfOneTimeKeys)
             XCTAssert(fakeLongTermKeysStorage.db.count == 1)
-            XCTAssert(fakeClient.users.count == 1)
+            XCTAssert(fakeClient.storage.users.count == 1)
             
-            let user = fakeClient.users.first!
+            let user = fakeClient.storage.users.first!
             XCTAssert(user.key == identity)
             
             XCTAssert(self.compareCloudAndStorage(userStore: user.value, longTermStorage: fakeLongTermKeysStorage, oneTimeStorage: fakeOneTimeKeysStorage))

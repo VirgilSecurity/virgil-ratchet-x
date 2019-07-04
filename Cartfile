@@ -1,2 +1,1 @@
-github "VirgilSecurity/virgil-sdk-x" ~> 5.7
-github "VirgilSecurity/virgil-crypto-x" "develop"
+github "VirgilSecurity/virgil-sdk-x" "develop-v6"

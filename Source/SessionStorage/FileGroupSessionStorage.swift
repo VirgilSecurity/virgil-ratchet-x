@@ -36,6 +36,7 @@
 
 import Foundation
 import VirgilCrypto
+import VirgilSDK
 
 /// FileGroupSessionStorage using files encrypted files
 /// This class is thread-safe
@@ -52,8 +53,8 @@ import VirgilCrypto
     ///   - crypto: VirgilCrypto that will be forwarded to [SecureGroupSession](x-source-tag://SecureGroupSession)
     ///   - identityKeyPair: Key pair to encrypt session
     @objc public init(identity: String, crypto: VirgilCrypto, identityKeyPair: VirgilKeyPair) throws {
-        let credentials = FileSystem.Credentials(crypto: crypto, keyPair: identityKeyPair)
-        self.fileSystem = FileSystem(userIdentifier: identity, pathComponents: ["GROUPS"], credentials: credentials)
+        let credentials = FileSystemCredentials(crypto: crypto, keyPair: identityKeyPair)
+        self.fileSystem = FileSystem(prefix: "VIRGIL-RATCHET", userIdentifier: identity, pathComponents: ["GROUPS"], credentials: credentials)
         self.crypto = crypto
         self.privateKeyData = try crypto.exportPrivateKey(identityKeyPair.privateKey)
 

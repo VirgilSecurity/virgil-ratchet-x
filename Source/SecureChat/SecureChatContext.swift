@@ -44,8 +44,8 @@ import VirgilSDK
     /// User's identity card id
     @objc public let identityCard: Card
 
-    /// User's identity key pair (corresponding to public key in identityCard)
-    @objc public let identityKeyPair: VirgilKeyPair
+    /// User's identity private key (corresponding to public key in identityCard)
+    @objc public let identityPrivateKey: VirgilPrivateKey
 
     /// Access token provider
     @objc public let accessTokenProvider: AccessTokenProvider
@@ -69,13 +69,13 @@ import VirgilSDK
     ///
     /// - Parameters:
     ///   - identityCard: user's identity card
-    ///   - identityKeyPair: user's identity key pair (corresponding to public key in identityCard)
+    ///   - identityPrivateKey: user's identity private key (corresponding to public key in identityCard)
     ///   - accessTokenProvider: access token provider
     @objc public init(identityCard: Card,
-                      identityKeyPair: VirgilKeyPair,
+                      identityPrivateKey: VirgilPrivateKey,
                       accessTokenProvider: AccessTokenProvider) {
         self.identityCard = identityCard
-        self.identityKeyPair = identityKeyPair
+        self.identityPrivateKey = identityPrivateKey
         self.accessTokenProvider = accessTokenProvider
 
         super.init()

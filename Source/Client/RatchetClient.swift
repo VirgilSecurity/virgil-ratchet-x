@@ -58,30 +58,45 @@ import VirgilSDK
     /// Default URL for service
     @objc public static let defaultURL = URL(string: "https://api.virgilsecurity.com")!
     // swiftlint:enable force_unwrapping
+    
+    internal let retryConfig: ExpBackoffRetry.Config
 
     /// Initializes a new `RatchetClient` instance
     ///
     /// - Parameters:
+    ///   - accessTokenProvider: Access token provider
     ///   - serviceUrl: URL of service client will use
     ///   - connection: custom HTTPConnection
-    override public init(serviceUrl: URL = RatchetClient.defaultURL, connection: HttpConnectionProtocol) {
-        super.init(serviceUrl: serviceUrl, connection: connection)
-    }
-
-    /// Initializes a new `RatchetClient` instance
-    @objc public convenience init() {
-        self.init(serviceUrl: RatchetClient.defaultURL)
-    }
-
-    /// Initializes a new `RatchetClient` instance
-    ///
-    /// - Parameter serviceUrl: URL of service client will use
-    @objc public convenience init(serviceUrl: URL) {
+    public init(accessTokenProvider: AccessTokenProvider,
+                         serviceUrl: URL = RatchetClient.defaultURL,
+                         connection: HttpConnectionProtocol? = nil,
+                         retryConfig: ExpBackoffRetry.Config) {
         let version = VersionUtils.getVersion(bundleIdentitifer: "com.virgilsecurity.VirgilSDKRatchet")
-        let adapter = VirgilAgentAdapter(product: "ratchet",
-                                         version: version)
-        let connection = HttpConnection(adapters: [adapter])
+        
+        let connection = connection ?? HttpConnection(adapters: [VirgilAgentAdapter(product: "sdk", version: version)])
+        
+        self.retryConfig = retryConfig
+        
+        super.init(accessTokenProvider: accessTokenProvider,
+                   serviceUrl: serviceUrl,
+                   connection: connection)
+    }
 
-        self.init(serviceUrl: serviceUrl, connection: connection)
+    /// Initializes new `RatchetClient` instance
+    ///
+    /// - Parameter accessTokenProvider: Access Token Provider
+    @objc public convenience init(accessTokenProvider: AccessTokenProvider) {
+        self.init(accessTokenProvider: accessTokenProvider, serviceUrl: RatchetClient.defaultURL)
+    }
+    
+    /// Initializes new `RatchetClient` instance
+    ///
+    /// - Parameters:
+    ///   - accessTokenProvider: Access Token Provider
+    ///   - serviceUrl: service URL
+    @objc public convenience init(accessTokenProvider: AccessTokenProvider, serviceUrl: URL) {
+        self.init(accessTokenProvider: accessTokenProvider,
+                  serviceUrl: serviceUrl,
+                  retryConfig: ExpBackoffRetry.Config())
     }
 }

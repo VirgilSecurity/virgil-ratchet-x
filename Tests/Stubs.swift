@@ -176,36 +176,39 @@ class RamOneTimeKeysStorage: OneTimeKeysStorage {
 }
 
 class RamClient: RatchetClientProtocol {
-    func getMultiplePublicKeysSets(forRecipientsIdentities identities: [String], token: String) throws -> [IdentityPublicKeySet] {
+    func getMultiplePublicKeysSets(forRecipientsIdentities identities: [String]) throws -> [IdentityPublicKeySet] {
         throw NSError(domain: "Stub", code: -1, userInfo: nil)
     }
     
-    struct UserStore {
+    struct UserEntry {
         var identityPublicKey: (VirgilPublicKey, Data)?
         var longTermPublicKey: SignedPublicKey?
         var oneTimePublicKeys: Set<Data> = []
     }
     
+    class Storage {
+        var users: [String: UserEntry] = [:]
+    }
+    
     private let keyId = RatchetKeyId()
     private let cardManager: CardManager
     private let crypto = try! VirgilCrypto()
-    var users: [String: UserStore] = [:]
+    private let identity: String
+    let storage: Storage
     
-    init(cardManager: CardManager) {
+    init(identity: String, storage: Storage, cardManager: CardManager) {
+        self.identity = identity
         self.cardManager = cardManager
+        self.storage = storage
     }
     
-    func uploadPublicKeys(identityCardId: String?, longTermPublicKey: SignedPublicKey?, oneTimePublicKeys: [Data], token: String) throws {
-        guard let jwt = try? Jwt(stringRepresentation: token) else {
-            throw NSError(domain: "Stub", code: -1, userInfo: nil)
-        }
-        
-        var userStore = self.users[jwt.identity()] ?? UserStore()
+    func uploadPublicKeys(identityCardId: String?, longTermPublicKey: SignedPublicKey?, oneTimePublicKeys: [Data]) throws {
+        var userStore = self.storage.users[self.identity] ?? UserEntry()
         
         let publicKey: VirgilPublicKey
         if let identityCardId = identityCardId {
             let card = try self.cardManager.getCard(withId: identityCardId).startSync().getResult()
-            publicKey = card.publicKey as! VirgilPublicKey
+            publicKey = card.publicKey
             userStore.identityPublicKey = (publicKey, try self.crypto.exportPublicKey(publicKey))
         }
         else {
@@ -239,15 +242,11 @@ class RamClient: RatchetClientProtocol {
             userStore.oneTimePublicKeys.formUnion(newKeysSet)
         }
         
-        self.users[jwt.identity()] = userStore
+        self.storage.users[self.identity] = userStore
     }
     
-    func validatePublicKeys(longTermKeyId: Data?, oneTimeKeysIds: [Data], token: String) throws -> ValidatePublicKeysResponse {
-        guard let jwt = try? Jwt(stringRepresentation: token) else {
-            throw NSError(domain: "Stub", code: -1, userInfo: nil)
-        }
-        
-        let userStore = self.users[jwt.identity()] ?? UserStore()
+    func validatePublicKeys(longTermKeyId: Data?, oneTimeKeysIds: [Data]) throws -> ValidatePublicKeysResponse {
+        let userStore = self.storage.users[self.identity] ?? UserEntry()
         
         let usedLongTermKeyId: Data?
         
@@ -265,12 +264,8 @@ class RamClient: RatchetClientProtocol {
         return ValidatePublicKeysResponse(usedLongTermKeyId: usedLongTermKeyId, usedOneTimeKeysIds: usedOneTimeKeysIds)
     }
     
-    func getPublicKeySet(forRecipientIdentity identity: String, token: String) throws -> PublicKeySet {
-        guard let _ = try? Jwt(stringRepresentation: token) else {
-            throw NSError(domain: "Stub", code: -1, userInfo: nil)
-        }
-        
-        var userStore = self.users[identity] ?? UserStore()
+    func getPublicKeySet(forRecipientIdentity identity: String) throws -> PublicKeySet {
+        var userStore = self.storage.users[identity] ?? UserEntry()
         
         guard let identityPublicKey = userStore.identityPublicKey?.1,
             let longTermPublicKey = userStore.longTermPublicKey else {
@@ -282,7 +277,7 @@ class RamClient: RatchetClientProtocol {
             oneTimePublicKey = randomOneTimePublicKey
             userStore.oneTimePublicKeys.remove(randomOneTimePublicKey)
             
-            self.users[identity] = userStore
+            self.storage.users[identity] = userStore
         }
         else {
             oneTimePublicKey = nil
@@ -291,8 +286,8 @@ class RamClient: RatchetClientProtocol {
         return PublicKeySet(identityPublicKey: identityPublicKey, longTermPublicKey: longTermPublicKey, oneTimePublicKey: oneTimePublicKey)
     }
     
-    func deleteKeysEntity(token: String) throws {
-        self.users = [:]
+    func deleteKeysEntity() throws {
+        self.storage.users = [:]
     }
 }
 
@@ -305,14 +300,14 @@ class FakeKeysRotator: KeysRotatorProtocol {
 }
 
 class RamCardClient: CardClientProtocol {
-    func revokeCard(withId cardId: String, token: String) throws {
+    func revokeCard(withId cardId: String) throws {
         throw NSError(domain: "Stub", code: -1, userInfo: nil)
     }
     
     let crypto = try! VirgilCrypto()
     private var cards: [String: RawSignedModel] = [:]
     
-    func getCard(withId cardId: String, token: String) throws -> GetCardResponse {
+    func getCard(withId cardId: String) throws -> GetCardResponse {
         if let model = self.cards[cardId] {
             return GetCardResponse(rawCard: model, isOutdated: false)
         }
@@ -320,7 +315,7 @@ class RamCardClient: CardClientProtocol {
         throw NSError(domain: "Stub", code: -1, userInfo: nil)
     }
     
-    func publishCard(model: RawSignedModel, token: String) throws -> RawSignedModel {
+    func publishCard(model: RawSignedModel) throws -> RawSignedModel {
         let cardId = self.crypto.computeHash(for: model.contentSnapshot, using: .sha512).subdata(in: 0..<32).hexEncodedString()
         
         self.cards[cardId] = model
@@ -328,11 +323,11 @@ class RamCardClient: CardClientProtocol {
         return model
     }
     
-    func searchCards(identity: String, token: String) throws -> [RawSignedModel] {
+    func searchCards(identity: String) throws -> [RawSignedModel] {
         throw NSError(domain: "Stub", code: -1, userInfo: nil)
     }
     
-    func searchCards(identities: [String], token: String) throws -> [RawSignedModel] {
+    func searchCards(identities: [String]) throws -> [RawSignedModel] {
         throw NSError(domain: "Stub", code: -1, userInfo: nil)
     }
 }

@@ -58,10 +58,8 @@ class IntegrationGroupTests: XCTestCase {
         let crypto = try! VirgilCrypto()
         self.crypto = crypto
         
-        let cardVerifier = VirgilCardVerifier(cardCrypto: VirgilCardCrypto(virgilCrypto: crypto))!
+        let cardVerifier = VirgilCardVerifier(crypto: crypto)!
         cardVerifier.verifyVirgilSignature = false
-        
-        let client = RatchetClient(serviceUrl: URL(string: testConfig.ServiceURL)!)
         
         var cards = [Card]()
         var chats = [SecureChat]()
@@ -72,17 +70,19 @@ class IntegrationGroupTests: XCTestCase {
             let tokenProvider = CachingJwtProvider(renewJwtCallback: { context, completion in
                 let privateKey = try! crypto.importPrivateKey(from: Data(base64Encoded: testConfig.ApiPrivateKey)!).privateKey
                 
-                let generator = JwtGenerator(apiKey: privateKey, apiPublicKeyIdentifier: testConfig.ApiPublicKeyId, accessTokenSigner: VirgilAccessTokenSigner(virgilCrypto: crypto), appId: testConfig.AppId, ttl: 10050)
+                let generator = try! JwtGenerator(apiKey: privateKey, crypto: crypto, appId: testConfig.AppId, ttl: 10050)
                 
                 completion(try! generator.generateToken(identity: identity), nil)
             })
             
-            let cardManagerParams = CardManagerParams(cardCrypto: VirgilCardCrypto(virgilCrypto: crypto), accessTokenProvider: tokenProvider, cardVerifier: cardVerifier)
-            cardManagerParams.cardClient = CardClient(serviceUrl: URL(string: testConfig.ServiceURL)!)
+            let cardManagerParams = CardManagerParams(crypto: crypto, accessTokenProvider: tokenProvider, cardVerifier: cardVerifier)
+            cardManagerParams.cardClient = CardClient(accessTokenProvider: tokenProvider, serviceUrl: URL(string: testConfig.ServiceURL)!)
+            
+            let client = RatchetClient(accessTokenProvider: tokenProvider, serviceUrl: URL(string: testConfig.ServiceURL)!)
             
             let cardManager = CardManager(params: cardManagerParams)
             
-            let card = try cardManager.publishCard(privateKey: keyPair.privateKey, publicKey: keyPair.publicKey).startSync().getResult()
+            let card = try cardManager.publishCard(privateKey: keyPair.privateKey, publicKey: keyPair.publicKey, identity: identity).startSync().getResult()
             
             let params = try KeychainStorageParams.makeKeychainStorageParams(appName: "test")
             let longTermKeysStorage = try KeychainLongTermKeysStorage(identity: identity, params: params)
@@ -93,7 +93,6 @@ class IntegrationGroupTests: XCTestCase {
             let secureChat = SecureChat(crypto: crypto,
                                         identityPrivateKey: keyPair.privateKey,
                                         identityCard: card,
-                                        accessTokenProvider: tokenProvider,
                                         client: client,
                                         longTermKeysStorage: longTermKeysStorage,
                                         oneTimeKeysStorage: oneTimeKeysStorage,

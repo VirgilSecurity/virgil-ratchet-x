@@ -65,7 +65,7 @@ class IntegrationTests: XCTestCase {
         let receiverTokenProvider = CachingJwtProvider(renewJwtCallback: { context, completion in
             let privateKey = try! crypto.importPrivateKey(from: Data(base64Encoded: testConfig.ApiPrivateKey)!).privateKey
             
-            let generator = JwtGenerator(apiKey: privateKey, apiPublicKeyIdentifier: testConfig.ApiPublicKeyId, accessTokenSigner: VirgilAccessTokenSigner(virgilCrypto: crypto), appId: testConfig.AppId, ttl: 10050)
+            let generator = try! JwtGenerator(apiKey: privateKey, crypto: crypto, appId: testConfig.AppId, ttl: 10050)
             
             completion(try! generator.generateToken(identity: receiverIdentity), nil)
         })
@@ -73,24 +73,24 @@ class IntegrationTests: XCTestCase {
         let senderTokenProvider = CachingJwtProvider(renewJwtCallback: { context, completion in
             let privateKey = try! crypto.importPrivateKey(from: Data(base64Encoded: testConfig.ApiPrivateKey)!).privateKey
             
-            let generator = JwtGenerator(apiKey: privateKey, apiPublicKeyIdentifier: testConfig.ApiPublicKeyId, accessTokenSigner: VirgilAccessTokenSigner(virgilCrypto: crypto), appId: testConfig.AppId, ttl: 10050)
+            let generator = try! JwtGenerator(apiKey: privateKey, crypto: crypto, appId: testConfig.AppId, ttl: 10050)
             
             completion(try! generator.generateToken(identity: senderIdentity), nil)
         })
         
-        let cardVerifier = VirgilCardVerifier(cardCrypto: VirgilCardCrypto(virgilCrypto: crypto))!
+        let cardVerifier = VirgilCardVerifier(crypto: crypto)!
         cardVerifier.verifyVirgilSignature = false
         
-        let senderCardManagerParams = CardManagerParams(cardCrypto: VirgilCardCrypto(virgilCrypto: crypto), accessTokenProvider: senderTokenProvider, cardVerifier: cardVerifier)
-        let receiverCardManagerParams = CardManagerParams(cardCrypto: VirgilCardCrypto(virgilCrypto: crypto), accessTokenProvider: receiverTokenProvider, cardVerifier: cardVerifier)
-        senderCardManagerParams.cardClient = CardClient(serviceUrl: URL(string: testConfig.ServiceURL)!)
-        receiverCardManagerParams.cardClient = CardClient(serviceUrl: URL(string: testConfig.ServiceURL)!)
+        let senderCardManagerParams = CardManagerParams(crypto: crypto, accessTokenProvider: senderTokenProvider, cardVerifier: cardVerifier)
+        let receiverCardManagerParams = CardManagerParams(crypto: crypto, accessTokenProvider: receiverTokenProvider, cardVerifier: cardVerifier)
+        senderCardManagerParams.cardClient = CardClient(accessTokenProvider: senderTokenProvider, serviceUrl: URL(string: testConfig.ServiceURL)!)
+        receiverCardManagerParams.cardClient = CardClient(accessTokenProvider: receiverTokenProvider, serviceUrl: URL(string: testConfig.ServiceURL)!)
         
         let senderCardManager = CardManager(params: senderCardManagerParams)
         let receiverCardManager = CardManager(params: receiverCardManagerParams)
         
-        let receiverCard = try receiverCardManager.publishCard(privateKey: receiverIdentityKeyPair.privateKey, publicKey: receiverIdentityKeyPair.publicKey).startSync().getResult()
-        let senderCard = try senderCardManager.publishCard(privateKey: senderIdentityKeyPair.privateKey, publicKey: senderIdentityKeyPair.publicKey).startSync().getResult()
+        let receiverCard = try receiverCardManager.publishCard(privateKey: receiverIdentityKeyPair.privateKey, publicKey: receiverIdentityKeyPair.publicKey, identity: receiverIdentity).startSync().getResult()
+        let senderCard = try senderCardManager.publishCard(privateKey: senderIdentityKeyPair.privateKey, publicKey: senderIdentityKeyPair.publicKey, identity: senderIdentity).startSync().getResult()
         
         let params = try KeychainStorageParams.makeKeychainStorageParams(appName: "test")
         let receiverLongTermKeysStorage = try KeychainLongTermKeysStorage(identity: receiverIdentity, params: params)
@@ -99,17 +99,17 @@ class IntegrationTests: XCTestCase {
         let receiverOneTimeKeysStorage = FileOneTimeKeysStorage(identity: receiverIdentity, crypto: crypto, identityKeyPair: receiverIdentityKeyPair)
         let senderOneTimeKeysStorage = FileOneTimeKeysStorage(identity: senderIdentity, crypto: crypto, identityKeyPair: senderIdentityKeyPair)
 
-        let client = RatchetClient(serviceUrl: URL(string: testConfig.ServiceURL)!)
+        let receiverClient = RatchetClient(accessTokenProvider: receiverTokenProvider, serviceUrl: URL(string: testConfig.ServiceURL)!)
+        let senderClient = RatchetClient(accessTokenProvider: senderTokenProvider, serviceUrl: URL(string: testConfig.ServiceURL)!)
         
-        let receiverKeysRotator = KeysRotator(crypto: crypto, identityPrivateKey: receiverIdentityKeyPair.privateKey, identityCardId: receiverCard.identifier, orphanedOneTimeKeyTtl: 5, longTermKeyTtl: 10, outdatedLongTermKeyTtl: 5, desiredNumberOfOneTimeKeys: IntegrationTests.desiredNumberOfOtKeys, longTermKeysStorage: receiverLongTermKeysStorage, oneTimeKeysStorage: receiverOneTimeKeysStorage, client: client)
+        let receiverKeysRotator = KeysRotator(crypto: crypto, identityPrivateKey: receiverIdentityKeyPair.privateKey, identityCardId: receiverCard.identifier, orphanedOneTimeKeyTtl: 5, longTermKeyTtl: 10, outdatedLongTermKeyTtl: 5, desiredNumberOfOneTimeKeys: IntegrationTests.desiredNumberOfOtKeys, longTermKeysStorage: receiverLongTermKeysStorage, oneTimeKeysStorage: receiverOneTimeKeysStorage, client: receiverClient)
         
-        let senderKeysRotator = KeysRotator(crypto: crypto, identityPrivateKey: senderIdentityKeyPair.privateKey, identityCardId: senderCard.identifier, orphanedOneTimeKeyTtl: 100, longTermKeyTtl: 100, outdatedLongTermKeyTtl: 100, desiredNumberOfOneTimeKeys: IntegrationTests.desiredNumberOfOtKeys, longTermKeysStorage: senderLongTermKeysStorage, oneTimeKeysStorage: senderOneTimeKeysStorage, client: client)
+        let senderKeysRotator = KeysRotator(crypto: crypto, identityPrivateKey: senderIdentityKeyPair.privateKey, identityCardId: senderCard.identifier, orphanedOneTimeKeyTtl: 100, longTermKeyTtl: 100, outdatedLongTermKeyTtl: 100, desiredNumberOfOneTimeKeys: IntegrationTests.desiredNumberOfOtKeys, longTermKeysStorage: senderLongTermKeysStorage, oneTimeKeysStorage: senderOneTimeKeysStorage, client: senderClient)
         
         let senderSecureChat = SecureChat(crypto: crypto,
                                           identityPrivateKey: senderIdentityKeyPair.privateKey,
                                           identityCard: senderCard,
-                                          accessTokenProvider: senderTokenProvider,
-                                          client: client,
+                                          client: senderClient,
                                           longTermKeysStorage: senderLongTermKeysStorage,
                                           oneTimeKeysStorage: senderOneTimeKeysStorage,
                                           sessionStorage: FileSessionStorage(identity: senderIdentity, crypto: crypto, identityKeyPair: senderIdentityKeyPair),
@@ -119,8 +119,7 @@ class IntegrationTests: XCTestCase {
         let receiverSecureChat = SecureChat(crypto: crypto,
                                             identityPrivateKey: receiverIdentityKeyPair.privateKey,
                                             identityCard: receiverCard,
-                                            accessTokenProvider: receiverTokenProvider,
-                                            client: client,
+                                            client: receiverClient,
                                             longTermKeysStorage: receiverLongTermKeysStorage,
                                             oneTimeKeysStorage: receiverOneTimeKeysStorage,
                                             sessionStorage: FileSessionStorage(identity: receiverIdentity, crypto: crypto, identityKeyPair: receiverIdentityKeyPair),

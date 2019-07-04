@@ -36,6 +36,7 @@
 
 import Foundation
 import VirgilCrypto
+import VirgilSDK
 
 /// FileSessionStorage using files
 /// - Note: This class is thread-safe
@@ -51,8 +52,8 @@ import VirgilCrypto
     ///   - crypto: VirgilCrypto that will be forwarded to [SecureSession](x-source-tag://SecureSession)
     ///   - identityKeyPair: Key pair to encrypt session
     @objc public init(identity: String, crypto: VirgilCrypto, identityKeyPair: VirgilKeyPair) {
-        let credentials = FileSystem.Credentials(crypto: crypto, keyPair: identityKeyPair)
-        self.fileSystem = FileSystem(userIdentifier: identity, pathComponents: ["SESSIONS"], credentials: credentials)
+        let credentials = FileSystemCredentials(crypto: crypto, keyPair: identityKeyPair)
+        self.fileSystem = FileSystem(prefix: "VIRGIL-RATCHET", userIdentifier: identity, pathComponents: ["SESSIONS"], credentials: credentials)
         self.crypto = crypto
 
         super.init()

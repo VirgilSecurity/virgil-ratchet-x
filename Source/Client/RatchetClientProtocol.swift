@@ -52,12 +52,10 @@ import Foundation
     ///             Should be curve25519 in PKCS#8
     ///   - oneTimePublicKeys: one-time public keys (up to 150 keys in the cloud).
     ///             Should be curve25519 in PKCS#8
-    ///   - token: auth token (JWT)
     /// - Throws: Depends on implementation
     @objc func uploadPublicKeys(identityCardId: String?,
                                 longTermPublicKey: SignedPublicKey?,
-                                oneTimePublicKeys: [Data],
-                                token: String) throws
+                                oneTimePublicKeys: [Data]) throws
 
     /// Checks list of keys ids and returns subset of that list with already used keys ids
     ///
@@ -66,35 +64,27 @@ import Foundation
     /// - Parameters:
     ///   - longTermKeyId: long-term public key id to validate
     ///   - oneTimeKeysIds: list of one-time public keys ids to validate
-    ///   - token: auth token (JWT)
     /// - Returns: Object with used keys ids
     /// - Throws: Depends on implementation
     @objc func validatePublicKeys(longTermKeyId: Data?,
-                                  oneTimeKeysIds: [Data],
-                                  token: String) throws -> ValidatePublicKeysResponse
+                                  oneTimeKeysIds: [Data]) throws -> ValidatePublicKeysResponse
 
     /// Returns public keys set for given identity.
     ///
-    /// - Parameters:
-    ///   - identity: User's identity
-    ///   - token: auth token (JWT)
+    /// - Parameter identity: User's identity
     /// - Returns: Set of public keys
     /// - Throws: Depends on implementation
-    @objc func getPublicKeySet(forRecipientIdentity identity: String, token: String) throws -> PublicKeySet
+    @objc func getPublicKeySet(forRecipientIdentity identity: String) throws -> PublicKeySet
 
     /// Returns public keys sets for given identities.
     ///
-    /// - Parameters:
-    ///   - identities: Users' identities
-    ///   - token: auth token (JWT)
+    /// - Parameter identities: Users' identities
     /// - Returns: Sets of public keys
     /// - Throws: Depends on implementation
-    @objc func getMultiplePublicKeysSets(forRecipientsIdentities identities: [String],
-                                         token: String) throws -> [IdentityPublicKeySet]
+    @objc func getMultiplePublicKeysSets(forRecipientsIdentities identities: [String]) throws -> [IdentityPublicKeySet]
 
     /// Deletes keys entity
     ///
-    /// - Parameter token: auth token (JWT)
     /// - Throws: Depends on implementation
-    @objc func deleteKeysEntity(token: String) throws
+    @objc func deleteKeysEntity() throws
 }

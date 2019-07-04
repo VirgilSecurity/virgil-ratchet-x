@@ -168,8 +168,6 @@ import VirgilCrypto
             }
 
             do {
-                let token: AccessToken = try operation.findDependencyResult()
-
                 let now = Date()
 
                 let rotationLog = RotationLog()
@@ -233,8 +231,7 @@ import VirgilCrypto
 
                 Log.debug("Validating local keys")
                 let validateResponse = try self.client.validatePublicKeys(longTermKeyId: lastLongTermKey?.identifier,
-                                                                          oneTimeKeysIds: oneTimeKeysIds,
-                                                                          token: token.stringRepresentation())
+                                                                          oneTimeKeysIds: oneTimeKeysIds)
 
                 for usedOneTimeKeyId in validateResponse.usedOneTimeKeysIds {
                     Log.debug("Marking one-time key as orhpaned \(usedOneTimeKeyId.hexEncodedString())")
@@ -296,8 +293,7 @@ import VirgilCrypto
                 Log.debug("Uploading keys")
                 try self.client.uploadPublicKeys(identityCardId: self.identityCardId,
                                                  longTermPublicKey: longTermSignedPublicKey,
-                                                 oneTimePublicKeys: oneTimePublicKeys,
-                                                 token: token.stringRepresentation())
+                                                 oneTimePublicKeys: oneTimePublicKeys)
 
                 rotationLog.oneTimeKeysAdded = oneTimePublicKeys.count
                 rotationLog.oneTimeKeysRelevant = numOfRelevantOneTimeKeys + oneTimePublicKeys.count

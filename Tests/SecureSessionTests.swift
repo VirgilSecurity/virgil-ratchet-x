@@ -63,7 +63,7 @@ class SecureSessionTests: XCTestCase {
         let receiverTokenProvider = CallbackJwtProvider(getJwtCallback: { context, completion in
             let privateKey = try! crypto.importPrivateKey(from: Data(base64Encoded: testConfig.ApiPrivateKey)!).privateKey
             
-            let generator = JwtGenerator(apiKey: privateKey, apiPublicKeyIdentifier: testConfig.ApiPublicKeyId, accessTokenSigner: VirgilAccessTokenSigner(virgilCrypto: crypto), appId: testConfig.AppId, ttl: 10050)
+            let generator = try! JwtGenerator(apiKey: privateKey, crypto: crypto, appId: testConfig.AppId, ttl: 10050)
             
             completion(try! generator.generateToken(identity: receiverIdentity), nil)
         })
@@ -71,7 +71,7 @@ class SecureSessionTests: XCTestCase {
         let senderTokenProvider = CallbackJwtProvider(getJwtCallback: { context, completion in
             let privateKey = try! crypto.importPrivateKey(from: Data(base64Encoded: testConfig.ApiPrivateKey)!).privateKey
             
-            let generator = JwtGenerator(apiKey: privateKey, apiPublicKeyIdentifier: testConfig.ApiPublicKeyId, accessTokenSigner: VirgilAccessTokenSigner(virgilCrypto: crypto), appId: testConfig.AppId, ttl: 10050)
+            let generator = try! JwtGenerator(apiKey: privateKey, crypto: crypto, appId: testConfig.AppId, ttl: 10050)
             
             completion(try! generator.generateToken(identity: senderIdentity), nil)
         })
@@ -79,42 +79,43 @@ class SecureSessionTests: XCTestCase {
         let cardVerifier = PositiveCardVerifier()
         let ramCardClient = RamCardClient()
         
-        let senderCardManagerParams = CardManagerParams(cardCrypto: VirgilCardCrypto(virgilCrypto: crypto), accessTokenProvider: senderTokenProvider, cardVerifier: cardVerifier)
+        let senderCardManagerParams = CardManagerParams(crypto: crypto, accessTokenProvider: senderTokenProvider, cardVerifier: cardVerifier)
         senderCardManagerParams.cardClient = ramCardClient
         
         let senderCardManager = CardManager(params: senderCardManagerParams)
         
-        let receiverCardManagerParams = CardManagerParams(cardCrypto: VirgilCardCrypto(virgilCrypto: crypto), accessTokenProvider: receiverTokenProvider, cardVerifier: cardVerifier)
+        let receiverCardManagerParams = CardManagerParams(crypto: crypto, accessTokenProvider: receiverTokenProvider, cardVerifier: cardVerifier)
         receiverCardManagerParams.cardClient = ramCardClient
         
         let receiverCardManager = CardManager(params: receiverCardManagerParams)
         
-        let receiverCard = try receiverCardManager.publishCard(privateKey: receiverIdentityKeyPair.privateKey, publicKey: receiverIdentityKeyPair.publicKey).startSync().getResult()
-        let senderCard = try senderCardManager.publishCard(privateKey: senderIdentityKeyPair.privateKey, publicKey: senderIdentityKeyPair.publicKey).startSync().getResult()
+        let receiverCard = try receiverCardManager.publishCard(privateKey: receiverIdentityKeyPair.privateKey, publicKey: receiverIdentityKeyPair.publicKey, identity: receiverIdentity).startSync().getResult()
+        let senderCard = try senderCardManager.publishCard(privateKey: senderIdentityKeyPair.privateKey, publicKey: senderIdentityKeyPair.publicKey, identity: senderIdentity).startSync().getResult()
         
         let receiverLongTermKeysStorage = RamLongTermKeysStorage(db: [:])
         let receiverOneTimeKeysStorage = RamOneTimeKeysStorage(db: [:])
         
-        let fakeClient = RamClient(cardManager: receiverCardManager)
+        let storage = RamClient.Storage()
+        
+        let senderFakeClient = RamClient(identity: senderIdentity, storage: storage, cardManager: senderCardManager)
+        let receiverFakeClient = RamClient(identity: receiverIdentity, storage: storage, cardManager: receiverCardManager)
         
         let senderSecureChat = SecureChat(crypto: crypto,
                                           identityPrivateKey: senderIdentityKeyPair.privateKey,
                                           identityCard: senderCard,
-                                          accessTokenProvider: senderTokenProvider,
-                                          client: fakeClient,
+                                          client: senderFakeClient,
                                           longTermKeysStorage: RamLongTermKeysStorage(db: [:]),
                                           oneTimeKeysStorage: RamOneTimeKeysStorage(db: [:]),
                                           sessionStorage: RamSessionStorage(),
                                           groupSessionStorage:  RamGroupSessionStorage(),
                                           keysRotator: FakeKeysRotator())
         
-        let receiverKeysRotator = KeysRotator(crypto: crypto, identityPrivateKey: receiverIdentityKeyPair.privateKey, identityCardId: receiverCard.identifier, orphanedOneTimeKeyTtl: 100, longTermKeyTtl: 100, outdatedLongTermKeyTtl: 100, desiredNumberOfOneTimeKeys: 10, longTermKeysStorage: receiverLongTermKeysStorage, oneTimeKeysStorage: receiverOneTimeKeysStorage, client: fakeClient)
+        let receiverKeysRotator = KeysRotator(crypto: crypto, identityPrivateKey: receiverIdentityKeyPair.privateKey, identityCardId: receiverCard.identifier, orphanedOneTimeKeyTtl: 100, longTermKeyTtl: 100, outdatedLongTermKeyTtl: 100, desiredNumberOfOneTimeKeys: 10, longTermKeysStorage: receiverLongTermKeysStorage, oneTimeKeysStorage: receiverOneTimeKeysStorage, client: receiverFakeClient)
         
         let receiverSecureChat = SecureChat(crypto: crypto,
                                             identityPrivateKey: receiverIdentityKeyPair.privateKey,
                                             identityCard: receiverCard,
-                                            accessTokenProvider: receiverTokenProvider,
-                                            client: fakeClient,
+                                            client: receiverFakeClient,
                                             longTermKeysStorage: receiverLongTermKeysStorage,
                                             oneTimeKeysStorage: receiverOneTimeKeysStorage,
                                             sessionStorage: RamSessionStorage(),

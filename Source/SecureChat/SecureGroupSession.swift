@@ -118,11 +118,7 @@ import VirgilCryptoRatchet
                 throw SecureGroupSessionError.invalidCardId
             }
 
-            guard let publicKey = card.publicKey as? VirgilPublicKey else {
-                throw SecureGroupSessionError.publicKeyIsNotVirgil
-            }
-
-            let publicKeyData = try crypto.exportPublicKey(publicKey)
+            let publicKeyData = try crypto.exportPublicKey(card.publicKey)
 
             try info.addParticipant(id: participantId, pubKey: publicKeyData)
         }
@@ -246,11 +242,7 @@ import VirgilCryptoRatchet
                 throw SecureGroupSessionError.invalidCardId
             }
 
-            guard let publicKey = card.publicKey as? VirgilPublicKey else {
-                throw SecureGroupSessionError.publicKeyIsNotVirgil
-            }
-
-            let publicKeyData = try self.crypto.exportPublicKey(publicKey)
+            let publicKeyData = try self.crypto.exportPublicKey(card.publicKey)
 
             try info.addParticipant(id: participantId, pubKey: publicKeyData)
         }
@@ -293,11 +285,7 @@ import VirgilCryptoRatchet
                 throw SecureGroupSessionError.invalidCardId
             }
 
-            guard let publicKey = card.publicKey as? VirgilPublicKey else {
-                throw SecureGroupSessionError.publicKeyIsNotVirgil
-            }
-
-            let publicKeyData = try self.crypto.exportPublicKey(publicKey)
+            let publicKeyData = try self.crypto.exportPublicKey(card.publicKey)
 
             try addInfo.addParticipant(id: participantId, pubKey: publicKeyData)
         }

@@ -38,6 +38,10 @@ import VirgilSDK
 
 // MARK: - Queries
 extension RatchetClient: RatchetClientProtocol {
+    private func createRetry() -> RetryProtocol {
+        return ExpBackoffRetry(config: self.retryConfig)
+    }
+    
     /// Uploads public keys
     ///
     /// Long-term public key signature should be verified.
@@ -52,7 +56,6 @@ extension RatchetClient: RatchetClientProtocol {
     ///             Should be curve25519 in PKCS#8
     ///   - oneTimePublicKeys: one-time public keys (up to 150 keys in the cloud).
     ///             Should be curve25519 in PKCS#8
-    ///   - token: auth token (JWT)
     /// - Throws:
     ///   - `RatchetClientError.constructingUrl`
     ///   - Rethrows from `ServiceRequest`
@@ -61,8 +64,7 @@ extension RatchetClient: RatchetClientProtocol {
     ///   - Rethrows from `BaseClient`
     @objc public func uploadPublicKeys(identityCardId: String?,
                                        longTermPublicKey: SignedPublicKey?,
-                                       oneTimePublicKeys: [Data],
-                                       token: String) throws {
+                                       oneTimePublicKeys: [Data]) throws {
         guard let url = URL(string: "pfs/v2/keys", relativeTo: self.serviceUrl) else {
             throw RatchetClientError.constructingUrl
         }
@@ -86,9 +88,13 @@ extension RatchetClient: RatchetClientProtocol {
             params["one_time_keys"] = oneTimePublicKeysStrings
         }
 
-        let request = try ServiceRequest(url: url, method: .put, accessToken: token, params: params)
-
-        let response = try self.connection.send(request)
+        let request = try ServiceRequest(url: url, method: .put, params: params)
+        
+        let tokenContext = TokenContext(service: "ratchet", operation: "post")
+        
+        let response = try self.sendWithRetry(request, retry: self.createRetry(), tokenContext: tokenContext)
+            .startSync()
+            .getResult()
 
         try self.validateResponse(response)
     }
@@ -100,7 +106,6 @@ extension RatchetClient: RatchetClientProtocol {
     /// - Parameters:
     ///   - longTermKeyId: long-term public key id to validate
     ///   - oneTimeKeysIds: list of one-time public keys ids to validate
-    ///   - token: auth token (JWT)
     /// - Returns: Object with used keys ids
     /// - Throws:
     ///   - `RatchetClientError.constructingUrl`
@@ -109,8 +114,7 @@ extension RatchetClient: RatchetClientProtocol {
     ///   - Rethrows from `JSONDecoder`
     ///   - Rethrows from `BaseClient`
     @objc public func validatePublicKeys(longTermKeyId: Data?,
-                                         oneTimeKeysIds: [Data],
-                                         token: String) throws -> ValidatePublicKeysResponse {
+                                         oneTimeKeysIds: [Data]) throws -> ValidatePublicKeysResponse {
         guard longTermKeyId != nil || !oneTimeKeysIds.isEmpty else {
             return ValidatePublicKeysResponse(usedLongTermKeyId: nil, usedOneTimeKeysIds: [])
         }
@@ -129,18 +133,20 @@ extension RatchetClient: RatchetClientProtocol {
             params["one_time_keys_ids"] = oneTimeKeysIds.map { $0.base64EncodedString() }
         }
 
-        let request = try ServiceRequest(url: url, method: .post, accessToken: token, params: params)
+        let request = try ServiceRequest(url: url, method: .post, params: params)
 
-        let response = try self.connection.send(request)
+        let tokenContext = TokenContext(service: "ratchet", operation: "get")
+        
+        let response = try self.sendWithRetry(request, retry: self.createRetry(), tokenContext: tokenContext)
+            .startSync()
+            .getResult()
 
         return try self.processResponse(response)
     }
 
     /// Returns public keys set for given identity
     ///
-    /// - Parameters:
-    ///   - identity: User's identity
-    ///   - token: auth token (JWT)
+    /// - Parameter identity: User's identity
     /// - Returns: Set of public keys
     /// - Throws:
     ///   - `RatchetClientError.constructingUrl`
@@ -148,26 +154,27 @@ extension RatchetClient: RatchetClientProtocol {
     ///   - Rethrows from `HttpConnectionProtocol`
     ///   - Rethrows from `JSONDecoder`
     ///   - Rethrows from `BaseClient`
-    @objc public func getPublicKeySet(forRecipientIdentity identity: String,
-                                      token: String) throws -> PublicKeySet {
+    @objc public func getPublicKeySet(forRecipientIdentity identity: String) throws -> PublicKeySet {
         guard let url = URL(string: "pfs/v2/keys/actions/pick-one", relativeTo: self.serviceUrl) else {
             throw RatchetClientError.constructingUrl
         }
 
         let params = ["identity": identity]
 
-        let request = try ServiceRequest(url: url, method: .post, accessToken: token, params: params)
+        let request = try ServiceRequest(url: url, method: .post, params: params)
 
-        let response = try self.connection.send(request)
+        let tokenContext = TokenContext(service: "ratchet", operation: "get")
+        
+        let response = try self.sendWithRetry(request, retry: self.createRetry(), tokenContext: tokenContext)
+            .startSync()
+            .getResult()
 
         return try self.processResponse(response)
     }
 
     /// Returns public keys sets for given identities.
     ///
-    /// - Parameters:
-    ///   - identities: Users' identities
-    ///   - token: auth token (JWT)
+    /// - Parameter identities: Users' identities
     /// - Returns: Sets of public keys
     /// - Throws:
     ///   - `RatchetClientError.constructingUrl`
@@ -175,38 +182,44 @@ extension RatchetClient: RatchetClientProtocol {
     ///   - Rethrows from `HttpConnectionProtocol`
     ///   - Rethrows from `JSONDecoder`
     ///   - Rethrows from `BaseClient`
-    @objc public func getMultiplePublicKeysSets(forRecipientsIdentities identities: [String],
-                                                token: String) throws -> [IdentityPublicKeySet] {
+    @objc public func getMultiplePublicKeysSets(forRecipientsIdentities identities: [String]) throws -> [IdentityPublicKeySet] {
         guard let url = URL(string: "pfs/v2/keys/actions/pick-batch", relativeTo: self.serviceUrl) else {
             throw RatchetClientError.constructingUrl
         }
 
         let params = ["identities": identities]
 
-        let request = try ServiceRequest(url: url, method: .post, accessToken: token, params: params)
+        let request = try ServiceRequest(url: url, method: .post, params: params)
 
-        let response = try self.connection.send(request)
+        let tokenContext = TokenContext(service: "ratchet", operation: "get")
+        
+        let response = try self.sendWithRetry(request, retry: self.createRetry(), tokenContext: tokenContext)
+            .startSync()
+            .getResult()
 
         return try self.processResponse(response)
     }
 
     /// Deletes keys entity
     ///
-    /// - Parameter token: auth token (JWT)
     /// - Throws:
     ///   - `RatchetClientError.constructingUrl`
     ///   - Rethrows from `ServiceRequest`
     ///   - Rethrows from `HttpConnectionProtocol`
     ///   - Rethrows from `JSONDecoder`
     ///   - Rethrows from `BaseClient`
-    @objc public func deleteKeysEntity(token: String) throws {
+    @objc public func deleteKeysEntity() throws {
         guard let url = URL(string: "pfs/v2/keys", relativeTo: self.serviceUrl) else {
             throw RatchetClientError.constructingUrl
         }
 
-        let request = try ServiceRequest(url: url, method: .delete, accessToken: token)
+        let request = try ServiceRequest(url: url, method: .delete)
 
-        let response = try self.connection.send(request)
+        let tokenContext = TokenContext(service: "ratchet", operation: "delete")
+        
+        let response = try self.sendWithRetry(request, retry: self.createRetry(), tokenContext: tokenContext)
+            .startSync()
+            .getResult()
 
         try self.validateResponse(response)
     }
