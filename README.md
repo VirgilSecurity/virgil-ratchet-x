@@ -21,7 +21,7 @@ Following this, the parties will use the Double Ratchet SDK to initialize chat s
 # SDK Features
 - communicate with Virgil PFS Service
 - manage users' one-time keys (OTK) and long-term keys (LTK)
-- use Virgil [Crypto library][_virgil_crypto]
+- enable group chat encryption
 
 ## Installation
 
@@ -341,7 +341,7 @@ for card in receiverCards {
     }
 
     let encryptedTicket = try! session.encrypt(data: ticketData).serialize()
-    
+
     try! secureChat.storeGroupSession(groupSession)
 
     // Send ticket to receiver
