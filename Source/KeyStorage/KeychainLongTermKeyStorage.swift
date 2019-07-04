@@ -43,6 +43,16 @@ import VirgilSDK
 @objc public enum KeychainLongTermKeysStorageError: Int, Error {
     case invalidKeyId = 1
     case invalidMeta = 2
+
+    /// Human-readable localized description
+    public var localizedDescription: String {
+        switch self {
+        case .invalidKeyId:
+            return "Invalid key id"
+        case .invalidMeta:
+            return "Invalid key meta"
+        }
+    }
 }
 
 /// Long-term keys storage

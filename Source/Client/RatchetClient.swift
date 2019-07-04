@@ -41,6 +41,14 @@ import VirgilSDK
 /// - constructingUrl: constructing url of endpoint failed
 @objc(VSRRatchetClientError) public enum RatchetClientError: Int, Error {
     case constructingUrl = 1
+
+    /// Human-readable localized description
+    public var localizedDescription: String {
+        switch self {
+        case .constructingUrl:
+            return "constructing url of endpoint failed"
+        }
+    }
 }
 
 /// Implemetation of RatchetClientProtocol

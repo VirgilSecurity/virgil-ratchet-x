@@ -49,7 +49,7 @@ import VirgilCrypto
 /// - publicKeysSetsMismatch: PublicKeysSets mismatch
 /// - invalidSessionIdLen: Session Id should be 32-byte
 /// - invalidCardId: Invalid card id
-/// - sessionIdMismatch: Session is mismatch
+/// - sessionIdMismatch: Session id mismatch
 @objc public enum SecureChatError: Int, Error {
     case sessionAlreadyExists = 1
     case wrongIdentityPublicKeyCrypto = 2
@@ -61,6 +61,32 @@ import VirgilCrypto
     case invalidSessionIdLen = 8
     case invalidCardId = 9
     case sessionIdMismatch = 10
+
+    /// Human-readable localized description
+    public var localizedDescription: String {
+        switch self {
+        case .sessionAlreadyExists:
+            return "Session with this participant already exists"
+        case .wrongIdentityPublicKeyCrypto:
+            return "PublicKey is not VirgilPublicKey"
+        case .identityKeyDoesntMatch:
+            return "Identity key in the Card and on Ratchet Cloud doesn't match"
+        case .invalidLongTermKeySignature:
+            return "Long-term key signature is invalid"
+        case .invalidMessageType:
+            return "Message type should be .prekey"
+        case .invalidKeyType:
+            return "Invalid key type"
+        case .publicKeysSetsMismatch:
+            return "PublicKeysSets mismatch"
+        case .invalidSessionIdLen:
+            return "Session Id should be 32-byte"
+        case .invalidCardId:
+                return "Invalid card id"
+        case .sessionIdMismatch:
+                return "Session id mismatch"
+        }
+    }
 }
 
 /// SecureChat. Class for rotating keys, starting and responding to conversation
@@ -208,8 +234,8 @@ import VirgilCrypto
             Log.debug("Started keys rotation")
 
             let tokenContext = TokenContext(service: "ratchet", operation: "rotate", forceReload: false)
-            let getTokenOperation = OperationUtils.makeGetTokenOperation(
-                tokenContext: tokenContext, accessTokenProvider: self.accessTokenProvider)
+            let getTokenOperation = OperationUtils.makeGetTokenOperation(tokenContext: tokenContext,
+                                                                         accessTokenProvider: self.accessTokenProvider)
             let rotateKeysOperation = self.keysRotator.rotateKeysOperation()
 
             let completionOperation = OperationUtils.makeCompletionOperation(completion: completion)
@@ -465,7 +491,7 @@ import VirgilCrypto
         guard try self.crypto.verifySignature(longTermPublicKey.signature,
                                               of: longTermPublicKey.publicKey,
                                               with: identityPublicKey) else {
-                                                throw SecureChatError.invalidLongTermKeySignature
+            throw SecureChatError.invalidLongTermKeySignature
         }
 
         if oneTimePublicKey == nil {

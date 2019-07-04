@@ -40,7 +40,7 @@ import VirgilCryptoRatchet
 
 /// SecureGroupSession errors
 ///
-/// - invalidUtf8String: invalid convesion to/from utf-8 string
+/// - invalidUtf8String: invalid conversion to/from utf-8 string
 /// - notConsequentTicket: consequent tickets should be passed to updateMembers
 /// - invalidMessageType: invalid message type
 /// - invalidCardId: invalid card id
@@ -53,6 +53,24 @@ import VirgilCryptoRatchet
     case invalidCardId = 4
     case publicKeyIsNotVirgil = 5
     case wrongSender = 6
+
+    /// Human-readable localized description
+    public var localizedDescription: String {
+        switch self {
+        case .invalidUtf8String:
+            return "invalid conversion to/from utf-8 string"
+        case .notConsequentTicket:
+            return "consequent tickets should be passed to updateMembers"
+        case .invalidMessageType:
+            return "invalid message type"
+        case .invalidCardId:
+            return "invalid card id"
+        case .publicKeyIsNotVirgil:
+            return "public key is not VirgilPublicKey"
+        case .wrongSender:
+            return "message sender doesn't match"
+        }
+    }
 }
 
 /// SecureGroupSession
