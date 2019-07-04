@@ -294,7 +294,7 @@ try! secureChat.storeSession(session)
 In this section you'll find out how to build a group chat using the Virgil Ratchet SDK.
 
 ### Create Group Chat Ticket
-Let's assume Alice wants to start a group chat with Bob and Carol. First of all, you have to create a new group session ticket by running the `startNewGroupSession` method. This ticket holds a shared root key for future group encryption. Therefore, it should be encrypted and transmitted to other group participants. Every group chat should have a unique 32-byte session identifier. We recommend tying this identifier to your unique transport channel id. If your channel id is not 32-bytes you can use SHA-256 to derive a session id from it.
+Let's assume Alice wants to start a group chat with Bob and Carol. First, create a new group session ticket by running the `startNewGroupSession` method. This ticket holds a shared root key for future group encryption. Therefore, it should be encrypted and then transmitted to other group participants. Every group chat should have a unique 32-byte session identifier. We recommend tying this identifier to your unique transport channel id. If your channel id is not 32-bytes you can use SHA-256 to derive a session id from it.
 
 ```Swift
 // Create transport channel according to your app logic and get session id from it
@@ -351,7 +351,7 @@ for card in receiverCards {
 - Next, use your application's business logic to share the encrypted ticket with the group chat participants.
 
 ### Join the Group Chat
-Now, when we have the group chat created, other participants can join this chat using the group chat ticket.
+Now, when we have the group chat created, other participants can join the chat using the group chat ticket.
 
 - First, we have to decrypt the encrypted ticket
 
@@ -409,7 +409,7 @@ let messageData = message.serialize()
 ```
 
 #### Decrypting Messages
-To decrypt messages, use the `decrypt` function. This function allows you to decrypt data and strings. Do not forget to update sessions in storage as their state changes with every encrypt operation!
+To decrypt messages, use the `decrypt` function. This function allows you to decrypt data and strings. Do not forget to update sessions in storage as their state changes with every encryption operation!
 
 - Use the following code-snippets to decrypt strings:
 ```Swift
