@@ -10,12 +10,16 @@
 
 ## Introduction
 
-<a href="https://developer.virgilsecurity.com/docs"><img width="230px" src="https://cdn.virgilsecurity.com/assets/images/github/logos/virgil-logo-red.png" align="left" hspace="10" vspace="6"></a> [Virgil Security](https://virgilsecurity.com) provides a set of services and open source libraries for adding security to any application.
-Virgil Security is presenting an implementation of the [Double Ratchet](https://signal.org/docs/specifications/doubleratchet/) algorithm, which is used by parties to exchange encrypted messages based on a shared secret key. The implementation includes:
-- **Virgil Perfect Forward Secrecy (PFS) service** – a standalone web-service designed to manage one-time keys and long-term keys that are based on their Identity Public Keys (public keys in user cards published on Virgil Cards service);
-- **Ratchet SDK** – interacts with PFS service in order to publish and manage one-time keys (OTK) and long-term keys (LTK) and interacts with Virgil Cards service to retrieve user's identity cards which the OTK and LTK are based on. The parties derive new keys for every Double Ratchet message so that previous private keys cannot be calculated from new ones. The parties that participate in the communication also send Diffie-Hellman public values attached to their messages. The results of Diffie-Hellman calculations are mixed into the derived keys so that the new private keys cannot be calculated from the previous ones.
+<a href="https://developer.virgilsecurity.com/docs"><img width="230px" src="https://cdn.virgilsecurity.com/assets/images/github/logos/virgil-logo-red.png" align="left" hspace="10" vspace="6"></a> 
+[Virgil Security](https://virgilsecurity.com) provides a set of services and open source libraries for adding security to any application. If you're developing a chat application, you'll understand the need for a  high level of data protection to ensure confidentiality and data integrity. 
 
-Following this, the parties will use the Double Ratchet SDK to initialize chat session, send and receive encrypted messages. And as a result by adding Virgil Perfect Forward Secrecy (PFS) to your encrypted communication, you prevent a possibly compromised user's long-term private key from affecting the confidentiality of past communications.
+For sure you've heard of our [e3kit](https://github.com/VirgilSecurity/virgil-e3kit-x) which offers a high level of end-to-end encription, but if you need maximum protection with your application, [Virgil Security](https://virgilsecurity.com) presents the Double Ratchet SDK. With the powerful tools in this SDK, you can protect encrypted data, even if a user's private key has been stolen. The [Double Ratchet](https://signal.org/docs/specifications/doubleratchet/) kit not only assigns a private encryption key with each message, but also allows the developer to limit the lifecycle of these keys. If a key is stolen, it will expire according to your application's life-cycle policies which provides the maximum security of historical data. 
+
+To implement our Double Ratchet technology, you'll also include:
+- **Virgil Perfect Forward Secrecy (PFS) service** – a standalone web-service designed to manage one-time keys and long-term keys. These keys are based on their Identity Public Keys which are public keys embedded in the user cards published by Virgil Cards services.
+- **Ratchet SDK** – interacts with the PFS service to publish and manage one-time keys (OTK), long-term keys (LTK), and interacts with Virgil Cards service to retrieve the user identity cards the OTK and LTK are based on. The Ratchet SDK issues chat participants new keys for every message, so previous private keys cannot be determined from new keys. 
+
+Following this, communication applications will use the Double Ratchet SDK to initialize chat sessions and send and receive encrypted messages. As a result, adding Virgil Perfect Forward Secrecy (PFS) to your communication prevents compromising a user's long-term private key from affecting the confidentiality of past communications.
 
 
 # SDK Features
@@ -25,7 +29,7 @@ Following this, the parties will use the Double Ratchet SDK to initialize chat s
 
 ## Installation
 
-Virgil SDK Ratchet is provided as a set of frameworks. These frameworks are distributed via Carthage and CocoaPods. Also in this guide, you find two more packages called VirgilCrypto (Virgil Crypto Library) that is used by the Virgil SDK Ratchet to perform cryptographic operations and VirgilSDK.
+Virgil Ratchet SDK is provided as a set of frameworks distributed via Carthage and CocoaPods. Also, in this guide, you'll find information about VirgilCrypto (the Virgil Crypto Library) that Virgil Ratchet SDK uses to perform cryptographic operations.
 
 All frameworks are available for:
 - iOS 9.0+
@@ -59,7 +63,7 @@ $ pod install
 
 ### Carthage
 
-[Carthage](https://github.com/Carthage/Carthage) is a decentralized dependency manager that builds your dependencies and provides you with binary frameworks.
+[Carthage](https://github.com/Carthage/Carthage) is a decentralized dependency manager that builds your dependencies and provides the binary frameworks.
 
 You can install Carthage with [Homebrew](http://brew.sh/) using the following command:
 
@@ -68,25 +72,25 @@ $ brew update
 $ brew install carthage
 ```
 
-To integrate VirgilSDKRatchet into your Xcode project using Carthage, create an empty file with name *Cartfile* in your project's root folder and add following lines to your *Cartfile*
+To integrate the Virgil Ratchet SDK into your Xcode project using Carthage, create an empty file with name *Cartfile* in your project's root folder and add following lines to your *Cartfile*
 
 ```
 github "VirgilSecurity/virgil-ratchet-x" ~> 0.1.0
 ```
 
-#### Linking against prebuilt binaries
+#### Linking against pre-built binaries
 
-To link prebuilt frameworks to your app, run following command:
+To link pre-built frameworks to your app, run the following command:
 
 ```bash
 $ carthage update
 ```
 
-This will build each dependency or download a pre-compiled framework from github Releases.
+This will build each dependency or download a pre-compiled framework from the github releases.
 
 ##### Building for iOS/tvOS/watchOS
 
-On your application targets’ “General” settings tab, in the “Linked Frameworks and Libraries” section, add following frameworks from the *Carthage/Build* folder inside your project's folder:
+On your application targets’ “General" settings tab, in the “Linked Frameworks and Libraries” section, add the following frameworks from the *Carthage/Build* folder inside your project's folder:
  - VirgilSDKRatchet
  - VirgilSDK
  - VirgilCryptoAPI
@@ -97,13 +101,13 @@ On your application targets’ “General” settings tab, in the “Linked Fram
  - VSCFoundation
  - VSCRatchet
 
-On your application targets’ “Build Phases” settings tab, click the “+” icon and choose “New Run Script Phase.” Create a Run Script in which you specify your shell (ex: */bin/sh*), add the following contents to the script area below the shell:
+On your application targets’ “Build Phases" settings tab, click the “+” icon and choose “New Run Script Phase.” Create a Run Script to specify your shell (ex: */bin/sh*) then add the following contents:
 
 ```bash
 /usr/local/bin/carthage copy-frameworks
 ```
 
-and add the paths to the frameworks you want to use under “Input Files”, e.g.:
+Then add the paths to the frameworks you want to use under “Input Files”, e.g.:
 
 ```
 $(SRCROOT)/Carthage/Build/iOS/VirgilSDKRatchet.framework
@@ -119,7 +123,7 @@ $(SRCROOT)/Carthage/Build/iOS/VSCRatchet.framework
 
 ##### Building for macOS
 
-On your application target's “General” settings tab, in the “Embedded Binaries” section, drag and drop following frameworks from the Carthage/Build folder on disk:
+On your application target's “General” settings tab, in the “Embedded Binaries” section, drag and drop the following frameworks from the Carthage/Build folder:
  - VirgilSDKRatchet
  - VirgilSDK
  - VirgilCryptoAPI
@@ -130,23 +134,23 @@ On your application target's “General” settings tab, in the “Embedded Bina
  - VSCFoundation
  - VSCRatchet
 
-Additionally, you'll need to copy debug symbols for debugging and crash reporting on macOS.
+Additionally, you'll need to copy the debug symbols for debugging and crash reporting on macOS.
 
 On your application target’s “Build Phases” settings tab, click the “+” icon and choose “New Copy Files Phase”.
-Click the “Destination” drop-down menu and select “Products Directory”. For each framework, drag and drop corresponding dSYM file.
+Click the “Destination” drop-down menu and select “Product Directory.” For each framework, drag and drop the corresponding dSYM file.
 
 ## Register Users
 
-Make sure that you have already registered at the [Virgil Dashboard][_dashboard] and created an E2EE V5 application.
+Make sure that you have already registered with the [Virgil Dashboard][_dashboard] and have created an E2EE V5 application.
 
-Besides from registering on your own server, your users must also be registered at Virgil Cloud. If they already are, you can skip this step and proceed to the next one.
+Besides registering on your own server, your users must also be registered on the Virgil Cloud. If they already are, you can skip this step and proceed to the next one.
 
-At Virgil every user has a `Private Key` on their device and is represented with a `Virgil Card` which contains a `Public Key` and user's `identity`. `Virgil Card` is a synonym to `Identity Card` in context of Virgil Services, and has an unlimited life-time.
+At Virgil, every user has a `Virgil Card` with an unlimited life-time on their device. The card contains a `Private Key`, `Public Key` and the user's `identity`. 
 
-In order to register your users at Virgil Cloud (i.e. create and publish their `Identity Cards`), you'll need to go through the following steps:
-- Set up your backend for generating JWT in order to provide your service and users with access to Virgil Cloud;
-- Set up you client side for authenticating users on Virgil Cloud;
-- Set up Cards Manager on your client side to generate and publish `Identity Cards` on Virgil Cards Service.
+To register users on the Virgil Cloud (i.e. create and publish their `Identity Cards`), you'll need to go through the following steps:
+- Set up your backend to generate a JWT to provide your service and users with access to the Virgil Cloud.
+- Set up the client side for authenticating users on Virgil Cloud.
+- Set up the Cards Manager on your client side to generate and publish `Virgil Card` with Virgil Cards Service.
 
 You can use [this guide](https://developer.virgilsecurity.com/docs/how-to/public-key-management/v5/create-card) for the steps described above (you don't need to install Virgil SDK and Virgil Crypto if you've already installed Virgil Ratchet SDK).
 
