@@ -199,7 +199,7 @@ let session = try! secureChat.startNewSessionAsSender(receiverCard: bobCard).sta
 
 let ratchetMessage = try! session.encrypt(string: messageToEncrypt)
 
-try! secureChat.storeSession(session: session)
+try! secureChat.storeSession(session)
 
 let encryptedMessage = ratchetMessage.serialize()
 ```
@@ -222,7 +222,7 @@ let session = try! secureChat.startNewSessionAsReceiver(senderCard: aliceCard, r
 
 let decryptedMessage = try! session.decryptString(from: ratchetMessage)
 
-try! secureChat.storeSession(session: session)
+try! secureChat.storeSession(session)
 ```
 
 **Important**: Also, you need to store session after operations that change the session's state (encrypt, decrypt), therefore if the session already exists in storage, it will be overwritten
@@ -241,7 +241,7 @@ let session = secureChat.existingSession(withParticpantIdentity: bobCard.identit
 
 let message = try! session.encrypt(string: "Hello, Bob!")
 
-try! secureChat.storeSession(session: session)
+try! secureChat.storeSession(session)
 
 let messageData = message.serialize()
 // Send messageData to Bob
@@ -254,7 +254,7 @@ let session = secureChat.existingSession(withParticpantIdentity: bobCard.identit
 
 let message = try! session.encrypt(data: data)
 
-try! secureChat.storeSession(session: session)
+try! secureChat.storeSession(session)
 
 let messageData = message.serialize()
 // Send messageData to Bob
@@ -274,7 +274,7 @@ let message = try! RatchetGroupMessage.deserialize(input: messageData)
 
 let decryptedMessage = try! session.decryptString(from: ratchetMessage)
 
-try! secureChat.storeSession(session: session)
+try! secureChat.storeSession(session)
 ```
 - Use the following code-snippets to decrypt data:
 
@@ -285,7 +285,7 @@ let message = try! RatchetGroupMessage.deserialize(input: messageData)
 
 let decryptedMessage = try! session.decryptData(from: ratchetMessage)
 
-try! secureChat.storeSession(session: session)
+try! secureChat.storeSession(session)
 ```
 
 
@@ -319,7 +319,7 @@ The Ratchet SDK doesn't store and update the group chat session itself. That's w
 > Also, you need to store existing session after operations that change the session's state (encrypt, decrypt, setParticipants, updateParticipants), therefore if the session already exists in storage, it will be overwritten
 
 ```swift
-try! secureChat.storeGroupSession(session: groupSession)
+try! secureChat.storeGroupSession(groupSession)
 ```
 
 ### Send the Group Ticket
@@ -342,7 +342,7 @@ for card in receiverCards {
 
     let encryptedTicket = try! session.encrypt(data: ticketData).serialize()
     
-    try! secureChat.storeGroupSession(session: groupSession)
+    try! secureChat.storeGroupSession(groupSession)
 
     // Send ticket to receiver
 }
@@ -379,7 +379,7 @@ let groupSession = try! secureChat.startGroupSession(with: receiverCards,
                                                      sessionId: sessionId,
                                                      using: ticket)
 
-try! secureChat.storeGroupSession(session: groupSession)
+try! secureChat.storeGroupSession(groupSession)
 ```
 
 ### Encrypt and decrypt messages
@@ -391,7 +391,7 @@ In order to encrypt messages for the group chat, use the `encrypt` function. Thi
 ```swift
 let message = try! groupSession.encrypt(string: "Hello, Alice and Bob!")
 
-try! secureChat.storeGroupSession(session: groupSession)
+try! secureChat.storeGroupSession(groupSession)
 
 let messageData = message.serialize()
 // Send messageData to receivers
@@ -401,7 +401,7 @@ let messageData = message.serialize()
 ```Swift
 let message = try! groupSession.encrypt(data: data)
 
-try! secureChat.storeGroupSession(session: groupSession)
+try! secureChat.storeGroupSession(groupSession)
 
 let messageData = message.serialize()
 // Send messageData to receivers
@@ -418,7 +418,7 @@ let carolCard = receiversCard.first { $0.identity == "Carol" }!
 
 let decryptedMessage = try! groupSession.decryptString(from: message, senderCardId: carolCard.identifier)
 
-try! secureChat.storeGroupSession(session: groupSession)
+try! secureChat.storeGroupSession(groupSession)
 ```
 - Use the following code-snippets to decrypt data:
 ```swift
@@ -428,7 +428,7 @@ let carolCard = receiversCard.first { $0.identity == "Carol" }!
 
 let data = try! groupSession.decryptData(from: message, senderCardId: carolCard.identifier)
 
-try! groupSession.storeGroupSession(session: groupSession)
+try! groupSession.storeGroupSession(groupSession)
 ```
 
 
