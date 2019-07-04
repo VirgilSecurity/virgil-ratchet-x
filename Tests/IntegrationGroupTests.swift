@@ -358,7 +358,7 @@ class IntegrationGroupTests: XCTestCase {
                 
                 sessions.append(session)
                 
-                try chats1[i].storeGroupSession(session: session)
+                try chats1[i].storeGroupSession(session)
             }
             
             try Utils.encryptDecrypt100TimesRestored(secureChats: chats1, sessionId: sessions[0].identifier)

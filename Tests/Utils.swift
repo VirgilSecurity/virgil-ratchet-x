@@ -98,7 +98,7 @@ class Utils {
             
             let message = try sender.encrypt(string: plainText)
             
-            try secureChats[senderNum].storeGroupSession(session: sender)
+            try secureChats[senderNum].storeGroupSession(sender)
             
             for i in 0..<secureChats.count {
                 if i == senderNum {
@@ -111,7 +111,7 @@ class Utils {
                 
                 XCTAssert(decryptedMessage == plainText)
                 
-                try secureChats[i].storeGroupSession(session: receiver)
+                try secureChats[i].storeGroupSession(receiver)
             }
         }
     }
@@ -138,8 +138,8 @@ class Utils {
             
             XCTAssert(decryptedMessage == plainText)
             
-            try senderSecureChat.storeSession(session: sender)
-            try receiverSecureChat.storeSession(session: receiver)
+            try senderSecureChat.storeSession(sender)
+            try receiverSecureChat.storeSession(receiver)
         }
     }
 }

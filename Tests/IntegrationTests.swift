@@ -162,24 +162,24 @@ class IntegrationTests: XCTestCase {
             
             let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().getResult()
             
-            try senderSecureChat.storeSession(session: senderSession)
+            try senderSecureChat.storeSession(senderSession)
             
             XCTAssert(senderSecureChat.existingSession(withParticpantIdentity: receiverCard.identity) != nil)
             
             let plainText = UUID().uuidString
             let cipherText = try senderSession.encrypt(string: plainText)
             
-            try senderSecureChat.storeSession(session: senderSession)
+            try senderSecureChat.storeSession(senderSession)
             
             let receiverSession = try receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, ratchetMessage: cipherText)
             
-            try receiverSecureChat.storeSession(session: receiverSession)
+            try receiverSecureChat.storeSession(receiverSession)
             
             XCTAssert(receiverSecureChat.existingSession(withParticpantIdentity: senderCard.identity) != nil)
             
             let decryptedMessage = try receiverSession.decryptString(from: cipherText)
             
-            try receiverSecureChat.storeSession(session: receiverSession)
+            try receiverSecureChat.storeSession(receiverSession)
             
             XCTAssert(decryptedMessage == plainText)
             
@@ -200,7 +200,7 @@ class IntegrationTests: XCTestCase {
             
             XCTAssert(senderSecureChat.existingSession(withParticpantIdentity: receiverCard.identity) == nil)
             
-            try senderSecureChat.storeSession(session: senderSession)
+            try senderSecureChat.storeSession(senderSession)
             
             XCTAssert(senderSecureChat.existingSession(withParticpantIdentity: receiverCard.identity) != nil)
             
@@ -211,7 +211,7 @@ class IntegrationTests: XCTestCase {
             
             XCTAssert(receiverSecureChat.existingSession(withParticpantIdentity: senderCard.identity) == nil)
             
-            try receiverSecureChat.storeSession(session: receiverSession)
+            try receiverSecureChat.storeSession(receiverSession)
 
             XCTAssert(receiverSecureChat.existingSession(withParticpantIdentity: senderCard.identity) != nil)
             
@@ -241,14 +241,14 @@ class IntegrationTests: XCTestCase {
         
             let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().getResult()
             
-            try senderSecureChat.storeSession(session: senderSession)
+            try senderSecureChat.storeSession(senderSession)
             
             let plainText = UUID().uuidString
             let cipherText = try senderSession.encrypt(string: plainText)
             
             let receiverSession = try receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, ratchetMessage: cipherText)
             
-            try receiverSecureChat.storeSession(session: receiverSession)
+            try receiverSecureChat.storeSession(receiverSession)
             
             let decryptedMessage = try receiverSession.decryptString(from: cipherText)
             
