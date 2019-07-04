@@ -138,23 +138,23 @@ Click the “Destination” drop-down menu and select “Product Directory.” F
 
 ## Register Users
 
-Make sure that you have already registered with the [Virgil Dashboard][_dashboard] and have created an E2EE V5 application.
+Make sure you have registered with the [Virgil Dashboard][_dashboard] and have created an E2EE V5 application.
 
-Besides registering on your own server, your users must also be registered on the Virgil Cloud. If they already are, you can skip this step and proceed to the next one.
+Besides registering on your own server, users must also be registered on the Virgil Cloud. If they already are, you can skip this step and proceed to the next one.
 
-At Virgil, every user has a `Virgil Card` with an unlimited life-time on their device. The card contains a `Private Key`, `Public Key` and the user's `identity`. 
+Every Virgil user has a `Virgil Card` with an unlimited life-time on their device. The card contains a `Private Key`, `Public Key`, and the user's `identity`. 
 
-To register users on the Virgil Cloud (i.e. create and publish their `Identity Cards`), you'll need to go through the following steps:
+To register users on the Virgil Cloud (i.e. create and publish their `Identity Cards`), follow these steps:
 - Set up your backend to generate a JWT to provide your service and users with access to the Virgil Cloud.
-- Set up the client side for authenticating users on Virgil Cloud.
+- Set up the client side for authenticating users on the Virgil Cloud.
 - Set up the Cards Manager on your client side to generate and publish `Virgil Card` with Virgil Cards Service.
 
-You can use [this guide](https://developer.virgilsecurity.com/docs/how-to/public-key-management/v5/create-card) for the steps described above (you don't need to install Virgil SDK and Virgil Crypto if you've already installed Virgil Ratchet SDK).
+If you've already installed the Virgil Ratchet SDK or don't need to install the Virgil SDK or Virgil Crypto, you can use [this guide](https://developer.virgilsecurity.com/docs/how-to/public-key-management/v5/create-card) for the steps described above. 
 
 
 ### Initialize SDK
 
-To begin communicating with PFS service and establish secure session, each user must run the initialization. In order to do that, you need the Receiver's public key (identity card) from Virgil Cloud and Sender's private key from their local storage:
+To begin communicating with the PFS service and establish a secure session, each user must run the initialization. To do that, you need the Receiver's public key (identity card) from Virgil Cloud and the sender's private key from their local storage:
 
 ```swift
 import VirgilSDKRatchet
@@ -175,19 +175,19 @@ secureChat.rotateKeys().start { result in
 }
 ```
 
-During the initialization process, using Identity Cards and `rotateKeys` method we generate special Keys that have their own life-time:
+During the initialization process, using Identity Cards and the `rotateKeys` method we generate special keys that have their own life-time:
 
-* **One-time Key (OTK)** - each time someone wants to create session with user, single one-time key is obtained and discarded from the server.
-* **Long-term Key (LTK)** - rotated periodically (daily or monthly based on the application developer's security considerations) and is signed with the Identity Private Key.
+* **One-time Key (OTK)** - each time chat participants want to create a session, a single one-time key is obtained and discarded from the server.
+* **Long-term Key (LTK)** - rotated periodically based on the developer's security considerations and is signed with the Identity Private Key.
 
 ## Peer-to-peer Chat Example
-In this section you'll find out how to build a peer-to-peer chat using Virgil Ratchet SDK.
+In this section you'll find out how to build a peer-to-peer chat using the Virgil Ratchet SDK.
 
 ### Send initial encrypted message
-Let's assume Alice wants to start communication with Bob and wants to send the first message:
+Let's assume Alice wants to start communicating with Bob and wants to send the first message:
 - first, Alice has to create a new chat session by running the `startNewSessionAsSender` function and specify Bob's Identity Card
 - then, Alice encrypts the initial message using the `encrypt` SDK function
-- finally, Alice has to store generated session locally. The Ratchet SDK doesn't store and update sessions itself. That's why you need to use the `storeSession` SDK function for storing the chat sessions.
+- finally, The Ratchet SDK doesn't store and update sessions itself. Alice has to store the generated session locally with the `storeSession` SDK function.
 
 ```swift
 import VirgilSDKRatchet
@@ -205,11 +205,11 @@ try! secureChat.storeSession(session)
 let encryptedMessage = ratchetMessage.serialize()
 ```
 
-**Important**: Also, you need to store session after operations that change the session's state (encrypt, decrypt), therefore if the session already exists in storage, it will be overwritten
+**Important**: You need to store the session after operations that change the session's state (encrypt, decrypt), therefore if the session already exists in storage, it will be overwritten
 
 ### Decrypt the initial message
 
-After Alice generated and stored the chat session, Bob also has to:
+After Alice generates and stores the chat session, Bob also has to:
 - start the chat session by running the `startNewSessionAsReceiver` function
 - decrypt the encrypted message using the using the `decrypt` SDK function
 
@@ -226,14 +226,14 @@ let decryptedMessage = try! session.decryptString(from: ratchetMessage)
 try! secureChat.storeSession(session)
 ```
 
-**Important**: Also, you need to store session after operations that change the session's state (encrypt, decrypt), therefore if the session already exists in storage, it will be overwritten
+**Important**: You need to store sessions after operations that change the session's state (encrypt, decrypt). If the session already exists in storage, it will be overwritten
 
 ### Encrypt and decrypt messages
 
 #### Encrypting messages
-In order to encrypt further messages, use the `encrypt` function. This function allows you to encrypt data and strings.
+To encrypt future messages, use the `encrypt` function. This function allows you to encrypt data and strings.
 
-> You also need to use message serialization to transfer encrypted messages between users. And do not forget to update session in storage as its state is changed on every encrypt operation!
+> You also need to use message serialization to transfer encrypted messages between users. And do not forget to update sessions in storage as their state changes with every encryption operation!
 
 - Use the following code-snippets to encrypt strings:
 
@@ -262,9 +262,9 @@ let messageData = message.serialize()
 ```
 
 #### Decrypting Messages
-In order to decrypt messages, use the `decrypt` function. This function allows you to decrypt data and strings.
+To decrypt messages, use the `decrypt` function. This function allows you to decrypt data and strings.
 
-> You also need to use message serialization to transfer encrypted messages between users. And do not forget to update session in storage as its state is changed on every decrypt operation!
+> You also need to use message serialization to transfer encrypted messages between users. And do not forget to update sessions in storage as their state changes with every decryption operation!
 
 - Use the following code-snippets to decrypt strings:
 
@@ -294,7 +294,7 @@ try! secureChat.storeSession(session)
 In this section you'll find out how to build a group chat using the Virgil Ratchet SDK.
 
 ### Create Group Chat Ticket
-Let's assume Alice wants to start group chat with Bob and Carol. First of all, you have to create a new group session ticket by running the `startNewGroupSession` method. This ticket holds shared root key for further group encryption, therefore it should be encrypted and transmitted to other group participants. Every group chat should have unique 32-byte session identifier, we recommend to tie this identifier to your unique transport channel id. If your channel id is not 32-byte you can use SHA-256 to derive session id from it.
+Let's assume Alice wants to start a group chat with Bob and Carol. First of all, you have to create a new group session ticket by running the `startNewGroupSession` method. This ticket holds a shared root key for future group encryption. Therefore, it should be encrypted and transmitted to other group participants. Every group chat should have a unique 32-byte session identifier. We recommend tying this identifier to your unique transport channel id. If your channel id is not 32-bytes you can use SHA-256 to derive a session id from it.
 
 ```Swift
 // Create transport channel according to your app logic and get session id from it
@@ -304,7 +304,7 @@ let ticket = try! secureChat.startNewGroupSession(sessionId: sessionId)
 ```
 
 ### Start Group Chat Session
-Now, you have to start the group session by running the `startGroupSession` function. This function requires specifying the group chat session ID, the receivers' Virgil Cards and ticket.
+Now, start the group session by running the `startGroupSession` function. This function requires specifying the group chat session ID, the receivers' Virgil Cards and tickets.
 
 ```Swift
 let receiverCards = try! cardManager.searchCards(["Bob", "Carol"]).startSync().getResult()
@@ -315,24 +315,24 @@ let groupSession = try! secureChat.startGroupSession(with: receiverCards,
 ```
 
 ###  Store the Group Session
-The Ratchet SDK doesn't store and update the group chat session itself. That's why you need to use the `storeGroupSession` SDK function for storing the chat sessions.
+The Ratchet SDK doesn't store and update the group chat session itself. Use the `storeGroupSession` SDK function to store the chat sessions.
 
-> Also, you need to store existing session after operations that change the session's state (encrypt, decrypt, setParticipants, updateParticipants), therefore if the session already exists in storage, it will be overwritten
+> Also, store existing session after operations that change the session's state (encrypt, decrypt, setParticipants, updateParticipants). If the session already exists in storage, it will be overwritten
 
 ```swift
 try! secureChat.storeGroupSession(groupSession)
 ```
 
 ### Send the Group Ticket
-Now, you have to provide the group chat ticket to other members.
+Next, provide the group chat ticket to other members.
 
-- First of all, let's serialize the ticket
+- First, serialize the ticket
 
 ```Swift
 let ticketData = ticket.serialize()
 ```
 
-- For security reasons we can't send the unprotected ticket, because it contains unencrypted symmetric key. Therefore, we have to encrypt the serialized ticket for the receivers. The only proper secure way to do this, is to use peer-to-peer Double Ratchet sessions with each of participants to send the ticket.
+- For security reasons, we can't send the unprotected ticket because it contains an unencrypted symmetric key. Therefore, we have to encrypt the serialized ticket for the receivers. The only secure way to do this is to use peer-to-peer Double Ratchet sessions with each participant to send the ticket.
 
 ```Swift
 for card in receiverCards {
@@ -348,7 +348,7 @@ for card in receiverCards {
     // Send ticket to receiver
 }
 ```
-- Now, use your application's business logic to share this encrypted ticket with the group chat participants.
+- Next, use your application's business logic to share the encrypted ticket with the group chat participants.
 
 ### Join the Group Chat
 Now, when we have the group chat created, other participants can join this chat using the group chat ticket.
@@ -357,7 +357,7 @@ Now, when we have the group chat created, other participants can join this chat 
 
 ```Swift
 guard let session = secureChat.existingSession(withParticpantIdentity: "Alice") else {
-    // If you don't have session, see Peer-to-peer Chat Example on how to create it as Receiver.
+    // If you don't have a session, see the peer-to-peer chat example on how to create it as a receiver.
     return
 }
 
@@ -371,7 +371,7 @@ let ticketData = session.decryptData(from: encryptedTicketMessage)
 ```Swift
 let ticket = try! RatchetGroupMessage.deserialize(input: ticketData)
 ```
-- Join the group chat by running the `startGroupSession` function and store session.
+- Join the group chat by running the `startGroupSession` function and store the session.
 
 ```Swift
 let receiverCards = try! cardManager.searchCards(["Alice", "Bob"]).startSync().getResult()
@@ -386,7 +386,7 @@ try! secureChat.storeGroupSession(groupSession)
 ### Encrypt and decrypt messages
 
 #### Encrypting messages
-In order to encrypt messages for the group chat, use the `encrypt` function. This function allows you to encrypt data and strings. You still need to use message serialization to transfer encrypted messages between users. And do not forget to update session in storage as its state is changed on every encrypt operation!
+In order to encrypt messages for the group chat, use the `encrypt` function. This function allows you to encrypt data and strings. You still need to use message serialization to transfer encrypted messages between users. And do not forget to update sessions in storage as their state is changed with every encryption operation!
 
 - Use the following code-snippets to encrypt strings:
 ```swift
@@ -409,7 +409,7 @@ let messageData = message.serialize()
 ```
 
 #### Decrypting Messages
-In order to decrypt messages, use the `decrypt` function. This function allows you to decrypt data and strings. Do not forget to update session in storage as its state is changed on every encrypt operation!
+To decrypt messages, use the `decrypt` function. This function allows you to decrypt data and strings. Do not forget to update sessions in storage as their state changes with every encrypt operation!
 
 - Use the following code-snippets to decrypt strings:
 ```Swift
@@ -438,9 +438,9 @@ try! groupSession.storeGroupSession(groupSession)
 This library is released under the [3-clause BSD License](LICENSE).
 
 ## Support
-Our developer support team is here to help you. Find out more information on our [Help Center](https://help.virgilsecurity.com/).
+Our developer support team is here to help you. Find out more information at our [Help Center](https://help.virgilsecurity.com/).
 
-You can find us on [Twitter](https://twitter.com/VirgilSecurity) or send us email support@VirgilSecurity.com.
+You can find us on [Twitter](https://twitter.com/VirgilSecurity) or send us an email at support@VirgilSecurity.com.
 
 Also, get extra help from our support team on [Slack](https://virgilsecurity.com/join-community).
 
