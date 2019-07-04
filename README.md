@@ -13,23 +13,20 @@
 <a href="https://developer.virgilsecurity.com/docs"><img width="230px" src="https://cdn.virgilsecurity.com/assets/images/github/logos/virgil-logo-red.png" align="left" hspace="10" vspace="6"></a> 
 [Virgil Security](https://virgilsecurity.com) provides a set of services and open source libraries for adding security to any application. If you're developing a chat application, you'll understand the need for a  high level of data protection to ensure confidentiality and data integrity. 
 
-For sure you've heard of our [e3kit](https://github.com/VirgilSecurity/virgil-e3kit-x) which offers a high level of end-to-end encription, but if you need maximum protection with your application, [Virgil Security](https://virgilsecurity.com) presents the Double Ratchet SDK. With the powerful tools in this SDK, you can protect encrypted data, even if a user's private key has been stolen. The [Double Ratchet](https://signal.org/docs/specifications/doubleratchet/) kit not only assigns a private encryption key with each message, but also allows the developer to limit the lifecycle of these keys. If a key is stolen, it will expire according to your application's life-cycle policies which provides the maximum security of historical data. 
+You may have heard of our [e3kit](https://github.com/VirgilSecurity/virgil-e3kit-x) which offers a high level of end-to-end encription, but if you need maximum protection with your application, Virgil Security presents the Double Ratchet SDK – an implementation of the [Double Ratchet Algorithm](https://signal.org/docs/specifications/doubleratchet/). With the powerful tools in this SDK, you can protect encrypted data, even if user messages or a private key has been stolen. The Double Ratchet SDK not only assigns a private encryption key with each chat session, but also allows the developer to limit the lifecycle of these keys. In the event an active key is stolen, it will expire according to the predetermined life-cycle you had set in your application.  
 
-To implement our Double Ratchet technology, you'll also include:
-- **Virgil Perfect Forward Secrecy (PFS) service** – a standalone web-service designed to manage one-time keys and long-term keys. These keys are based on their Identity Public Keys which are public keys embedded in the user cards published by Virgil Cards services.
-- **Ratchet SDK** – interacts with the PFS service to publish and manage one-time keys (OTK), long-term keys (LTK), and interacts with Virgil Cards service to retrieve the user identity cards the OTK and LTK are based on. The Ratchet SDK issues chat participants new keys for every message, so previous private keys cannot be determined from new keys. 
-
-Following this, communication applications will use the Double Ratchet SDK to initialize chat sessions and send and receive encrypted messages. As a result, adding Virgil Perfect Forward Secrecy (PFS) to your communication prevents compromising a user's long-term private key from affecting the confidentiality of past communications.
+Ratchet SDK interacts with the [PFS service](https://developer.virgilsecurity.com/docs/api-reference/pfs-service/v4) to publish and manage one-time keys (OTK), long-term keys (LTK), and interacts with Virgil Cards service to retrieve the user identity cards the OTK and LTK are based on. The Ratchet SDK issues chat participants new keys for every chat session. As a result new session keys cannot be used to compromise past session keys. 
 
 
 # SDK Features
 - communicate with Virgil PFS Service
 - manage users' one-time keys (OTK) and long-term keys (LTK)
-- enable group chat encryption
+- enable group or peer-to-peer chat encryption
+- uses the [Virgil crypto library](https://github.com/VirgilSecurity/virgil-crypto-c) and [Virgil Core SDK](https://github.com/VirgilSecurity/virgil-sdk-x)
 
 ## Installation
 
-Virgil Ratchet SDK is provided as a set of frameworks distributed via Carthage and CocoaPods. Also, in this guide, you'll find information about VirgilCrypto (the Virgil Crypto Library) that Virgil Ratchet SDK uses to perform cryptographic operations.
+Virgil Ratchet SDK is provided as a set of frameworks distributed via Carthage and CocoaPods.
 
 All frameworks are available for:
 - iOS 9.0+
