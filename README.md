@@ -10,12 +10,12 @@
 
 ## Introduction
 
-<a href="https://developer.virgilsecurity.com/docs"><img width="230px" src="https://cdn.virgilsecurity.com/assets/images/github/logos/virgil-logo-red.png" align="left" hspace="10" vspace="6"></a> 
-[Virgil Security](https://virgilsecurity.com) provides a set of services and open source libraries for adding security to any application. If you're developing a chat application, you'll understand the need for a  high level of data protection to ensure confidentiality and data integrity. 
+<a href="https://developer.virgilsecurity.com/docs"><img width="230px" src="https://cdn.virgilsecurity.com/assets/images/github/logos/virgil-logo-red.png" align="left" hspace="10" vspace="6"></a>
+[Virgil Security](https://virgilsecurity.com) provides a set of services and open source libraries for adding security to any application. If you're developing a chat application, you'll understand the need for a  high level of data protection to ensure confidentiality and data integrity.
 
 You may have heard of our [e3kit](https://github.com/VirgilSecurity/virgil-e3kit-x) which offers a high level of end-to-end encription, but if you need maximum protection with your application, Virgil Security presents the Double Ratchet SDK – an implementation of the [Double Ratchet Algorithm](https://signal.org/docs/specifications/doubleratchet/). With the powerful tools in this SDK, you can protect encrypted data, even if user messages or a private key has been stolen. The Double Ratchet SDK not only assigns a private encryption key with each chat session, but also allows the developer to limit the lifecycle of these keys. In the event an active key is stolen, it will expire according to the predetermined lifecycle you had set in your application.  
 
-Ratchet SDK interacts with the [PFS service](https://developer.virgilsecurity.com/docs/api-reference/pfs-service/v4) to publish and manage one-time keys (OTK), long-term keys (LTK), and interacts with Virgil Cards service to retrieve the user identity cards the OTK and LTK are based on. The Ratchet SDK issues chat participants new keys for every chat session. As a result new session keys cannot be used to compromise past session keys. 
+Ratchet SDK interacts with the [PFS service](https://developer.virgilsecurity.com/docs/api-reference/pfs-service/v5) to publish and manage one-time keys (OTK), long-term keys (LTK), and interacts with Virgil Cards service to retrieve the user identity cards the OTK and LTK are based on. The Ratchet SDK issues chat participants new keys for every chat session. As a result new session keys cannot be used to compromise past session keys.
 
 
 # SDK Features
@@ -142,14 +142,14 @@ Make sure you have registered with the [Virgil Dashboard][_dashboard] and have c
 
 Besides registering on your own server, users must also be registered on the Virgil Cloud. If they already are, you can skip this step and proceed to the next one.
 
-Every Virgil user has a `Virgil Card` with an unlimited life-time on their device. The card contains a `Private Key`, `Public Key`, and the user's `identity`. 
+Every Virgil user has a `Virgil Card` with an unlimited life-time on their device. The card contains a `Private Key`, `Public Key`, and the user's `identity`.
 
 To register users on the Virgil Cloud (i.e. create and publish their `Identity Cards`), follow these steps:
 - Set up your backend to generate a JWT to provide your service and users with access to the Virgil Cloud.
 - Set up the client side for authenticating users on the Virgil Cloud.
 - Set up the Cards Manager on your client side to generate and publish `Virgil Card` with Virgil Cards Service.
 
-If you've already installed the Virgil Ratchet SDK or don't need to install the Virgil SDK or Virgil Crypto, you can use [this guide](https://developer.virgilsecurity.com/docs/how-to/public-key-management/v5/create-card) for the steps described above. 
+If you've already installed the Virgil Ratchet SDK or don't need to install the Virgil SDK or Virgil Crypto, you can use [this guide](https://developer.virgilsecurity.com/docs/how-to/public-key-management/v5/create-card) for the steps described above.
 
 
 ### Initialize SDK
@@ -451,4 +451,4 @@ Also, get extra help from our support team on [Slack](https://virgilsecurity.com
 [_virgil_crypto]: https://github.com/VirgilSecurity/virgil-crypto-c
 [_reference_api]: https://developer.virgilsecurity.com/docs/api-reference
 [_use_cases]: https://developer.virgilsecurity.com/docs/use-cases
-[_use_case_pfs]:https://developer.virgilsecurity.com/docs/swift/use-cases/v4/perfect-forward-secrecy
+[_use_case_pfs]:https://developer.virgilsecurity.com/docs/swift/use-cases/v5/perfect-forward-secrecy
