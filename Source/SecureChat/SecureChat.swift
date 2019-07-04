@@ -50,7 +50,7 @@ import VirgilCrypto
 /// - invalidSessionIdLen: Session Id should be 32-byte
 /// - invalidCardId: Invalid card id
 /// - sessionIdMismatch: Session id mismatch
-@objc public enum SecureChatError: Int, Error {
+@objc(VSRSecureChatError) public enum SecureChatError: Int, LocalizedError {
     case sessionAlreadyExists = 1
     case wrongIdentityPublicKeyCrypto = 2
     case identityKeyDoesntMatch = 3
@@ -63,7 +63,7 @@ import VirgilCrypto
     case sessionIdMismatch = 10
 
     /// Human-readable localized description
-    public var localizedDescription: String {
+    public var errorDescription: String {
         switch self {
         case .sessionAlreadyExists:
             return "Session with this participant already exists"

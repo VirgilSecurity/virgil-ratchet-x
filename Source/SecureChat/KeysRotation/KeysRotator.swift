@@ -41,14 +41,14 @@ import VirgilCrypto
 /// KeysRotator errors
 ///
 /// - concurrentRotation: concurrent rotation is not allowed
-@objc public enum KeysRotatorError: Int, Error {
+@objc(VSRKeysRotatorError) public enum KeysRotatorError: Int, LocalizedError {
     case concurrentRotation = 1
 
     /// Human-readable localized description
-    public var localizedDescription: String {
+    public var errorDescription: String? {
         switch self {
         case .concurrentRotation:
-            return "concurrent rotation is not allowed"
+            return "Concurrent rotation is not allowed"
         }
     }
 }

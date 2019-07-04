@@ -46,7 +46,7 @@ import VirgilCryptoRatchet
 /// - invalidCardId: invalid card id
 /// - publicKeyIsNotVirgil: public key is not VirgilPublicKey
 /// - wrongSender: message sender doesn't match
-@objc(VSCRSecureGroupSessionError) public enum SecureGroupSessionError: Int, Error {
+@objc(VSRSecureGroupSessionError) public enum SecureGroupSessionError: Int, LocalizedError {
     case invalidUtf8String = 1
     case notConsequentTicket = 2
     case invalidMessageType = 3
@@ -55,7 +55,7 @@ import VirgilCryptoRatchet
     case wrongSender = 6
 
     /// Human-readable localized description
-    public var localizedDescription: String {
+    public var errorDescription: String {
         switch self {
         case .invalidUtf8String:
             return "invalid conversion to/from utf-8 string"

@@ -40,11 +40,11 @@ import VirgilCryptoRatchet
 /// SecureSession errors
 ///
 /// - invalidUtf8String: invalid conversion to/from utf-8 string
-@objc(VSCRSecureSessionError) public enum SecureSessionError: Int, Error {
+@objc(VSRSecureSessionError) public enum SecureSessionError: Int, LocalizedError {
     case invalidUtf8String = 1
 
     /// Human-readable localized description
-    public var localizedDescription: String {
+    public var errorDescription: String {
         switch self {
         case .invalidUtf8String:
             return "invalid conversion to/from utf-8 string"
