@@ -42,10 +42,22 @@ import VirgilCrypto
 /// - keyAlreadyExists: This key already exists
 /// - keyNotFound: Key not found
 /// - keyAlreadyMarked: Key is already marked as orphaned
-@objc public enum FileOneTimeKeysStorageError: Int, Error {
+@objc(VSRFileOneTimeKeysStorageError) public enum FileOneTimeKeysStorageError: Int, LocalizedError {
     case keyAlreadyExists = 1
     case keyNotFound = 2
     case keyAlreadyMarked = 3
+
+    /// Human-readable localized description
+    public var errorDescription: String {
+        switch self {
+        case .keyAlreadyExists:
+            return "This key already exists"
+        case .keyNotFound:
+            return "Key not found"
+        case .keyAlreadyMarked:
+            return "Key is already marked as orphaned"
+        }
+    }
 }
 
 /// One-time keys storage using file

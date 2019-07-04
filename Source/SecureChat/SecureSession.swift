@@ -39,9 +39,17 @@ import VirgilCryptoRatchet
 
 /// SecureSession errors
 ///
-/// - invalidUtf8String: invalid convesion to/from utf-8 string
-@objc(VSCRSecureSessionError) public enum SecureSessionError: Int, Error {
+/// - invalidUtf8String: invalid conversion to/from utf-8 string
+@objc(VSRSecureSessionError) public enum SecureSessionError: Int, LocalizedError {
     case invalidUtf8String = 1
+
+    /// Human-readable localized description
+    public var errorDescription: String {
+        switch self {
+        case .invalidUtf8String:
+            return "invalid conversion to/from utf-8 string"
+        }
+    }
 }
 
 /// SecureSession
