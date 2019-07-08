@@ -238,7 +238,7 @@ To encrypt future messages, use the `encrypt` function. This function allows you
 - Use the following code-snippets to encrypt strings:
 
 ```swift
-let session = secureChat.existingSession(withParticpantIdentity: bobCard.identity)!
+let session = secureChat.existingSession(withParticipantIdentity: bobCard.identity)!
 
 let message = try! session.encrypt(string: "Hello, Bob!")
 
@@ -251,7 +251,7 @@ let messageData = message.serialize()
 - Use the following code-snippets to encrypt data:
 
 ```Swift
-let session = secureChat.existingSession(withParticpantIdentity: bobCard.identity)!
+let session = secureChat.existingSession(withParticipantIdentity: bobCard.identity)!
 
 let message = try! session.encrypt(data: data)
 
@@ -269,7 +269,7 @@ To decrypt messages, use the `decrypt` function. This function allows you to dec
 - Use the following code-snippets to decrypt strings:
 
 ```Swift
-let session = secureChat.existingSession(withParticpantIdentity: aliceCard.identity)!
+let session = secureChat.existingSession(withParticipantIdentity: aliceCard.identity)!
 
 let message = try! RatchetGroupMessage.deserialize(input: messageData)
 
@@ -280,7 +280,7 @@ try! secureChat.storeSession(session)
 - Use the following code-snippets to decrypt data:
 
 ```swift
-let session = secureChat.existingSession(withParticpantIdentity: aliceCard.identity)
+let session = secureChat.existingSession(withParticipantIdentity: aliceCard.identity)
 
 let message = try! RatchetGroupMessage.deserialize(input: messageData)
 
@@ -336,7 +336,7 @@ let ticketData = ticket.serialize()
 
 ```Swift
 for card in receiverCards {
-    guard let session = secureChat.existingSession(withParticpantIdentity: card.identity) else {
+    guard let session = secureChat.existingSession(withParticipantIdentity: card.identity) else {
         // If you don't have session, see Peer-to-peer Chat Example on how to create it as Sender.
         return
     }
@@ -356,7 +356,7 @@ Now, when we have the group chat created, other participants can join the chat u
 - First, we have to decrypt the encrypted ticket
 
 ```Swift
-guard let session = secureChat.existingSession(withParticpantIdentity: "Alice") else {
+guard let session = secureChat.existingSession(withParticipantIdentity: "Alice") else {
     // If you don't have a session, see the peer-to-peer chat example on how to create it as a receiver.
     return
 }
