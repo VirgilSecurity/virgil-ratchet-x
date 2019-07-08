@@ -429,7 +429,7 @@ let carolCard = receiversCard.first { $0.identity == "Carol" }!
 
 let data = try! groupSession.decryptData(from: message, senderCardId: carolCard.identifier)
 
-try! groupSession.storeGroupSession(groupSession)
+try! secureChat.storeGroupSession(groupSession)
 ```
 
 
