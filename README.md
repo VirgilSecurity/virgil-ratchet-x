@@ -271,9 +271,9 @@ To decrypt messages, use the `decrypt` function. This function allows you to dec
 ```Swift
 let session = secureChat.existingSession(withParticipantIdentity: aliceCard.identity)!
 
-let message = try! RatchetGroupMessage.deserialize(input: messageData)
+let message = try! RatchetMessage.deserialize(input: messageData)
 
-let decryptedMessage = try! session.decryptString(from: ratchetMessage)
+let decryptedMessage = try! session.decryptString(from: message)
 
 try! secureChat.storeSession(session)
 ```
@@ -282,9 +282,9 @@ try! secureChat.storeSession(session)
 ```swift
 let session = secureChat.existingSession(withParticipantIdentity: aliceCard.identity)
 
-let message = try! RatchetGroupMessage.deserialize(input: messageData)
+let message = try! RatchetMessage.deserialize(input: messageData)
 
-let decryptedMessage = try! session.decryptData(from: ratchetMessage)
+let decryptedMessage = try! session.decryptData(from: message)
 
 try! secureChat.storeSession(session)
 ```
