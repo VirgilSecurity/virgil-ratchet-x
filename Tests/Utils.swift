@@ -122,12 +122,12 @@ class Utils {
             let receiver: SecureSession
             
             if Bool.random() {
-                sender = senderSecureChat.existingSession(withParticpantIdentity: receiverIdentity)!
-                receiver = receiverSecureChat.existingSession(withParticpantIdentity: senderIdentity)!
+                sender = senderSecureChat.existingSession(withParticipantIdentity: receiverIdentity)!
+                receiver = receiverSecureChat.existingSession(withParticipantIdentity: senderIdentity)!
             }
             else {
-                sender = receiverSecureChat.existingSession(withParticpantIdentity: senderIdentity)!
-                receiver = senderSecureChat.existingSession(withParticpantIdentity: receiverIdentity)!
+                sender = receiverSecureChat.existingSession(withParticipantIdentity: senderIdentity)!
+                receiver = senderSecureChat.existingSession(withParticipantIdentity: receiverIdentity)!
             }
             
             let plainText = UUID().uuidString

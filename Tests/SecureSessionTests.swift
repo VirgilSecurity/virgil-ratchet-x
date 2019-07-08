@@ -159,7 +159,7 @@ class SecureSessionTests: XCTestCase {
             
             try senderSecureChat.storeSession(senderSession)
             
-            XCTAssert(senderSecureChat.existingSession(withParticpantIdentity: receiverCard.identity) != nil)
+            XCTAssert(senderSecureChat.existingSession(withParticipantIdentity: receiverCard.identity) != nil)
             
             let plainText = UUID().uuidString
             let cipherText = try senderSession.encrypt(string: plainText)
@@ -168,7 +168,7 @@ class SecureSessionTests: XCTestCase {
             
             try receiverSecureChat.storeSession(receiverSession)
             
-            XCTAssert(receiverSecureChat.existingSession(withParticpantIdentity: senderCard.identity) != nil)
+            XCTAssert(receiverSecureChat.existingSession(withParticipantIdentity: senderCard.identity) != nil)
             
             let decryptedMessage = try receiverSession.decryptString(from: cipherText)
             

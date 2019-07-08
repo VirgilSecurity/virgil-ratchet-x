@@ -256,19 +256,19 @@ import VirgilCrypto
     /// Checks for existing session with given participent in the storage
     ///
     /// - Parameters:
-    ///   - particpantIdentity: participant identity
+    ///   - participantIdentity: participant identity
     ///   - name: session name
     /// - Returns: [SecureSession](x-source-tag://SecureSession) if exists
-    @objc open func existingSession(withParticpantIdentity particpantIdentity: String,
+    @objc open func existingSession(withParticipantIdentity participantIdentity: String,
                                     name: String? = nil) -> SecureSession? {
-        if let session = self.sessionStorage.retrieveSession(participantIdentity: particpantIdentity,
+        if let session = self.sessionStorage.retrieveSession(participantIdentity: participantIdentity,
                                                              name: name ?? SecureChat.defaultSessionName) {
-            Log.debug("Found existing session with \(particpantIdentity)")
+            Log.debug("Found existing session with \(participantIdentity)")
 
             return session
         }
         else {
-            Log.debug("Existing session with \(particpantIdentity) was not found")
+            Log.debug("Existing session with \(participantIdentity) was not found")
 
             return nil
         }
@@ -277,24 +277,24 @@ import VirgilCrypto
     /// Deletes session with given participant identity
     ///
     /// - Parameters:
-    ///   - particpantIdentity: participant identity
+    ///   - participantIdentity: participant identity
     ///   - name: Session name
     /// - Throws: Rethrows from SessionStorage
-    @objc public func deleteSession(withParticpantIdentity particpantIdentity: String, name: String? = nil) throws {
-        Log.debug("Deleting session with \(particpantIdentity)")
+    @objc public func deleteSession(withParticipantIdentity participantIdentity: String, name: String? = nil) throws {
+        Log.debug("Deleting session with \(participantIdentity)")
 
-        try self.sessionStorage.deleteSession(participantIdentity: particpantIdentity,
+        try self.sessionStorage.deleteSession(participantIdentity: participantIdentity,
                                               name: name ?? SecureChat.defaultSessionName)
     }
 
     /// Deletes session with given participant identity
     ///
-    /// - Parameter particpantIdentity: participant identity
+    /// - Parameter participantIdentity: participant identity
     /// - Throws: Rethrows from SessionStorage
-    @objc public func deleteAllSessions(withParticpantIdentity particpantIdentity: String) throws {
-        Log.debug("Deleting session with \(particpantIdentity)")
+    @objc public func deleteAllSessions(withParticipantIdentity participantIdentity: String) throws {
+        Log.debug("Deleting session with \(participantIdentity)")
 
-        try self.sessionStorage.deleteSession(participantIdentity: particpantIdentity, name: nil)
+        try self.sessionStorage.deleteSession(participantIdentity: participantIdentity, name: nil)
     }
 
     /// Deletes group session with given identifier
@@ -331,7 +331,7 @@ import VirgilCrypto
             do {
                 Log.debug("Starting new session with \(receiverCard.identity)")
 
-                guard self.existingSession(withParticpantIdentity: receiverCard.identity,
+                guard self.existingSession(withParticipantIdentity: receiverCard.identity,
                                            name: name ?? SecureChat.defaultSessionName) == nil else {
                     throw SecureChatError.sessionAlreadyExists
                 }
@@ -385,7 +385,7 @@ import VirgilCrypto
                 Log.debug("Starting new session with \(receiverCards.map { $0.identity })")
 
                 for card in receiverCards {
-                    guard self.existingSession(withParticpantIdentity: card.identity,
+                    guard self.existingSession(withParticipantIdentity: card.identity,
                                                name: name ?? SecureChat.defaultSessionName) == nil else {
                         throw SecureChatError.sessionAlreadyExists
                     }
@@ -533,7 +533,7 @@ import VirgilCrypto
                                                 ratchetMessage: RatchetMessage) throws -> SecureSession {
         Log.debug("Responding to session with \(senderCard.identity) queued")
 
-        guard self.existingSession(withParticpantIdentity: senderCard.identity, name: name) == nil else {
+        guard self.existingSession(withParticipantIdentity: senderCard.identity, name: name) == nil else {
             throw SecureChatError.sessionAlreadyExists
         }
 
