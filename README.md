@@ -89,7 +89,6 @@ This will build each dependency or download a pre-compiled framework from github
 On your application targets’ “General” settings tab, in the “Linked Frameworks and Libraries” section, add following frameworks from the *Carthage/Build* folder inside your project's folder:
  - VirgilSDKRatchet
  - VirgilSDK
- - VirgilCryptoAPI
  - VirgilCrypto
  - VirgilCryptoFoundation
  - VirgilCryptoRatchet
@@ -108,7 +107,6 @@ and add the paths to the frameworks you want to use under “Input Files”, e.g
 ```
 $(SRCROOT)/Carthage/Build/iOS/VirgilSDKRatchet.framework
 $(SRCROOT)/Carthage/Build/iOS/VirgilSDK.framework
-$(SRCROOT)/Carthage/Build/iOS/VirgilCryptoAPI.framework
 $(SRCROOT)/Carthage/Build/iOS/VirgilCrypto.framework
 $(SRCROOT)/Carthage/Build/iOS/VirgilCryptoFoundation.framework
 $(SRCROOT)/Carthage/Build/iOS/VirgilCryptoRatchet.framework
@@ -122,7 +120,6 @@ $(SRCROOT)/Carthage/Build/iOS/VSCRatchet.framework
 On your application target's “General” settings tab, in the “Embedded Binaries” section, drag and drop following frameworks from the Carthage/Build folder on disk:
  - VirgilSDKRatchet
  - VirgilSDK
- - VirgilCryptoAPI
  - VirgilCrypto
  - VirgilCryptoFoundation
  - VirgilCryptoRatchet

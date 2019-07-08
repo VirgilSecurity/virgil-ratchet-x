@@ -94,7 +94,7 @@ extension RatchetClient: RatchetClientProtocol {
         
         let response = try self.sendWithRetry(request, retry: self.createRetry(), tokenContext: tokenContext)
             .startSync()
-            .getResult()
+            .get()
 
         try self.validateResponse(response)
     }
@@ -139,7 +139,7 @@ extension RatchetClient: RatchetClientProtocol {
         
         let response = try self.sendWithRetry(request, retry: self.createRetry(), tokenContext: tokenContext)
             .startSync()
-            .getResult()
+            .get()
 
         return try self.processResponse(response)
     }
@@ -167,7 +167,7 @@ extension RatchetClient: RatchetClientProtocol {
         
         let response = try self.sendWithRetry(request, retry: self.createRetry(), tokenContext: tokenContext)
             .startSync()
-            .getResult()
+            .get()
 
         return try self.processResponse(response)
     }
@@ -195,7 +195,7 @@ extension RatchetClient: RatchetClientProtocol {
         
         let response = try self.sendWithRetry(request, retry: self.createRetry(), tokenContext: tokenContext)
             .startSync()
-            .getResult()
+            .get()
 
         return try self.processResponse(response)
     }
@@ -219,7 +219,7 @@ extension RatchetClient: RatchetClientProtocol {
         
         let response = try self.sendWithRetry(request, retry: self.createRetry(), tokenContext: tokenContext)
             .startSync()
-            .getResult()
+            .get()
 
         try self.validateResponse(response)
     }
