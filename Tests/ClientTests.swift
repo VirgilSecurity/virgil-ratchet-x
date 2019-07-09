@@ -70,7 +70,7 @@ class ClientTests: XCTestCase {
         
         let cardManager = CardManager(params: cardManagerParams)
         
-        let card = try cardManager.publishCard(privateKey: identityKeyPair.privateKey, publicKey: identityKeyPair.publicKey, identity: identity).startSync().getResult()
+        let card = try cardManager.publishCard(privateKey: identityKeyPair.privateKey, publicKey: identityKeyPair.publicKey, identity: identity).startSync().get()
         
         return (identity, identityKeyPair.privateKey, card, client)
     }

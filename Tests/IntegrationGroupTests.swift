@@ -82,7 +82,7 @@ class IntegrationGroupTests: XCTestCase {
             
             let cardManager = CardManager(params: cardManagerParams)
             
-            let card = try cardManager.publishCard(privateKey: keyPair.privateKey, publicKey: keyPair.publicKey, identity: identity).startSync().getResult()
+            let card = try cardManager.publishCard(privateKey: keyPair.privateKey, publicKey: keyPair.publicKey, identity: identity).startSync().get()
             
             let params = try KeychainStorageParams.makeKeychainStorageParams(appName: "test")
             let longTermKeysStorage = try KeychainLongTermKeysStorage(identity: identity, params: params)

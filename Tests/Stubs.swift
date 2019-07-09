@@ -207,7 +207,7 @@ class RamClient: RatchetClientProtocol {
         
         let publicKey: VirgilPublicKey
         if let identityCardId = identityCardId {
-            let card = try self.cardManager.getCard(withId: identityCardId).startSync().getResult()
+            let card = try self.cardManager.getCard(withId: identityCardId).startSync().get()
             publicKey = card.publicKey
             userStore.identityPublicKey = (publicKey, try self.crypto.exportPublicKey(publicKey))
         }

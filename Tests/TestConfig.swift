@@ -37,13 +37,11 @@
 import Foundation
 
 @objc public class TestConfig: NSObject, Decodable {
-    @objc public let ApiPublicKeyId: String
     @objc public let ApiPrivateKey: String
     @objc public let AppId: String
     @objc public let ServiceURL: String
     
-    @objc init(apiPublicKeyId: String, apiPrivateKey: String, appId: String, serviceURL: String) {
-        self.ApiPublicKeyId = apiPublicKeyId
+    @objc init(apiPrivateKey: String, appId: String, serviceURL: String) {
         self.ApiPrivateKey = apiPrivateKey
         self.AppId = appId
         self.ServiceURL = serviceURL

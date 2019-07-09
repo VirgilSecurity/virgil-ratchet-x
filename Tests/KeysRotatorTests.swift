@@ -104,14 +104,14 @@ class KeysRotatorTests: XCTestCase {
         
         let cardManager = CardManager(params: cardManagerParams)
         
-        let card = try cardManager.publishCard(privateKey: identityKeyPair.privateKey, publicKey: identityKeyPair.publicKey, identity: identity).startSync().getResult()
+        let card = try cardManager.publishCard(privateKey: identityKeyPair.privateKey, publicKey: identityKeyPair.publicKey, identity: identity).startSync().get()
         
         return (cardManager, identity, identityKeyPair.privateKey, card)
     }
     
     private func rotate(rotator: KeysRotator) throws -> RotationLog {
         
-        return try rotator.rotateKeysOperation().startSync().getResult()
+        return try rotator.rotateKeysOperation().startSync().get()
     }
     
     func test1__rotate__empty_storage__should_create_keys() {

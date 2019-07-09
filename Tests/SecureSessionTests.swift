@@ -89,8 +89,8 @@ class SecureSessionTests: XCTestCase {
         
         let receiverCardManager = CardManager(params: receiverCardManagerParams)
         
-        let receiverCard = try receiverCardManager.publishCard(privateKey: receiverIdentityKeyPair.privateKey, publicKey: receiverIdentityKeyPair.publicKey, identity: receiverIdentity).startSync().getResult()
-        let senderCard = try senderCardManager.publishCard(privateKey: senderIdentityKeyPair.privateKey, publicKey: senderIdentityKeyPair.publicKey, identity: senderIdentity).startSync().getResult()
+        let receiverCard = try receiverCardManager.publishCard(privateKey: receiverIdentityKeyPair.privateKey, publicKey: receiverIdentityKeyPair.publicKey, identity: receiverIdentity).startSync().get()
+        let senderCard = try senderCardManager.publishCard(privateKey: senderIdentityKeyPair.privateKey, publicKey: senderIdentityKeyPair.publicKey, identity: senderIdentity).startSync().get()
         
         let receiverLongTermKeysStorage = RamLongTermKeysStorage(db: [:])
         let receiverOneTimeKeysStorage = RamOneTimeKeysStorage(db: [:])
@@ -129,9 +129,9 @@ class SecureSessionTests: XCTestCase {
         do {
             let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = try self.initChat()
             
-            _ = try receiverSecureChat.rotateKeys().startSync().getResult()
+            _ = try receiverSecureChat.rotateKeys().startSync().get()
             
-            let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().getResult()
+            let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().get()
             
             let plainText = UUID().uuidString
             let cipherText = try senderSession.encrypt(string: plainText)
@@ -153,9 +153,9 @@ class SecureSessionTests: XCTestCase {
         do {
             let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = try self.initChat()
             
-            _ = try receiverSecureChat.rotateKeys().startSync().getResult()
+            _ = try receiverSecureChat.rotateKeys().startSync().get()
             
-            let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().getResult()
+            let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().get()
             
             try senderSecureChat.storeSession(senderSession)
             
@@ -185,9 +185,9 @@ class SecureSessionTests: XCTestCase {
         do {
             let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = try self.initChat()
             
-            _ = try receiverSecureChat.rotateKeys().startSync().getResult()
+            _ = try receiverSecureChat.rotateKeys().startSync().get()
             
-            let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().getResult()
+            let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().get()
             
             try senderSecureChat.storeSession(senderSession)
             
@@ -199,7 +199,7 @@ class SecureSessionTests: XCTestCase {
             try receiverSecureChat.storeSession(receiverSession)
             
             do {
-                _ = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().getResult()
+                _ = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().get()
                 XCTFail()
             }
             catch SecureChatError.sessionAlreadyExists { }
@@ -217,7 +217,7 @@ class SecureSessionTests: XCTestCase {
             }
             
             do {
-                _ = try receiverSecureChat.startNewSessionAsSender(receiverCard: senderCard).startSync().getResult()
+                _ = try receiverSecureChat.startNewSessionAsSender(receiverCard: senderCard).startSync().get()
                 XCTFail()
             }
             catch SecureChatError.sessionAlreadyExists { }

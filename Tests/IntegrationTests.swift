@@ -89,8 +89,8 @@ class IntegrationTests: XCTestCase {
         let senderCardManager = CardManager(params: senderCardManagerParams)
         let receiverCardManager = CardManager(params: receiverCardManagerParams)
         
-        let receiverCard = try receiverCardManager.publishCard(privateKey: receiverIdentityKeyPair.privateKey, publicKey: receiverIdentityKeyPair.publicKey, identity: receiverIdentity).startSync().getResult()
-        let senderCard = try senderCardManager.publishCard(privateKey: senderIdentityKeyPair.privateKey, publicKey: senderIdentityKeyPair.publicKey, identity: senderIdentity).startSync().getResult()
+        let receiverCard = try receiverCardManager.publishCard(privateKey: receiverIdentityKeyPair.privateKey, publicKey: receiverIdentityKeyPair.publicKey, identity: receiverIdentity).startSync().get()
+        let senderCard = try senderCardManager.publishCard(privateKey: senderIdentityKeyPair.privateKey, publicKey: senderIdentityKeyPair.publicKey, identity: senderIdentity).startSync().get()
         
         let params = try KeychainStorageParams.makeKeychainStorageParams(appName: "test")
         let receiverLongTermKeysStorage = try KeychainLongTermKeysStorage(identity: receiverIdentity, params: params)
@@ -133,9 +133,9 @@ class IntegrationTests: XCTestCase {
         do {
             let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = try self.initChat()
             
-            _ = try receiverSecureChat.rotateKeys().startSync().getResult()
+            _ = try receiverSecureChat.rotateKeys().startSync().get()
             
-            let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().getResult()
+            let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().get()
             
             let plainText = UUID().uuidString
             let cipherText = try senderSession.encrypt(string: plainText)
@@ -157,9 +157,9 @@ class IntegrationTests: XCTestCase {
         do {
             let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = try self.initChat()
             
-            _ = try receiverSecureChat.rotateKeys().startSync().getResult()
+            _ = try receiverSecureChat.rotateKeys().startSync().get()
             
-            let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().getResult()
+            let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().get()
             
             try senderSecureChat.storeSession(senderSession)
             
@@ -193,9 +193,9 @@ class IntegrationTests: XCTestCase {
         do {
             let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = try self.initChat()
             
-            _ = try receiverSecureChat.rotateKeys().startSync().getResult()
+            _ = try receiverSecureChat.rotateKeys().startSync().get()
             
-            let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().getResult()
+            let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().get()
             
             XCTAssert(senderSecureChat.existingSession(withParticipantIdentity: receiverCard.identity) == nil)
             
@@ -235,10 +235,10 @@ class IntegrationTests: XCTestCase {
         do {
             let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = try self.initChat()
             
-            _ = try receiverSecureChat.rotateKeys().startSync().getResult()
-            _ = try senderSecureChat.rotateKeys().startSync().getResult()
+            _ = try receiverSecureChat.rotateKeys().startSync().get()
+            _ = try senderSecureChat.rotateKeys().startSync().get()
         
-            let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().getResult()
+            let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().get()
             
             try senderSecureChat.storeSession(senderSession)
             
@@ -257,7 +257,7 @@ class IntegrationTests: XCTestCase {
             
             sleep(3)
             
-            try senderSecureChat.reset().startSync().getResult()
+            try senderSecureChat.reset().startSync().get()
             
             XCTAssert(senderSecureChat.existingSession(withParticipantIdentity: receiverCard.identity) == nil)
             XCTAssert(try senderSecureChat.longTermKeysStorage.retrieveAllKeys().isEmpty)
@@ -271,7 +271,7 @@ class IntegrationTests: XCTestCase {
             
             sleep(5)
         
-            try receiverSecureChat.reset().startSync().getResult()
+            try receiverSecureChat.reset().startSync().get()
             
             XCTAssert(receiverSecureChat.existingSession(withParticipantIdentity: senderCard.identity) == nil)
             XCTAssert(try receiverSecureChat.longTermKeysStorage.retrieveAllKeys().isEmpty)
@@ -288,14 +288,14 @@ class IntegrationTests: XCTestCase {
         do {
             let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = try self.initChat()
             
-            _ = try receiverSecureChat.rotateKeys().startSync().getResult()
-            _ = try senderSecureChat.rotateKeys().startSync().getResult()
+            _ = try receiverSecureChat.rotateKeys().startSync().get()
+            _ = try senderSecureChat.rotateKeys().startSync().get()
             
             try receiverSecureChat.oneTimeKeysStorage.startInteraction()
             
             XCTAssert(try receiverSecureChat.oneTimeKeysStorage.retrieveAllKeys().count == IntegrationTests.desiredNumberOfOtKeys)
             
-            let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().getResult()
+            let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().get()
             
             let plainText = UUID().uuidString
             let cipherText = try senderSession.encrypt(string: plainText)
@@ -319,8 +319,8 @@ class IntegrationTests: XCTestCase {
         do {
             let (_, _, _, receiverSecureChat) = try self.initChat()
             
-            _ = try receiverSecureChat.rotateKeys().startSync().getResult()
-            _ = try receiverSecureChat.rotateKeys().startSync().getResult()
+            _ = try receiverSecureChat.rotateKeys().startSync().get()
+            _ = try receiverSecureChat.rotateKeys().startSync().get()
         }
         catch {
             XCTFail(error.localizedDescription)
@@ -331,25 +331,25 @@ class IntegrationTests: XCTestCase {
         do {
             let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = try self.initChat()
             
-            _ = try receiverSecureChat.rotateKeys().startSync().getResult()
-            _ = try senderSecureChat.rotateKeys().startSync().getResult()
+            _ = try receiverSecureChat.rotateKeys().startSync().get()
+            _ = try senderSecureChat.rotateKeys().startSync().get()
             
             try receiverSecureChat.oneTimeKeysStorage.startInteraction()
             
             XCTAssert(try receiverSecureChat.oneTimeKeysStorage.retrieveAllKeys().count == IntegrationTests.desiredNumberOfOtKeys)
             
-            let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().getResult()
+            let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().get()
             
             let plainText = UUID().uuidString
             let cipherText = try senderSession.encrypt(string: plainText)
             
-            _ = try receiverSecureChat.rotateKeys().startSync().getResult()
+            _ = try receiverSecureChat.rotateKeys().startSync().get()
             
             XCTAssert(try receiverSecureChat.oneTimeKeysStorage.retrieveAllKeys().count == IntegrationTests.desiredNumberOfOtKeys + 1)
             
             sleep(6)
             
-            _ = try receiverSecureChat.rotateKeys().startSync().getResult()
+            _ = try receiverSecureChat.rotateKeys().startSync().get()
             
             XCTAssert(try receiverSecureChat.oneTimeKeysStorage.retrieveAllKeys().count == IntegrationTests.desiredNumberOfOtKeys)
             
@@ -370,19 +370,19 @@ class IntegrationTests: XCTestCase {
         do {
             let (_, _, _, receiverSecureChat) = try self.initChat()
             
-            _ = try receiverSecureChat.rotateKeys().startSync().getResult()
+            _ = try receiverSecureChat.rotateKeys().startSync().get()
             
             XCTAssert(try receiverSecureChat.longTermKeysStorage.retrieveAllKeys().count == 1)
             
             sleep(11)
             
-            _ = try receiverSecureChat.rotateKeys().startSync().getResult()
+            _ = try receiverSecureChat.rotateKeys().startSync().get()
             
             XCTAssert(try receiverSecureChat.longTermKeysStorage.retrieveAllKeys().count == 2)
             
             sleep(5)
             
-            _ = try receiverSecureChat.rotateKeys().startSync().getResult()
+            _ = try receiverSecureChat.rotateKeys().startSync().get()
             
             XCTAssert(try receiverSecureChat.longTermKeysStorage.retrieveAllKeys().count == 1)
         }
@@ -396,11 +396,11 @@ class IntegrationTests: XCTestCase {
             let (card1, card2, chat1, chat2) = try self.initChat()
             let (card3, card4, chat3, chat4) = try self.initChat()
             
-            _ = try chat2.rotateKeys().startSync().getResult()
-            _ = try chat3.rotateKeys().startSync().getResult()
-            _ = try chat4.rotateKeys().startSync().getResult()
+            _ = try chat2.rotateKeys().startSync().get()
+            _ = try chat3.rotateKeys().startSync().get()
+            _ = try chat4.rotateKeys().startSync().get()
             
-            let sessions = try chat1.startMutipleNewSessionsAsSender(receiverCards: [card2, card3, card4]).startSync().getResult()
+            let sessions = try chat1.startMutipleNewSessionsAsSender(receiverCards: [card2, card3, card4]).startSync().get()
             
             let plainText2 = UUID().uuidString
             let plainText3 = UUID().uuidString
