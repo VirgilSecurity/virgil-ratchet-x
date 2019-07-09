@@ -54,7 +54,11 @@ class ClientTests: XCTestCase {
         
         let privateKey = try! crypto.importPrivateKey(from: Data(base64Encoded: testConfig.ApiPrivateKey)!).privateKey
         
-        let generator = try! JwtGenerator(apiKey: privateKey, crypto: crypto, appId: testConfig.AppId, ttl: 10050)
+        let generator = try! JwtGenerator(apiKey: privateKey,
+                                          apiPublicKeyIdentifier: testConfig.ApiKeyId,
+                                          crypto: crypto,
+                                          appId: testConfig.AppId,
+                                          ttl: 10050)
         
         let tokenProvider = CachingJwtProvider(renewJwtCallback: { context, completion in
             completion(try! generator.generateToken(identity: identity), nil)

@@ -65,7 +65,11 @@ class IntegrationTests: XCTestCase {
         let receiverTokenProvider = CachingJwtProvider(renewJwtCallback: { context, completion in
             let privateKey = try! crypto.importPrivateKey(from: Data(base64Encoded: testConfig.ApiPrivateKey)!).privateKey
             
-            let generator = try! JwtGenerator(apiKey: privateKey, crypto: crypto, appId: testConfig.AppId, ttl: 10050)
+            let generator = try! JwtGenerator(apiKey: privateKey,
+                                              apiPublicKeyIdentifier: testConfig.ApiKeyId,
+                                              crypto: crypto,
+                                              appId: testConfig.AppId,
+                                              ttl: 10050)
             
             completion(try! generator.generateToken(identity: receiverIdentity), nil)
         })
@@ -73,7 +77,11 @@ class IntegrationTests: XCTestCase {
         let senderTokenProvider = CachingJwtProvider(renewJwtCallback: { context, completion in
             let privateKey = try! crypto.importPrivateKey(from: Data(base64Encoded: testConfig.ApiPrivateKey)!).privateKey
             
-            let generator = try! JwtGenerator(apiKey: privateKey, crypto: crypto, appId: testConfig.AppId, ttl: 10050)
+            let generator = try! JwtGenerator(apiKey: privateKey,
+                                              apiPublicKeyIdentifier: testConfig.ApiKeyId,
+                                              crypto: crypto,
+                                              appId: testConfig.AppId,
+                                              ttl: 10050)
             
             completion(try! generator.generateToken(identity: senderIdentity), nil)
         })
