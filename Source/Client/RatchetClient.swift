@@ -58,7 +58,7 @@ import VirgilSDK
     /// Default URL for service
     @objc public static let defaultURL = URL(string: "https://api.virgilsecurity.com")!
     // swiftlint:enable force_unwrapping
-    
+
     internal let retryConfig: ExpBackoffRetry.Config
 
     /// Initializes a new `RatchetClient` instance
@@ -68,15 +68,15 @@ import VirgilSDK
     ///   - serviceUrl: URL of service client will use
     ///   - connection: custom HTTPConnection
     public init(accessTokenProvider: AccessTokenProvider,
-                         serviceUrl: URL = RatchetClient.defaultURL,
-                         connection: HttpConnectionProtocol? = nil,
-                         retryConfig: ExpBackoffRetry.Config) {
+                serviceUrl: URL = RatchetClient.defaultURL,
+                connection: HttpConnectionProtocol? = nil,
+                retryConfig: ExpBackoffRetry.Config) {
         let version = VersionUtils.getVersion(bundleIdentitifer: "com.virgilsecurity.VirgilSDKRatchet")
-        
+
         let connection = connection ?? HttpConnection(adapters: [VirgilAgentAdapter(product: "sdk", version: version)])
-        
+
         self.retryConfig = retryConfig
-        
+
         super.init(accessTokenProvider: accessTokenProvider,
                    serviceUrl: serviceUrl,
                    connection: connection)
@@ -88,7 +88,7 @@ import VirgilSDK
     @objc public convenience init(accessTokenProvider: AccessTokenProvider) {
         self.init(accessTokenProvider: accessTokenProvider, serviceUrl: RatchetClient.defaultURL)
     }
-    
+
     /// Initializes new `RatchetClient` instance
     ///
     /// - Parameters:

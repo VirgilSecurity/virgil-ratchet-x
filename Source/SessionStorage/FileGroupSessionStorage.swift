@@ -54,7 +54,10 @@ import VirgilSDK
     ///   - identityKeyPair: Key pair to encrypt session
     @objc public init(identity: String, crypto: VirgilCrypto, identityKeyPair: VirgilKeyPair) throws {
         let credentials = FileSystemCredentials(crypto: crypto, keyPair: identityKeyPair)
-        self.fileSystem = FileSystem(prefix: "VIRGIL-RATCHET", userIdentifier: identity, pathComponents: ["GROUPS"], credentials: credentials)
+        self.fileSystem = FileSystem(prefix: "VIRGIL-RATCHET",
+                                     userIdentifier: identity,
+                                     pathComponents: ["GROUPS"],
+                                     credentials: credentials)
         self.crypto = crypto
         self.privateKeyData = try crypto.exportPrivateKey(identityKeyPair.privateKey)
 

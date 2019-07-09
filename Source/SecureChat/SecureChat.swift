@@ -138,7 +138,8 @@ import VirgilCrypto
             params = nil
         }
 
-        let identityKeyPair = VirgilKeyPair(privateKey: context.identityPrivateKey, publicKey: context.identityCard.publicKey)
+        let identityKeyPair = VirgilKeyPair(privateKey: context.identityPrivateKey,
+                                            publicKey: context.identityCard.publicKey)
         let longTermKeysStorage = try KeychainLongTermKeysStorage(identity: context.identityCard.identifier,
                                                                   params: params)
         let oneTimeKeysStorage = FileOneTimeKeysStorage(identity: context.identityCard.identifier,

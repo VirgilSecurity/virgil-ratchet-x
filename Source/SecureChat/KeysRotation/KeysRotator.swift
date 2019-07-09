@@ -121,7 +121,7 @@ import VirgilCrypto
     ///
     /// - Returns: GenericOperation
     public func rotateKeysOperation() -> GenericOperation<RotationLog> {
-        return CallbackOperation { operation, completion in
+        return CallbackOperation { _, completion in
             guard self.mutex.trylock() else {
                 Log.debug("Interrupted concurrent keys' rotation")
 

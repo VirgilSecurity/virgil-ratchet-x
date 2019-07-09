@@ -41,7 +41,7 @@ extension RatchetClient: RatchetClientProtocol {
     private func createRetry() -> RetryProtocol {
         return ExpBackoffRetry(config: self.retryConfig)
     }
-    
+
     /// Uploads public keys
     ///
     /// Long-term public key signature should be verified.
@@ -89,9 +89,9 @@ extension RatchetClient: RatchetClientProtocol {
         }
 
         let request = try ServiceRequest(url: url, method: .put, params: params)
-        
+
         let tokenContext = TokenContext(service: "ratchet", operation: "post")
-        
+
         let response = try self.sendWithRetry(request, retry: self.createRetry(), tokenContext: tokenContext)
             .startSync()
             .get()
@@ -136,7 +136,7 @@ extension RatchetClient: RatchetClientProtocol {
         let request = try ServiceRequest(url: url, method: .post, params: params)
 
         let tokenContext = TokenContext(service: "ratchet", operation: "get")
-        
+
         let response = try self.sendWithRetry(request, retry: self.createRetry(), tokenContext: tokenContext)
             .startSync()
             .get()
@@ -164,7 +164,7 @@ extension RatchetClient: RatchetClientProtocol {
         let request = try ServiceRequest(url: url, method: .post, params: params)
 
         let tokenContext = TokenContext(service: "ratchet", operation: "get")
-        
+
         let response = try self.sendWithRetry(request, retry: self.createRetry(), tokenContext: tokenContext)
             .startSync()
             .get()
@@ -182,7 +182,8 @@ extension RatchetClient: RatchetClientProtocol {
     ///   - Rethrows from `HttpConnectionProtocol`
     ///   - Rethrows from `JSONDecoder`
     ///   - Rethrows from `BaseClient`
-    @objc public func getMultiplePublicKeysSets(forRecipientsIdentities identities: [String]) throws -> [IdentityPublicKeySet] {
+    @objc public func getMultiplePublicKeysSets(forRecipientsIdentities identities: [String])
+        throws -> [IdentityPublicKeySet] {
         guard let url = URL(string: "pfs/v2/keys/actions/pick-batch", relativeTo: self.serviceUrl) else {
             throw RatchetClientError.constructingUrl
         }
@@ -192,7 +193,7 @@ extension RatchetClient: RatchetClientProtocol {
         let request = try ServiceRequest(url: url, method: .post, params: params)
 
         let tokenContext = TokenContext(service: "ratchet", operation: "get")
-        
+
         let response = try self.sendWithRetry(request, retry: self.createRetry(), tokenContext: tokenContext)
             .startSync()
             .get()
@@ -216,7 +217,7 @@ extension RatchetClient: RatchetClientProtocol {
         let request = try ServiceRequest(url: url, method: .delete)
 
         let tokenContext = TokenContext(service: "ratchet", operation: "delete")
-        
+
         let response = try self.sendWithRetry(request, retry: self.createRetry(), tokenContext: tokenContext)
             .startSync()
             .get()
