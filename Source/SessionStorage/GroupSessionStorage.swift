@@ -37,7 +37,7 @@
 import Foundation
 
 /// Protocol for session storage
-@objc(VSRSessionStorage) public protocol GroupSessionStorage: class {
+@objc(VSRGroupSessionStorage) public protocol GroupSessionStorage: class {
     /// Stores session
     ///
     /// - Parameter session: session to store
