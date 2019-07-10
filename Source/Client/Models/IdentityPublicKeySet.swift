@@ -36,32 +36,34 @@
 
 import Foundation
 
-/// Protocol for session storage
-@objc(VSRSessionStorage) public protocol SessionStorage: class {
-    /// Stores session
-    ///
-    /// - Parameter session: session to store
-    /// - Throws: Depends on implementation
-    @objc func storeSession(_ session: SecureSession) throws
+/// Set of public keys for some receiver
+@objc(VSRIdentityPublicKeySet) public final class IdentityPublicKeySet: NSObject, Decodable {
+    /// Identity
+    @objc public let identity: String
 
-    /// Retrieves session
-    ///
-    /// - Parameters:
-    ///   - participantIdentity: participant identity
-    ///   - name: session name
-    /// - Returns: Stored session if found, nil otherwise
-    @objc func retrieveSession(participantIdentity: String, name: String) -> SecureSession?
+    /// Identity public key
+    @objc public let identityPublicKey: Data
 
-    /// Deletes session
-    ///
-    /// - Parameters:
-    ///   - participantIdentity: participant identity
-    ///   - name: session name
-    /// - Throws: Depends on implementation
-    @objc func deleteSession(participantIdentity: String, name: String?) throws
+    /// Long-term public key
+    @objc public let longTermPublicKey: SignedPublicKey
 
-    /// Removes all sessions
-    ///
-    /// - Throws: Depends on implementation
-    @objc func reset() throws
+    /// One-time public key
+    @objc public let oneTimePublicKey: Data?
+
+    private enum CodingKeys: String, CodingKey {
+        case identity = "identity"
+        case identityPublicKey = "identity_key"
+        case longTermPublicKey = "long_term_key"
+        case oneTimePublicKey = "one_time_key"
+    }
+
+    internal init(identity: String,
+                  identityPublicKey: Data,
+                  longTermPublicKey: SignedPublicKey,
+                  oneTimePublicKey: Data?) {
+        self.identity = identity
+        self.identityPublicKey = identityPublicKey
+        self.longTermPublicKey = longTermPublicKey
+        self.oneTimePublicKey = oneTimePublicKey
+    }
 }

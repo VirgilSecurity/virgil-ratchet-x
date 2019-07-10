@@ -44,7 +44,7 @@ import Foundation
     /// Private key
     @objc public let key: Data
 
-    /// Date from which we found out that this key if orphaned
+    /// Date from which we found out that this key is orphaned
     @objc public let orphanedFrom: Date?
 
     /// Initializer
@@ -52,7 +52,7 @@ import Foundation
     /// - Parameters:
     ///   - identifier: key id
     ///   - key: private key
-    ///   - orphanedFrom: date from which we found out that this key if orphaned
+    ///   - orphanedFrom: date from which we found out that this key is orphaned
     @objc public init(identifier: Data, key: Data, orphanedFrom: Date?) {
         self.identifier = identifier
         self.key = key

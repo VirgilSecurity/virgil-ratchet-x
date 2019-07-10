@@ -34,11 +34,9 @@
 // Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 //
 
-import Foundation
 import VirgilSDK
-import VirgilCryptoApiImpl
+import VirgilCrypto
 import VirgilCryptoRatchet
-import VirgilCryptoFoundation
 @testable import VirgilSDKRatchet
 
 class RamSessionStorage: SessionStorage {
@@ -48,13 +46,35 @@ class RamSessionStorage: SessionStorage {
         self.db[session.participantIdentity] = session
     }
     
-    func retrieveSession(participantIdentity: String) -> SecureSession? {
+    func retrieveSession(participantIdentity: String, name: String) -> SecureSession? {
         return self.db[participantIdentity]
     }
     
-    func deleteSession(participantIdentity: String) throws {
+    func deleteSession(participantIdentity: String, name: String?) throws {
         guard self.db.removeValue(forKey: participantIdentity) != nil else {
-            throw NSError()
+            throw NSError(domain: "Stub", code: -1, userInfo: nil)
+        }
+    }
+    
+    func reset() throws {
+        self.db = [:]
+    }
+}
+
+class RamGroupSessionStorage: GroupSessionStorage {
+    private var db: [Data: SecureGroupSession] = [:]
+    
+    func storeSession(_ session: SecureGroupSession) throws {
+        self.db[session.identifier] = session
+    }
+    
+    func retrieveSession(identifier: Data) -> SecureGroupSession? {
+        return self.db[identifier]
+    }
+    
+    func deleteSession(identifier: Data) throws {
+        guard self.db.removeValue(forKey: identifier) != nil else {
+            throw NSError(domain: "Stub", code: -1, userInfo: nil)
         }
     }
     
@@ -78,7 +98,7 @@ class RamLongTermKeysStorage: LongTermKeysStorage {
     
     func retrieveKey(withId id: Data) throws -> LongTermKey {
         guard let key = self.db[id] else {
-            throw NSError()
+            throw NSError(domain: "Stub", code: -1, userInfo: nil)
         }
         
         return key
@@ -86,7 +106,7 @@ class RamLongTermKeysStorage: LongTermKeysStorage {
     
     func deleteKey(withId id: Data) throws {
         guard self.db.removeValue(forKey: id) != nil else {
-            throw NSError()
+            throw NSError(domain: "Stub", code: -1, userInfo: nil)
         }
     }
     
@@ -96,7 +116,7 @@ class RamLongTermKeysStorage: LongTermKeysStorage {
     
     func markKeyOutdated(startingFrom date: Date, keyId: Data) throws {
         guard let key = self.db[keyId] else {
-            throw NSError()
+            throw NSError(domain: "Stub", code: -1, userInfo: nil)
         }
         
         self.db[keyId] = LongTermKey(identifier: keyId, key: key.key, creationDate: key.creationDate, outdatedFrom: date)
@@ -126,7 +146,7 @@ class RamOneTimeKeysStorage: OneTimeKeysStorage {
     
     func retrieveKey(withId id: Data) throws -> OneTimeKey {
         guard let key = self.db[id] else {
-            throw NSError()
+            throw NSError(domain: "Stub", code: -1, userInfo: nil)
         }
         
         return key
@@ -134,7 +154,7 @@ class RamOneTimeKeysStorage: OneTimeKeysStorage {
     
     func deleteKey(withId id: Data) throws {
         guard self.db.removeValue(forKey: id) != nil else {
-            throw NSError()
+            throw NSError(domain: "Stub", code: -1, userInfo: nil)
         }
     }
     
@@ -144,7 +164,7 @@ class RamOneTimeKeysStorage: OneTimeKeysStorage {
     
     func markKeyOrphaned(startingFrom date: Date, keyId: Data) throws {
         guard let key = self.db[keyId] else {
-            throw NSError()
+            throw NSError(domain: "Stub", code: -1, userInfo: nil)
         }
         
         self.db[keyId] = OneTimeKey(identifier: keyId, key: key.key, orphanedFrom: date)
@@ -156,52 +176,59 @@ class RamOneTimeKeysStorage: OneTimeKeysStorage {
 }
 
 class RamClient: RatchetClientProtocol {
-    struct UserStore {
+    func getMultiplePublicKeysSets(forRecipientsIdentities identities: [String]) throws -> [IdentityPublicKeySet] {
+        throw NSError(domain: "Stub", code: -1, userInfo: nil)
+    }
+    
+    struct UserEntry {
         var identityPublicKey: (VirgilPublicKey, Data)?
         var longTermPublicKey: SignedPublicKey?
         var oneTimePublicKeys: Set<Data> = []
     }
     
-    private let keyUtils = RatchetKeyUtils()
-    private let cardManager: CardManager
-    private let crypto = VirgilCrypto()
-    var users: [String: UserStore] = [:]
-    
-    init(cardManager: CardManager) {
-        self.cardManager = cardManager
+    class Storage {
+        var users: [String: UserEntry] = [:]
     }
     
-    func uploadPublicKeys(identityCardId: String?, longTermPublicKey: SignedPublicKey?, oneTimePublicKeys: [Data], token: String) throws {
-        guard let jwt = try? Jwt(stringRepresentation: token) else {
-            throw NSError()
-        }
-        
-        var userStore = self.users[jwt.identity()] ?? UserStore()
+    private let keyId = RatchetKeyId()
+    private let cardManager: CardManager
+    private let crypto = try! VirgilCrypto()
+    private let identity: String
+    let storage: Storage
+    
+    init(identity: String, storage: Storage, cardManager: CardManager) {
+        self.identity = identity
+        self.cardManager = cardManager
+        self.storage = storage
+    }
+    
+    func uploadPublicKeys(identityCardId: String?, longTermPublicKey: SignedPublicKey?, oneTimePublicKeys: [Data]) throws {
+        var userStore = self.storage.users[self.identity] ?? UserEntry()
         
         let publicKey: VirgilPublicKey
         if let identityCardId = identityCardId {
-            let card = try self.cardManager.getCard(withId: identityCardId).startSync().getResult()
-            publicKey = card.publicKey as! VirgilPublicKey
-            userStore.identityPublicKey = (publicKey, self.crypto.exportPublicKey(publicKey))
+            let card = try self.cardManager.getCard(withId: identityCardId).startSync().get()
+            publicKey = card.publicKey
+            userStore.identityPublicKey = (publicKey, try self.crypto.exportPublicKey(publicKey))
         }
         else {
             guard let existingIdentityPublicKey = userStore.identityPublicKey else {
-                throw NSError()
+                throw NSError(domain: "Stub", code: -1, userInfo: nil)
             }
             
             publicKey = existingIdentityPublicKey.0
         }
         
         if let longTermPublicKey = longTermPublicKey {
-            guard crypto.verifySignature(longTermPublicKey.signature, of: longTermPublicKey.publicKey, with: publicKey) else {
-                throw NSError()
+            guard try crypto.verifySignature(longTermPublicKey.signature, of: longTermPublicKey.publicKey, with: publicKey) else {
+                throw NSError(domain: "Stub", code: -1, userInfo: nil)
             }
             
             userStore.longTermPublicKey = longTermPublicKey
         }
         else {
             guard userStore.longTermPublicKey != nil else {
-                throw NSError()
+                throw NSError(domain: "Stub", code: -1, userInfo: nil)
             }
         }
         
@@ -209,48 +236,40 @@ class RamClient: RatchetClientProtocol {
             let newKeysSet = Set<Data>(oneTimePublicKeys)
             
             guard userStore.oneTimePublicKeys.intersection(newKeysSet).isEmpty else {
-                throw NSError()
+                throw NSError(domain: "Stub", code: -1, userInfo: nil)
             }
             
             userStore.oneTimePublicKeys.formUnion(newKeysSet)
         }
         
-        self.users[jwt.identity()] = userStore
+        self.storage.users[self.identity] = userStore
     }
     
-    func validatePublicKeys(longTermKeyId: Data?, oneTimeKeysIds: [Data], token: String) throws -> ValidatePublicKeysResponse {
-        guard let jwt = try? Jwt(stringRepresentation: token) else {
-            throw NSError()
-        }
-        
-        let userStore = self.users[jwt.identity()] ?? UserStore()
+    func validatePublicKeys(longTermKeyId: Data?, oneTimeKeysIds: [Data]) throws -> ValidatePublicKeysResponse {
+        let userStore = self.storage.users[self.identity] ?? UserEntry()
         
         let usedLongTermKeyId: Data?
         
         if let longTermKeyId = longTermKeyId,
             let storedLongTermPublicKey = userStore.longTermPublicKey?.publicKey,
-            try! self.keyUtils.computePublicKeyId(publicKey: storedLongTermPublicKey) == longTermKeyId {
+            try self.keyId.computePublicKeyId(publicKey: storedLongTermPublicKey) == longTermKeyId {
                 usedLongTermKeyId = nil
         }
         else {
             usedLongTermKeyId = longTermKeyId
         }
         
-        let usedOneTimeKeysIds: [Data] = Array<Data>(Set<Data>(oneTimeKeysIds).subtracting(userStore.oneTimePublicKeys.map{ try! self.keyUtils.computePublicKeyId(publicKey: $0) }))
+        let usedOneTimeKeysIds: [Data] = Array<Data>(Set<Data>(oneTimeKeysIds).subtracting(userStore.oneTimePublicKeys.map { try! self.keyId.computePublicKeyId(publicKey: $0) }))
         
         return ValidatePublicKeysResponse(usedLongTermKeyId: usedLongTermKeyId, usedOneTimeKeysIds: usedOneTimeKeysIds)
     }
     
-    func getPublicKeySet(forRecipientIdentity identity: String, token: String) throws -> PublicKeySet {
-        guard let _ = try? Jwt(stringRepresentation: token) else {
-            throw NSError()
-        }
-        
-        var userStore = self.users[identity] ?? UserStore()
+    func getPublicKeySet(forRecipientIdentity identity: String) throws -> PublicKeySet {
+        var userStore = self.storage.users[identity] ?? UserEntry()
         
         guard let identityPublicKey = userStore.identityPublicKey?.1,
             let longTermPublicKey = userStore.longTermPublicKey else {
-                throw NSError()
+                throw NSError(domain: "Stub", code: -1, userInfo: nil)
         }
         
         let oneTimePublicKey: Data?
@@ -258,7 +277,7 @@ class RamClient: RatchetClientProtocol {
             oneTimePublicKey = randomOneTimePublicKey
             userStore.oneTimePublicKeys.remove(randomOneTimePublicKey)
             
-            self.users[identity] = userStore
+            self.storage.users[identity] = userStore
         }
         else {
             oneTimePublicKey = nil
@@ -267,8 +286,8 @@ class RamClient: RatchetClientProtocol {
         return PublicKeySet(identityPublicKey: identityPublicKey, longTermPublicKey: longTermPublicKey, oneTimePublicKey: oneTimePublicKey)
     }
     
-    func deleteKeysEntity(token: String) throws {
-        self.users = [:]
+    func deleteKeysEntity() throws {
+        self.storage.users = [:]
     }
 }
 
@@ -281,31 +300,35 @@ class FakeKeysRotator: KeysRotatorProtocol {
 }
 
 class RamCardClient: CardClientProtocol {
-    let crypto = VirgilCrypto()
+    func revokeCard(withId cardId: String) throws {
+        throw NSError(domain: "Stub", code: -1, userInfo: nil)
+    }
+    
+    let crypto = try! VirgilCrypto()
     private var cards: [String: RawSignedModel] = [:]
     
-    func getCard(withId cardId: String, token: String) throws -> GetCardResponse {
+    func getCard(withId cardId: String) throws -> GetCardResponse {
         if let model = self.cards[cardId] {
             return GetCardResponse(rawCard: model, isOutdated: false)
         }
         
-        throw NSError()
+        throw NSError(domain: "Stub", code: -1, userInfo: nil)
     }
     
-    func publishCard(model: RawSignedModel, token: String) throws -> RawSignedModel {
-        let cardId = self.crypto.computeHash(for: model.contentSnapshot, using: .SHA512).subdata(in: 0..<32).hexEncodedString()
+    func publishCard(model: RawSignedModel) throws -> RawSignedModel {
+        let cardId = self.crypto.computeHash(for: model.contentSnapshot, using: .sha512).subdata(in: 0..<32).hexEncodedString()
         
         self.cards[cardId] = model
         
         return model
     }
     
-    func searchCards(identity: String, token: String) throws -> [RawSignedModel] {
-        throw NSError()
+    func searchCards(identity: String) throws -> [RawSignedModel] {
+        throw NSError(domain: "Stub", code: -1, userInfo: nil)
     }
     
-    func searchCards(identities: [String], token: String) throws -> [RawSignedModel] {
-        throw NSError()
+    func searchCards(identities: [String]) throws -> [RawSignedModel] {
+        throw NSError(domain: "Stub", code: -1, userInfo: nil)
     }
 }
 

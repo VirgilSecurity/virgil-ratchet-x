@@ -1,33 +1,31 @@
-language: swift
-osx_image: xcode10.1
+language: objective-c
+osx_image: xcode10.2
 
 env:
   global:
     - LC_CTYPE=en_US.UTF-8
     - PROJECT=VirgilSDKRatchet.xcodeproj
-    - IOS_SDK=iphonesimulator12.1
+    - IOS_SDK=iphonesimulator12.2
     - MACOS_SDK=macosx10.14
-    - TVOS_SDK=appletvsimulator12.1
-    - WATCHOS_SDK=watchsimulator5.1
+    - TVOS_SDK=appletvsimulator12.2
+    - WATCHOS_SDK=watchsimulator5.2
     - FRAMEWORK_NAME=VirgilSDKRatchet
+    - REPO=VirgilSecurity/virgil-ratchet-x
+    - REPO_PATH=https://github.com/VirgilSecurity/virgil-ratchet-x.git
 
   matrix:
-    - DESTINATION="OS=12.1,name=iPhone SE"                   PREFIX="iOS"      SDK="$IOS_SDK"      BUILD="2"  PUBLISH_CARTHAGE="NO"   PUBLISH_POD="NO"   SWIFT_LINT="NO"   PUBLISH_DOCS="NO"
-    - DESTINATION="arch=x86_64"                              PREFIX="macOS"    SDK="$MACOS_SDK"    BUILD="2"  PUBLISH_CARTHAGE="NO"   PUBLISH_POD="NO"   SWIFT_LINT="NO"   PUBLISH_DOCS="NO"
-    - DESTINATION="OS=12.1,name=Apple TV 4K"                 PREFIX="tvOS"     SDK="$TVOS_SDK"     BUILD="2"  PUBLISH_CARTHAGE="NO"   PUBLISH_POD="NO"   SWIFT_LINT="NO"   PUBLISH_DOCS="NO"
-    - DESTINATION="OS=5.1,name=Apple Watch Series 4 - 44mm"  PREFIX="watchOS"  SDK="$WATCHOS_SDK"  BUILD="1"  PUBLISH_CARTHAGE="NO"   PUBLISH_POD="NO"   SWIFT_LINT="NO"   PUBLISH_DOCS="NO"
-    - DESTINATION=""                                         PREFIX=""         SDK=""              BUILD="0"  PUBLISH_CARTHAGE="YES"  PUBLISH_POD="YES"  SWIFT_LINT="YES"  PUBLISH_DOCS="YES"
+    - DESTINATION=""                                         PREFIX=""         SDK=""              BUILD="0"  PUBLISH_CARTHAGE="YES"  CARTHAGE_PLATFORM="Mac"         PUBLISH_POD="YES"  SWIFT_LINT="YES"  PUBLISH_DOCS="YES"
+    - DESTINATION="OS=12.2,name=iPhone SE"                   PREFIX="iOS"      SDK="$IOS_SDK"      BUILD="2"  PUBLISH_CARTHAGE="NO"   CARTHAGE_PLATFORM="iOS"      PUBLISH_POD="NO"   SWIFT_LINT="NO"   PUBLISH_DOCS="NO"
+    - DESTINATION="arch=x86_64"                              PREFIX="macOS"    SDK="$MACOS_SDK"    BUILD="2"  PUBLISH_CARTHAGE="NO"   CARTHAGE_PLATFORM="Mac"      PUBLISH_POD="NO"   SWIFT_LINT="NO"   PUBLISH_DOCS="NO"
+    - DESTINATION="OS=12.2,name=Apple TV 4K"                 PREFIX="tvOS"     SDK="$TVOS_SDK"     BUILD="2"  PUBLISH_CARTHAGE="NO"   CARTHAGE_PLATFORM="tvOS"     PUBLISH_POD="NO"   SWIFT_LINT="NO"   PUBLISH_DOCS="NO"
+    - DESTINATION="OS=5.2,name=Apple Watch Series 4 - 44mm"  PREFIX="watchOS"  SDK="$WATCHOS_SDK"  BUILD="1"  PUBLISH_CARTHAGE="NO"   CARTHAGE_PLATFORM="watchOS"  PUBLISH_POD="NO"   SWIFT_LINT="NO"   PUBLISH_DOCS="NO"
 
 before_install:
   - set -e
   - set -o pipefail
-  - brew update
-  - brew outdated carthage || brew upgrade carthage
-  - xcodebuild -version
-  - xcodebuild -showsdks
 
 script:
-  - openssl aes-256-cbc -K $encrypted_37cfd9246873_key -iv $encrypted_37cfd9246873_iv -in config.tar.enc -out config.tar -d
+  - openssl aes-256-cbc -K $encrypted_c69be59365f7_key -iv $encrypted_c69be59365f7_iv -in config.tar.enc -out config.tar -d
   - tar xvf config.tar
 
   - |
@@ -38,7 +36,7 @@ script:
     fi
 
   - carthage version
-  - carthage bootstrap
+  - carthage bootstrap --platform $CARTHAGE_PLATFORM
 
   - |
     if [ $SWIFT_LINT == "YES" ]; then
@@ -62,14 +60,14 @@ script:
 
   # Build with carthage
   - if [ $PUBLISH_CARTHAGE == "YES" ]; then
+      brew update && brew upgrade carthage || true;
       carthage build --no-skip-current;
+      carthage archive;
     fi
   
   # Check pod lib
-  - if [ $PUBLISH_POD == "YES" ]; then
-      gem install cocoapods --pre;
-      pod repo update;
-      pod lib lint;
+  - if [[ $PUBLISH_DOCS = "YES" && $TRAVIS_TAG =~ ^[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+      ./CI/publish-docs.sh;
     fi
 
 before_deploy:
@@ -88,15 +86,16 @@ deploy:
       - "$FRAMEWORK_NAME.framework.zip"
     skip_cleanup: true
     on:
-      repo: VirgilSecurity/virgil-ratchet-x
+      repo: $REPO
       tags: true
       condition: $PUBLISH_CARTHAGE = "YES"
 
   - provider: script
     script: bash CI/publish-cocoapods.sh
     on:
+      repo: $REPO
       tags: true
-      condition: $PUBLISH_POD == "YES"
+      condition: $PUBLISH_POD == "YES" && $TRAVIS_TAG =~ ^[0-9]+\.[0-9]+\.[0-9]+
 
   # Upload docs to gh-pages
   - provider: pages
@@ -104,6 +103,7 @@ deploy:
     github-token: $GITHUB_ACCESS_TOKEN
     local_dir: "docs"
     on:
-      repo: VirgilSecurity/virgil-ratchet-x
+      repo: $REPO
       tags: true
-      condition: $PUBLISH_DOCS = "YES"
+      condition: $PUBLISH_DOCS == "YES" && $TRAVIS_TAG =~ ^[0-9]+\.[0-9]+\.[0-9]+
+

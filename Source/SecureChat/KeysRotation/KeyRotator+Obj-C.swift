@@ -36,32 +36,27 @@
 
 import Foundation
 
-/// Protocol for session storage
-@objc(VSRSessionStorage) public protocol SessionStorage: class {
-    /// Stores session
+/// MARK: - Extension with objective-c methods
+public extension KeysRotator {
+    /// Rotates keys
     ///
-    /// - Parameter session: session to store
-    /// - Throws: Depends on implementation
-    @objc func storeSession(_ session: SecureSession) throws
-
-    /// Retrieves session
-    ///
-    /// - Parameters:
-    ///   - participantIdentity: participant identity
-    ///   - name: session name
-    /// - Returns: Stored session if found, nil otherwise
-    @objc func retrieveSession(participantIdentity: String, name: String) -> SecureSession?
-
-    /// Deletes session
+    /// Rotation process:
+    ///   - Retrieve all one-time keys
+    ///   - Delete one-time keys that were marked as orphaned more than orphanedOneTimeKeyTtl seconds ago
+    ///   - Retrieve all long-term keys
+    ///   - Delete long-term keys that were marked as outdated more than outdatedLongTermKeyTtl seconds ago
+    ///   - Check that all relevant long-term and one-time keys are in the cloud
+    ///     (still persistent in the cloud and were not used)
+    ///   - Mark used one-time keys as used
+    ///   - Decide on long-term key roration
+    ///   - Generate needed number of one-time keys
+    ///   - Upload keys to the cloud
     ///
     /// - Parameters:
-    ///   - participantIdentity: participant identity
-    ///   - name: session name
-    /// - Throws: Depends on implementation
-    @objc func deleteSession(participantIdentity: String, name: String?) throws
-
-    /// Removes all sessions
-    ///
-    /// - Throws: Depends on implementation
-    @objc func reset() throws
+    ///   - completion: completion handler
+    ///   - rotationLog: represents the result of rotateKeys operation
+    ///   - error: corresponding error
+    @objc func rotateKeysOperation(completion: @escaping (_ rotationLog: RotationLog?, _ error: Error?) -> Void) {
+        self.rotateKeysOperation().start(completion: completion)
+    }
 }

@@ -34,17 +34,15 @@
 // Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 //
 
-import Foundation
-import VirgilCryptoApiImpl
+import VirgilCrypto
 import VirgilSDK
 
 /// SecureChat context
+/// - Tag: SecureChatContext
 @objc(VSRSecureChatContext) open class SecureChatContext: NSObject {
-    /// User's identity
-    @objc public let identity: String
 
     /// User's identity card id
-    @objc public let identityCardId: String
+    @objc public let identityCard: Card
 
     /// User's identity private key (corresponding to public key in identityCard)
     @objc public let identityPrivateKey: VirgilPrivateKey
@@ -70,16 +68,13 @@ import VirgilSDK
     /// Initializer
     ///
     /// - Parameters:
-    ///   - identity: user's identity
-    ///   - identityCardId: user's identity card id
+    ///   - identityCard: user's identity card
     ///   - identityPrivateKey: user's identity private key (corresponding to public key in identityCard)
     ///   - accessTokenProvider: access token provider
-    @objc public init(identity: String,
-                      identityCardId: String,
+    @objc public init(identityCard: Card,
                       identityPrivateKey: VirgilPrivateKey,
                       accessTokenProvider: AccessTokenProvider) {
-        self.identity = identity
-        self.identityCardId = identityCardId
+        self.identityCard = identityCard
         self.identityPrivateKey = identityPrivateKey
         self.accessTokenProvider = accessTokenProvider
 

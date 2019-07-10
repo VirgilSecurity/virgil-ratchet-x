@@ -34,21 +34,28 @@
 // Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 //
 
-import Foundation
-import VirgilCryptoApiImpl
 import VirgilSDK
 import VirgilCryptoRatchet
+import VirgilCrypto
 
 /// KeysRotator errors
 ///
 /// - concurrentRotation: concurrent rotation is not allowed
-public enum KeysRotatorError: Int, Error {
+@objc(VSRKeysRotatorError) public enum KeysRotatorError: Int, LocalizedError {
     case concurrentRotation = 1
+
+    /// Human-readable localized description
+    public var errorDescription: String? {
+        switch self {
+        case .concurrentRotation:
+            return "Concurrent rotation is not allowed"
+        }
+    }
 }
 
-/// Default implementation of KeysRotatorProtocol
-public class KeysRotator: KeysRotatorProtocol {
-    private let crypto = VirgilCrypto(defaultKeyType: .FAST_EC_X25519, useSHA256Fingerprints: false)
+/// Default implementation of `KeysRotatorProtocol`
+@objc(VSRKeysRotator) public class KeysRotator: NSObject, KeysRotatorProtocol {
+    private let crypto: VirgilCrypto
     private let identityPrivateKey: VirgilPrivateKey
     private let identityCardId: String
     private let orphanedOneTimeKeyTtl: TimeInterval
@@ -59,11 +66,12 @@ public class KeysRotator: KeysRotatorProtocol {
     private let oneTimeKeysStorage: OneTimeKeysStorage
     private let client: RatchetClientProtocol
     private let mutex = Mutex()
-    private let keyUtils = RatchetKeyUtils()
+    private let keyId = RatchetKeyId()
 
     /// Initializer
     ///
     /// - Parameters:
+    ///   - crypto: VirgilCrypto instance
     ///   - identityPrivateKey: identity private key
     ///   - identityCardId: identity card id
     ///   - orphanedOneTimeKeyTtl: time that one-time key lives in the storage after been marked as orphaned. Seconds
@@ -72,16 +80,18 @@ public class KeysRotator: KeysRotatorProtocol {
     ///   - desiredNumberOfOneTimeKeys: desired number of one-time keys
     ///   - longTermKeysStorage: long-term keys storage
     ///   - oneTimeKeysStorage: one-time keys storage
-    ///   - client: RatchetClient
-    public init(identityPrivateKey: VirgilPrivateKey,
-                identityCardId: String,
-                orphanedOneTimeKeyTtl: TimeInterval,
-                longTermKeyTtl: TimeInterval,
-                outdatedLongTermKeyTtl: TimeInterval,
-                desiredNumberOfOneTimeKeys: Int,
-                longTermKeysStorage: LongTermKeysStorage,
-                oneTimeKeysStorage: OneTimeKeysStorage,
-                client: RatchetClientProtocol) {
+    ///   - client: [RatchetClient](x-source-tag://RatchetClient)
+    @objc public init(crypto: VirgilCrypto,
+                      identityPrivateKey: VirgilPrivateKey,
+                      identityCardId: String,
+                      orphanedOneTimeKeyTtl: TimeInterval,
+                      longTermKeyTtl: TimeInterval,
+                      outdatedLongTermKeyTtl: TimeInterval,
+                      desiredNumberOfOneTimeKeys: Int,
+                      longTermKeysStorage: LongTermKeysStorage,
+                      oneTimeKeysStorage: OneTimeKeysStorage,
+                      client: RatchetClientProtocol) {
+        self.crypto = crypto
         self.identityPrivateKey = identityPrivateKey
         self.identityCardId = identityCardId
         self.orphanedOneTimeKeyTtl = orphanedOneTimeKeyTtl
@@ -91,25 +101,27 @@ public class KeysRotator: KeysRotatorProtocol {
         self.longTermKeysStorage = longTermKeysStorage
         self.oneTimeKeysStorage = oneTimeKeysStorage
         self.client = client
+
+        super.init()
     }
 
     /// Rotates keys
     ///
     /// Rotation process:
-    ///         - Retrieve all one-time keys
-    ///         - Delete one-time keys that were marked as orphaned more than orphanedOneTimeKeyTtl seconds ago
-    ///         - Retrieve all long-term keys
-    ///         - Delete long-term keys that were marked as outdated more than outdatedLongTermKeyTtl seconds ago
-    ///         - Check that all relevant long-term and one-time keys are in the cloud
-    ///             (still persistent in the cloud and were not used)
-    ///         - Mark used one-time keys as used
-    ///         - Decide on long-term key roration
-    ///         - Generate needed number of one-time keys
-    ///         - Upload keys to the cloud
+    ///   - Retrieve all one-time keys
+    ///   - Delete one-time keys that were marked as orphaned more than orphanedOneTimeKeyTtl seconds ago
+    ///   - Retrieve all long-term keys
+    ///   - Delete long-term keys that were marked as outdated more than outdatedLongTermKeyTtl seconds ago
+    ///   - Check that all relevant long-term and one-time keys are in the cloud
+    ///     (still persistent in the cloud and were not used)
+    ///   - Mark used one-time keys as used
+    ///   - Decide on long-term key roration
+    ///   - Generate needed number of one-time keys
+    ///   - Upload keys to the cloud
     ///
     /// - Returns: GenericOperation
     public func rotateKeysOperation() -> GenericOperation<RotationLog> {
-        return CallbackOperation { operation, completion in
+        return CallbackOperation { _, completion in
             guard self.mutex.trylock() else {
                 Log.debug("Interrupted concurrent keys' rotation")
 
@@ -118,6 +130,8 @@ public class KeysRotator: KeysRotatorProtocol {
             }
 
             Log.debug("Started keys' rotation operation")
+
+            var interactionStarted = false
 
             let completionWrapper: (RotationLog?, Error?) -> Void = {
                 do {
@@ -128,13 +142,15 @@ public class KeysRotator: KeysRotatorProtocol {
                     return
                 }
 
-                do {
-                    try self.oneTimeKeysStorage.stopInteraction()
-                }
-                catch {
-                    Log.debug("Completed keys' rotation with storage error")
-                    completion(nil, error)
-                    return
+                if interactionStarted {
+                    do {
+                        try self.oneTimeKeysStorage.stopInteraction()
+                    }
+                    catch {
+                        Log.debug("Completed keys' rotation with storage error")
+                        completion(nil, error)
+                        return
+                    }
                 }
 
                 if let error = $1 {
@@ -152,13 +168,13 @@ public class KeysRotator: KeysRotatorProtocol {
             }
 
             do {
-                let token: AccessToken = try operation.findDependencyResult()
-
                 let now = Date()
 
                 let rotationLog = RotationLog()
 
                 try self.oneTimeKeysStorage.startInteraction()
+                interactionStarted = true
+
                 let oneTimeKeys = try self.oneTimeKeysStorage.retrieveAllKeys()
                 var oneTimeKeysIds = [Data]()
                 oneTimeKeysIds.reserveCapacity(oneTimeKeys.count)
@@ -215,8 +231,7 @@ public class KeysRotator: KeysRotatorProtocol {
 
                 Log.debug("Validating local keys")
                 let validateResponse = try self.client.validatePublicKeys(longTermKeyId: lastLongTermKey?.identifier,
-                                                                          oneTimeKeysIds: oneTimeKeysIds,
-                                                                          token: token.stringRepresentation())
+                                                                          oneTimeKeysIds: oneTimeKeysIds)
 
                 for usedOneTimeKeyId in validateResponse.usedOneTimeKeysIds {
                     Log.debug("Marking one-time key as orhpaned \(usedOneTimeKeyId.hexEncodedString())")
@@ -236,10 +251,10 @@ public class KeysRotator: KeysRotatorProtocol {
                 let longTermSignedPublicKey: SignedPublicKey?
                 if rotateLongTermKey {
                     Log.debug("Rotating long-term key")
-                    let longTermKeyPair = try self.crypto.generateKeyPair()
-                    let longTermPrivateKey = self.crypto.exportPrivateKey(longTermKeyPair.privateKey)
-                    let longTermPublicKey = self.crypto.exportPublicKey(longTermKeyPair.publicKey)
-                    let longTermKeyId = try self.keyUtils.computePublicKeyId(publicKey: longTermPublicKey)
+                    let longTermKeyPair = try self.crypto.generateKeyPair(ofType: .curve25519)
+                    let longTermPrivateKey = try self.crypto.exportPrivateKey(longTermKeyPair.privateKey)
+                    let longTermPublicKey = try self.crypto.exportPublicKey(longTermKeyPair.publicKey)
+                    let longTermKeyId = try self.keyId.computePublicKeyId(publicKey: longTermPublicKey)
                     _ = try self.longTermKeysStorage.storeKey(longTermPrivateKey,
                                                               withId: longTermKeyId)
                     let longTermKeySignature = try self.crypto.generateSignature(of: longTermPublicKey,
@@ -257,14 +272,13 @@ public class KeysRotator: KeysRotatorProtocol {
                 Log.debug("Generating \(numbOfOneTimeKeysToGen) one-time keys")
                 let oneTimePublicKeys: [Data]
                 if numbOfOneTimeKeysToGen > 0 {
-                    let keyPairs = try self.crypto.generateMultipleKeyPairs(numberOfKeyPairs: numbOfOneTimeKeysToGen)
-
                     var publicKeys = [Data]()
                     publicKeys.reserveCapacity(Int(numbOfOneTimeKeysToGen))
-                    for keyPair in keyPairs {
-                        let oneTimePrivateKey = self.crypto.exportPrivateKey(keyPair.privateKey)
-                        let oneTimePublicKey = self.crypto.exportPublicKey(keyPair.publicKey)
-                        let keyId = try self.keyUtils.computePublicKeyId(publicKey: oneTimePublicKey)
+                    for _ in 0..<numbOfOneTimeKeysToGen {
+                        let keyPair = try self.crypto.generateKeyPair(ofType: .curve25519)
+                        let oneTimePrivateKey = try self.crypto.exportPrivateKey(keyPair.privateKey)
+                        let oneTimePublicKey = try self.crypto.exportPublicKey(keyPair.publicKey)
+                        let keyId = try self.keyId.computePublicKeyId(publicKey: oneTimePublicKey)
                         _ = try self.oneTimeKeysStorage.storeKey(oneTimePrivateKey, withId: keyId)
 
                         publicKeys.append(oneTimePublicKey)
@@ -279,8 +293,7 @@ public class KeysRotator: KeysRotatorProtocol {
                 Log.debug("Uploading keys")
                 try self.client.uploadPublicKeys(identityCardId: self.identityCardId,
                                                  longTermPublicKey: longTermSignedPublicKey,
-                                                 oneTimePublicKeys: oneTimePublicKeys,
-                                                 token: token.stringRepresentation())
+                                                 oneTimePublicKeys: oneTimePublicKeys)
 
                 rotationLog.oneTimeKeysAdded = oneTimePublicKeys.count
                 rotationLog.oneTimeKeysRelevant = numOfRelevantOneTimeKeys + oneTimePublicKeys.count

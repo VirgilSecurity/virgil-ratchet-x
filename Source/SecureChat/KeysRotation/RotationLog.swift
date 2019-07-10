@@ -39,37 +39,37 @@ import Foundation
 /// This class shows the result of rotateKeys operation
 @objc(VSRRotationLog) public class RotationLog: NSObject, Encodable {
     /// Number of unused one-time keys
-    public var oneTimeKeysRelevant = 0
+    @objc public var oneTimeKeysRelevant = 0
 
     /// NUmber of one-time keys that were generated and uploaded to the cloud during this operation
-    public var oneTimeKeysAdded = 0
+    @objc public var oneTimeKeysAdded = 0
 
     /// Number of one-time keys that were deleted during this rotation
-    public var oneTimeKeysDeleted = 0
+    @objc public var oneTimeKeysDeleted = 0
 
     /// Number of one-time keys that were marked orphaned during this operation
-    public var oneTimeKeysMarkedOrphaned = 0
+    @objc public var oneTimeKeysMarkedOrphaned = 0
 
     /// Number of one-time keys that were marked orphaned
-    public var oneTimeKeysOrphaned = 0
+    @objc public var oneTimeKeysOrphaned = 0
 
     /// Number of relevant long-term keys
-    public var longTermKeysRelevant = 0
+    @objc public var longTermKeysRelevant = 0
 
     /// Number of long-term keys that were generated and uploaded to the cloud during this operation
-    public var longTermKeysAdded = 0
+    @objc public var longTermKeysAdded = 0
 
     /// Number of long-term keys that were deleted during this rotation
-    public var longTermKeysDeleted = 0
+    @objc public var longTermKeysDeleted = 0
 
     /// Number of long-term keys that were marked orphaned outdated this operation
-    public var longTermKeysMarkedOutdated = 0
+    @objc public var longTermKeysMarkedOutdated = 0
 
     /// Number of long-term keys that were marked orphaned
-    public var longTermKeysOutdated = 0
+    @objc public var longTermKeysOutdated = 0
 
     /// Pretty print JSON
-    override public var description: String {
+    @objc override public var description: String {
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
 

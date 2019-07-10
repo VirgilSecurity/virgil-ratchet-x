@@ -37,7 +37,7 @@
 import Foundation
 
 /// Client used to communicate with ratchet service
-public protocol RatchetClientProtocol: class {
+@objc(VSRRatchetClientProtocol) public protocol RatchetClientProtocol: class {
     /// Uploads public keys
     ///
     /// Long-term public key signature should be verified.
@@ -49,42 +49,42 @@ public protocol RatchetClientProtocol: class {
     ///   - identityCardId: Identity cardId that should be available on Card service.
     ///             It's public key should be ED25519
     ///   - longTermPublicKey: long-term public key + its signature created using identity private key.
-    ///             Should be X25518 in PKCS#8
+    ///             Should be curve25519 in PKCS#8
     ///   - oneTimePublicKeys: one-time public keys (up to 150 keys in the cloud).
-    ///             Should be X25518 in PKCS#8
-    ///   - token: auth token (JWT)
+    ///             Should be curve25519 in PKCS#8
     /// - Throws: Depends on implementation
-    func uploadPublicKeys(identityCardId: String?,
-                          longTermPublicKey: SignedPublicKey?,
-                          oneTimePublicKeys: [Data],
-                          token: String) throws
+    @objc func uploadPublicKeys(identityCardId: String?,
+                                longTermPublicKey: SignedPublicKey?,
+                                oneTimePublicKeys: [Data]) throws
 
     /// Checks list of keys ids and returns subset of that list with already used keys ids
     ///
-    /// keyId == SHA512(raw 32-byte publicKey)[0..<8]
+    /// - Note: keyId == SHA512(raw 32-byte publicKey)[0..<8]
     ///
     /// - Parameters:
     ///   - longTermKeyId: long-term public key id to validate
     ///   - oneTimeKeysIds: list of one-time public keys ids to validate
-    ///   - token: auth token (JWT)
     /// - Returns: Object with used keys ids
     /// - Throws: Depends on implementation
-    func validatePublicKeys(longTermKeyId: Data?,
-                            oneTimeKeysIds: [Data],
-                            token: String) throws -> ValidatePublicKeysResponse
+    @objc func validatePublicKeys(longTermKeyId: Data?,
+                                  oneTimeKeysIds: [Data]) throws -> ValidatePublicKeysResponse
 
     /// Returns public keys set for given identity.
     ///
-    /// - Parameters:
-    ///   - identity: User's identity
-    ///   - token: auth token (JWT)
+    /// - Parameter identity: User's identity
     /// - Returns: Set of public keys
     /// - Throws: Depends on implementation
-    func getPublicKeySet(forRecipientIdentity identity: String, token: String) throws -> PublicKeySet
+    @objc func getPublicKeySet(forRecipientIdentity identity: String) throws -> PublicKeySet
+
+    /// Returns public keys sets for given identities.
+    ///
+    /// - Parameter identities: Users' identities
+    /// - Returns: Sets of public keys
+    /// - Throws: Depends on implementation
+    @objc func getMultiplePublicKeysSets(forRecipientsIdentities identities: [String]) throws -> [IdentityPublicKeySet]
 
     /// Deletes keys entity
     ///
-    /// - Parameter token: auth token (JWT)
     /// - Throws: Depends on implementation
-    func deleteKeysEntity(token: String) throws
+    @objc func deleteKeysEntity() throws
 }
