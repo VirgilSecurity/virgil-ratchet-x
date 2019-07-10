@@ -193,7 +193,7 @@ import VirgilSDKRatchet
 let messageToEncrypt = "Hello, Bob!"
 
 // start new secure session with Bob
-let session = try! secureChat.startNewSessionAsSender(receiverCard: bobCard).startSync().getResult()
+let session = try! secureChat.startNewSessionAsSender(receiverCard: bobCard).startSync().get()
 
 let ratchetMessage = try! session.encrypt(string: messageToEncrypt)
 
@@ -304,7 +304,7 @@ let ticket = try! secureChat.startNewGroupSession(sessionId: sessionId)
 Now, start the group session by running the `startGroupSession` function. This function requires specifying the group chat session ID, the receivers' Virgil Cards and tickets.
 
 ```Swift
-let receiverCards = try! cardManager.searchCards(["Bob", "Carol"]).startSync().getResult()
+let receiverCards = try! cardManager.searchCards(["Bob", "Carol"]).startSync().get()
 
 let groupSession = try! secureChat.startGroupSession(with: receiverCards,
                                                      sessionId: sessionId,
@@ -371,7 +371,7 @@ let ticket = try! RatchetGroupMessage.deserialize(input: ticketData)
 - Join the group chat by running the `startGroupSession` function and store the session.
 
 ```Swift
-let receiverCards = try! cardManager.searchCards(["Alice", "Bob"]).startSync().getResult()
+let receiverCards = try! cardManager.searchCards(["Alice", "Bob"]).startSync().get()
 
 let groupSession = try! secureChat.startGroupSession(with: receiverCards,
                                                      sessionId: sessionId,
