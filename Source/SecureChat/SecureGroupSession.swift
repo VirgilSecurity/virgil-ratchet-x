@@ -177,12 +177,13 @@ import VirgilCryptoRatchet
             throw SecureGroupSessionError.invalidMessageType
         }
 
-        guard message.getSenderId().hexEncodedString() == senderCardId else {
-            throw SecureGroupSessionError.wrongSender
+        guard let senderId = Data(hexEncodedString: senderCardId) else {
+            // FIXME
+            throw NSError()
         }
 
         return try self.queue.sync {
-            try self.ratchetGroupSession.decrypt(message: message)
+            try self.ratchetGroupSession.decrypt(message: message, senderId: senderId)
         }
     }
 
