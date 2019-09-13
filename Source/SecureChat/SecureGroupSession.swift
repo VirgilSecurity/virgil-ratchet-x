@@ -95,6 +95,10 @@ import VirgilCryptoRatchet
         return self.ratchetGroupSession.getParticipantsCount()
     }
 
+    @objc public var currentEpoch: UInt32 {
+        return self.ratchetGroupSession.getCurrentEpoch()
+    }
+
     private let ratchetGroupSession: RatchetGroupSession
     private let queue = DispatchQueue(label: "SecureGroupSessionQueue")
 
@@ -217,10 +221,7 @@ import VirgilCryptoRatchet
         return try self.ratchetGroupSession.createGroupTicket().getTicketMessage()
     }
 
-    /// Set participants
-    /// - Important: As this update is incremental, tickets should be applied strictly consequently
-    /// - Note: This operation changes session state, so session should be updated in storage.
-    /// Otherwise, use setParticipants()
+    /// Sets participants
     ///
     /// - Parameters:
     ///   - ticket: ticket
