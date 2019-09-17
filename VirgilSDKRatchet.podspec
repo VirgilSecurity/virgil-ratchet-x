@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name                        = "VirgilSDKRatchet"
-  s.version                     = "0.1.1"
+  s.version                     = "0.2.0"
   s.swift_version               = "5.0"
   s.license                     = { :type => "BSD", :file => "LICENSE" }
   s.summary                     = "Virgil SDK for communication using Double Ratchet protocol for Apple devices and languages."
