@@ -300,6 +300,10 @@ class FakeKeysRotator: KeysRotatorProtocol {
 }
 
 class RamCardClient: CardClientProtocol {
+    func getOutdated(cardIds: [String]) throws -> [String] {
+        throw NSError(domain: "Stub", code: -1, userInfo: nil)
+    }
+
     func revokeCard(withId cardId: String) throws {
         throw NSError(domain: "Stub", code: -1, userInfo: nil)
     }

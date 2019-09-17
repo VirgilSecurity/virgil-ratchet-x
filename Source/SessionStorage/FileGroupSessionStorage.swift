@@ -86,7 +86,7 @@ import VirgilSDK
         }
 
         return try? SecureGroupSession(data: data,
-                                       privateKeyData: privateKeyData,
+                                       privateKeyData: self.privateKeyData,
                                        crypto: self.crypto)
     }
 
