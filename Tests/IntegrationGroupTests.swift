@@ -38,6 +38,7 @@ import XCTest
 import VirgilSDK
 import VirgilCrypto
 import VSCRatchet
+import VirgilCryptoRatchet
 @testable import VirgilSDKRatchet
 
 class IntegrationGroupTests: XCTestCase {
@@ -288,59 +289,59 @@ class IntegrationGroupTests: XCTestCase {
             XCTFail(error.localizedDescription)
         }
     }
-    
-//    func test4__decrypt__wrong_sender__should_return_error() {
-//        do {
-//            let num = 2
-//            
-//            let (cards, chats) = try self.initChat(numberOfParticipants: num)
-//            
-//            let sessionId = try self.crypto.generateRandomData(ofSize: 32)
-//            
-//            let initMsg = try chats.first!.startNewGroupSession(sessionId: sessionId)
-//            
-//            var sessions = [SecureGroupSession]()
-//            
-//            for i in 0..<num {
-//                var localCards = cards
-//                localCards.remove(at: i)
-//                
-//                let session = try chats[i].startGroupSession(with: localCards, sessionId: sessionId, using: initMsg)
-//                
-//                sessions.append(session)
-//            }
-//            
-//            let str = UUID().uuidString
-//            let message = try sessions[0].encrypt(string: str)
-//            
-//            let decrypted = try sessions[1].decryptString(from: message, senderCardId: sessions[0].myIdentifier)
-//            XCTAssert(decrypted == str)
-//            
-//            let crypto = try! VirgilCrypto()
-//            
-//            do {
-//                _ = try sessions[1].decryptString(from: message, senderCardId: sessions[1].myIdentifier)
-//                XCTFail()
-//            }
-//            catch SecureGroupSessionError.wrongSender {}
-//            catch {
-//                XCTFail()
-//            }
-//            
-//            do {
-//                let randomCardId = try crypto.generateRandomData(ofSize: 32).hexEncodedString()
-//                _ = try sessions[1].decryptString(from: message, senderCardId: randomCardId)
-//                XCTFail()
-//            }
-//            catch SecureGroupSessionError.wrongSender {}
-//            catch {
-//                XCTFail()
-//            }
-//        } catch {
-//            XCTFail(error.localizedDescription)
-//        }
-//    }
-    
+
+    func test4__decrypt__wrong_sender__should_return_error() {
+        do {
+            let num = 3
+
+            let (cards, chats) = try self.initChat(numberOfParticipants: num)
+
+            let sessionId = try self.crypto.generateRandomData(ofSize: 32)
+
+            let initMsg = try chats.first!.startNewGroupSession(sessionId: sessionId)
+
+            var sessions = [SecureGroupSession]()
+
+            for i in 0..<num {
+                var localCards = cards
+                localCards.remove(at: i)
+
+                let session = try chats[i].startGroupSession(with: localCards, sessionId: sessionId, using: initMsg)
+
+                sessions.append(session)
+            }
+
+            let str = UUID().uuidString
+            let message = try sessions[0].encrypt(string: str)
+
+            let decrypted = try sessions[1].decryptString(from: message, senderCardId: sessions[0].myIdentifier)
+            XCTAssert(decrypted == str)
+
+            let crypto = try! VirgilCrypto()
+
+            do {
+                _ = try sessions[1].decryptString(from: message, senderCardId: sessions[2].myIdentifier)
+                XCTFail()
+            }
+            catch RatchetError.errorInvalidSignature {}
+            catch {
+                XCTFail()
+            }
+
+            do {
+                let randomCardId = try crypto.generateRandomData(ofSize: 32).hexEncodedString()
+                _ = try sessions[1].decryptString(from: message, senderCardId: randomCardId)
+                XCTFail()
+            }
+            catch RatchetError.errorSenderNotFound {}
+            catch {
+                XCTFail()
+            }
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+
     func test5__session_persistence__random_uuid_messages__should_decrypt() {
         do {
             let num = 10
