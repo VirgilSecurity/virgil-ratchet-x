@@ -45,14 +45,12 @@ import VirgilCryptoRatchet
 /// - invalidMessageType: invalid message type
 /// - invalidCardId: invalid card id
 /// - publicKeyIsNotVirgil: public key is not VirgilPublicKey
-/// - wrongSender: message sender doesn't match
 @objc(VSRSecureGroupSessionError) public enum SecureGroupSessionError: Int, LocalizedError {
     case invalidUtf8String = 1
     case notConsequentTicket = 2
     case invalidMessageType = 3
     case invalidCardId = 4
     case publicKeyIsNotVirgil = 5
-    case wrongSender = 6
 
     /// Human-readable localized description
     public var errorDescription: String {
@@ -67,8 +65,6 @@ import VirgilCryptoRatchet
             return "invalid card id"
         case .publicKeyIsNotVirgil:
             return "public key is not VirgilPublicKey"
-        case .wrongSender:
-            return "message sender doesn't match"
         }
     }
 }
@@ -93,6 +89,11 @@ import VirgilCryptoRatchet
     /// Number of participants
     @objc public var participantsCount: UInt32 {
         return self.ratchetGroupSession.getParticipantsCount()
+    }
+
+    /// Current epoch
+    @objc public var currentEpoch: UInt32 {
+        return self.ratchetGroupSession.getCurrentEpoch()
     }
 
     private let ratchetGroupSession: RatchetGroupSession
@@ -170,19 +171,19 @@ import VirgilCryptoRatchet
     /// - Returns: Decrypted data
     /// - Throws:
     ///   - `SecureGroupSessionError.invalidMessageType` if message type is not .regular
-    ///   - `SecureGroupSessionError.wrongSender` if sender card identifier does not match
+    ///   - `SecureGroupSessionError.invalidCardId`
     ///   - Rethrows from crypto `RatchetGroupSession`
     @objc public func decryptData(from message: RatchetGroupMessage, senderCardId: String) throws -> Data {
         guard message.getType() == .regular else {
             throw SecureGroupSessionError.invalidMessageType
         }
 
-        guard message.getSenderId().hexEncodedString() == senderCardId else {
-            throw SecureGroupSessionError.wrongSender
+        guard let senderId = Data(hexEncodedString: senderCardId) else {
+            throw SecureGroupSessionError.invalidCardId
         }
 
         return try self.queue.sync {
-            try self.ratchetGroupSession.decrypt(message: message)
+            try self.ratchetGroupSession.decrypt(message: message, senderId: senderId)
         }
     }
 
@@ -196,7 +197,7 @@ import VirgilCryptoRatchet
     /// - Throws:
     ///   - `SecureGroupSessionError.invalidUtf8String` if decrypted data is not correct utf-8 string
     ///   - `SecureGroupSessionError.invalidMessageType` if message type is not .regular
-    ///   - `SecureGroupSessionError.wrongSender` if sender card identifier does not match
+    ///   - `SecureGroupSessionError.invalidCardId`
     ///   - Rethrows from crypto `RatchetGroupSession`
     @objc public func decryptString(from message: RatchetGroupMessage, senderCardId: String) throws -> String {
         let data = try self.decryptData(from: message, senderCardId: senderCardId)
@@ -216,10 +217,7 @@ import VirgilCryptoRatchet
         return try self.ratchetGroupSession.createGroupTicket().getTicketMessage()
     }
 
-    /// Set participants
-    /// - Important: As this update is incremental, tickets should be applied strictly consequently
-    /// - Note: This operation changes session state, so session should be updated in storage.
-    /// Otherwise, use setParticipants()
+    /// Sets participants
     ///
     /// - Parameters:
     ///   - ticket: ticket
