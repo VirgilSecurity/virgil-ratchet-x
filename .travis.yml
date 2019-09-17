@@ -65,7 +65,7 @@ script:
       carthage archive;
     fi
   
-  # Check pod lib
+  # Publish docs
   - if [[ $PUBLISH_DOCS = "YES" && $TRAVIS_TAG =~ ^[0-9]+\.[0-9]+\.[0-9]+ ]]; then
       ./CI/publish-docs.sh;
     fi
