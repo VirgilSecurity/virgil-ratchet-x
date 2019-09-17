@@ -58,6 +58,13 @@ script:
         xcodebuild -verbose -project "$PROJECT" -scheme "$SCHEME" -sdk "$SDK" -destination "$DESTINATION" -configuration Release clean build | xcpretty;
       fi
 
+  # Check pod lib
+  - if [ $POD_LIB_LINT == "YES" ]; then
+      gem install cocoapods --pre;
+      pod repo update;
+      pod lib lint;
+    fi
+
   # Build with carthage
   - if [ $PUBLISH_CARTHAGE == "YES" ]; then
       brew update && brew upgrade carthage || true;
@@ -65,7 +72,7 @@ script:
       carthage archive;
     fi
   
-  # Check pod lib
+  # Publish docs
   - if [[ $PUBLISH_DOCS = "YES" && $TRAVIS_TAG =~ ^[0-9]+\.[0-9]+\.[0-9]+ ]]; then
       ./CI/publish-docs.sh;
     fi
