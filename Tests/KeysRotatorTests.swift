@@ -80,7 +80,7 @@ class KeysRotatorTests: XCTestCase {
         return true
     }
     
-    private func initialize() throws -> (CardManager, String, VirgilPrivateKey, Card) {
+    private func initialize() throws -> (CardManager, String, PrivateKeyWrapper, Card) {
         let testConfig = TestConfig.readFromBundle()
         
         let crypto = try! VirgilCrypto()
@@ -110,7 +110,7 @@ class KeysRotatorTests: XCTestCase {
         
         let card = try cardManager.publishCard(privateKey: identityKeyPair.privateKey, publicKey: identityKeyPair.publicKey, identity: identity).startSync().get()
         
-        return (cardManager, identity, identityKeyPair.privateKey, card)
+        return (cardManager, identity, PrivateKeyWrapper(keyPair: identityKeyPair), card)
     }
     
     private func rotate(rotator: KeysRotator) throws -> RotationLog {

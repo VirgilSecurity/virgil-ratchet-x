@@ -91,17 +91,17 @@ class IntegrationGroupTests: XCTestCase {
             
             let params = try KeychainStorageParams.makeKeychainStorageParams(appName: "test")
             let longTermKeysStorage = try KeychainLongTermKeysStorage(identity: identity, params: params)
-            let oneTimeKeysStorage = FileOneTimeKeysStorage(identity: identity, crypto: crypto, identityKeyPair: keyPair)
+            let oneTimeKeysStorage = FileOneTimeKeysStorage(identity: identity, crypto: crypto, identityPrivateKey: PrivateKeyWrapper(keyPair: keyPair))
             
-            let keysRotator = KeysRotator(crypto: crypto, identityPrivateKey: keyPair.privateKey, identityCardId: card.identifier, orphanedOneTimeKeyTtl: 5, longTermKeyTtl: 10, outdatedLongTermKeyTtl: 5, desiredNumberOfOneTimeKeys: IntegrationTests.desiredNumberOfOtKeys, longTermKeysStorage: longTermKeysStorage, oneTimeKeysStorage: oneTimeKeysStorage, client: client)
+            let keysRotator = KeysRotator(crypto: crypto, identityPrivateKey: PrivateKeyWrapper(keyPair: keyPair), identityCardId: card.identifier, orphanedOneTimeKeyTtl: 5, longTermKeyTtl: 10, outdatedLongTermKeyTtl: 5, desiredNumberOfOneTimeKeys: IntegrationTests.desiredNumberOfOtKeys, longTermKeysStorage: longTermKeysStorage, oneTimeKeysStorage: oneTimeKeysStorage, client: client)
             
             let secureChat = SecureChat(crypto: crypto,
-                                        identityPrivateKey: keyPair.privateKey,
+                                        identityPrivateKey: PrivateKeyWrapper(keyPair: keyPair),
                                         identityCard: card,
                                         client: client,
                                         longTermKeysStorage: longTermKeysStorage,
                                         oneTimeKeysStorage: oneTimeKeysStorage,
-                                        sessionStorage: FileSessionStorage(identity: identity, crypto: crypto, identityKeyPair: keyPair),
+                                        sessionStorage: FileSessionStorage(identity: identity, crypto: crypto, identityPrivateKey: PrivateKeyWrapper(keyPair: keyPair)),
                                         groupSessionStorage: try FileGroupSessionStorage(identity: identity, crypto: crypto, identityKeyPair: keyPair),
                                         keysRotator: keysRotator)
             

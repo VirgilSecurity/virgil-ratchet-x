@@ -35,6 +35,7 @@
 //
 
 import VirgilCrypto
+import VirgilSDK
 import VirgilCryptoRatchet
 
 /// SecureSession errors
@@ -72,7 +73,7 @@ import VirgilCryptoRatchet
     internal init(crypto: VirgilCrypto,
                   participantIdentity: String,
                   name: String,
-                  receiverIdentityPrivateKey: VirgilPrivateKey,
+                  receiverIdentityPrivateKey: PrivateKeyWrapper,
                   receiverLongTermPrivateKey: LongTermKey,
                   receiverOneTimePrivateKey: OneTimeKey?,
                   senderIdentityPublicKey: Data,
@@ -85,7 +86,7 @@ import VirgilCryptoRatchet
         ratchetSession.setRng(rng: crypto.rng)
 
         try ratchetSession.respond(senderIdentityPublicKey: senderIdentityPublicKey,
-                                   receiverIdentityPrivateKey: self.crypto.exportPrivateKey(receiverIdentityPrivateKey),
+                                   receiverIdentityPrivateKey: self.crypto.exportPrivateKey(receiverIdentityPrivateKey.getPrivateKey()),
                                    receiverLongTermPrivateKey: receiverLongTermPrivateKey.key,
                                    receiverOneTimePrivateKey: receiverOneTimePrivateKey?.key ?? Data(),
                                    message: ratchetMessage)
@@ -99,7 +100,7 @@ import VirgilCryptoRatchet
     internal init(crypto: VirgilCrypto,
                   participantIdentity: String,
                   name: String,
-                  senderIdentityPrivateKey: Data,
+                  senderIdentityPrivateKey: PrivateKeyWrapper,
                   receiverIdentityPublicKey: Data,
                   receiverLongTermPublicKey: Data,
                   receiverOneTimePublicKey: Data?) throws {
@@ -109,8 +110,10 @@ import VirgilCryptoRatchet
 
         let ratchetSession = RatchetSession()
         ratchetSession.setRng(rng: crypto.rng)
+        
+        let privateKeyData = try self.crypto.exportPrivateKey(senderIdentityPrivateKey.getPrivateKey())
 
-        try ratchetSession.initiate(senderIdentityPrivateKey: senderIdentityPrivateKey,
+        try ratchetSession.initiate(senderIdentityPrivateKey: privateKeyData,
                                     receiverIdentityPublicKey: receiverIdentityPublicKey,
                                     receiverLongTermPublicKey: receiverLongTermPublicKey,
                                     receiverOneTimePublicKey: receiverOneTimePublicKey ?? Data())

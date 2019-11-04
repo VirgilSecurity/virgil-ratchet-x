@@ -104,33 +104,33 @@ class IntegrationTests: XCTestCase {
         let receiverLongTermKeysStorage = try KeychainLongTermKeysStorage(identity: receiverIdentity, params: params)
         let senderLongTermKeysStorage = try KeychainLongTermKeysStorage(identity: senderIdentity, params: params)
         
-        let receiverOneTimeKeysStorage = FileOneTimeKeysStorage(identity: receiverIdentity, crypto: crypto, identityKeyPair: receiverIdentityKeyPair)
-        let senderOneTimeKeysStorage = FileOneTimeKeysStorage(identity: senderIdentity, crypto: crypto, identityKeyPair: senderIdentityKeyPair)
+        let receiverOneTimeKeysStorage = FileOneTimeKeysStorage(identity: receiverIdentity, crypto: crypto, identityPrivateKey: PrivateKeyWrapper(keyPair: receiverIdentityKeyPair))
+        let senderOneTimeKeysStorage = FileOneTimeKeysStorage(identity: senderIdentity, crypto: crypto, identityPrivateKey: PrivateKeyWrapper(keyPair: senderIdentityKeyPair))
 
         let receiverClient = RatchetClient(accessTokenProvider: receiverTokenProvider, serviceUrl: URL(string: testConfig.ServiceURL)!)
         let senderClient = RatchetClient(accessTokenProvider: senderTokenProvider, serviceUrl: URL(string: testConfig.ServiceURL)!)
         
-        let receiverKeysRotator = KeysRotator(crypto: crypto, identityPrivateKey: receiverIdentityKeyPair.privateKey, identityCardId: receiverCard.identifier, orphanedOneTimeKeyTtl: 5, longTermKeyTtl: 10, outdatedLongTermKeyTtl: 5, desiredNumberOfOneTimeKeys: IntegrationTests.desiredNumberOfOtKeys, longTermKeysStorage: receiverLongTermKeysStorage, oneTimeKeysStorage: receiverOneTimeKeysStorage, client: receiverClient)
+        let receiverKeysRotator = KeysRotator(crypto: crypto, identityPrivateKey: PrivateKeyWrapper(keyPair: receiverIdentityKeyPair), identityCardId: receiverCard.identifier, orphanedOneTimeKeyTtl: 5, longTermKeyTtl: 10, outdatedLongTermKeyTtl: 5, desiredNumberOfOneTimeKeys: IntegrationTests.desiredNumberOfOtKeys, longTermKeysStorage: receiverLongTermKeysStorage, oneTimeKeysStorage: receiverOneTimeKeysStorage, client: receiverClient)
         
-        let senderKeysRotator = KeysRotator(crypto: crypto, identityPrivateKey: senderIdentityKeyPair.privateKey, identityCardId: senderCard.identifier, orphanedOneTimeKeyTtl: 100, longTermKeyTtl: 100, outdatedLongTermKeyTtl: 100, desiredNumberOfOneTimeKeys: IntegrationTests.desiredNumberOfOtKeys, longTermKeysStorage: senderLongTermKeysStorage, oneTimeKeysStorage: senderOneTimeKeysStorage, client: senderClient)
+        let senderKeysRotator = KeysRotator(crypto: crypto, identityPrivateKey: PrivateKeyWrapper(keyPair: senderIdentityKeyPair), identityCardId: senderCard.identifier, orphanedOneTimeKeyTtl: 100, longTermKeyTtl: 100, outdatedLongTermKeyTtl: 100, desiredNumberOfOneTimeKeys: IntegrationTests.desiredNumberOfOtKeys, longTermKeysStorage: senderLongTermKeysStorage, oneTimeKeysStorage: senderOneTimeKeysStorage, client: senderClient)
         
         let senderSecureChat = SecureChat(crypto: crypto,
-                                          identityPrivateKey: senderIdentityKeyPair.privateKey,
+                                          identityPrivateKey: PrivateKeyWrapper(keyPair: senderIdentityKeyPair),
                                           identityCard: senderCard,
                                           client: senderClient,
                                           longTermKeysStorage: senderLongTermKeysStorage,
                                           oneTimeKeysStorage: senderOneTimeKeysStorage,
-                                          sessionStorage: FileSessionStorage(identity: senderIdentity, crypto: crypto, identityKeyPair: senderIdentityKeyPair),
+                                          sessionStorage: FileSessionStorage(identity: senderIdentity, crypto: crypto, identityPrivateKey: PrivateKeyWrapper(keyPair: senderIdentityKeyPair)),
                                           groupSessionStorage: try FileGroupSessionStorage(identity: senderIdentity, crypto: crypto, identityKeyPair: receiverIdentityKeyPair),
                                           keysRotator: senderKeysRotator)
         
         let receiverSecureChat = SecureChat(crypto: crypto,
-                                            identityPrivateKey: receiverIdentityKeyPair.privateKey,
+                                            identityPrivateKey: PrivateKeyWrapper(keyPair: receiverIdentityKeyPair),
                                             identityCard: receiverCard,
                                             client: receiverClient,
                                             longTermKeysStorage: receiverLongTermKeysStorage,
                                             oneTimeKeysStorage: receiverOneTimeKeysStorage,
-                                            sessionStorage: FileSessionStorage(identity: receiverIdentity, crypto: crypto, identityKeyPair: receiverIdentityKeyPair),
+                                            sessionStorage: FileSessionStorage(identity: receiverIdentity, crypto: crypto, identityPrivateKey: PrivateKeyWrapper(keyPair: receiverIdentityKeyPair)),
                                             groupSessionStorage: try FileGroupSessionStorage(identity: receiverIdentity, crypto: crypto, identityKeyPair: receiverIdentityKeyPair),
                                             keysRotator: receiverKeysRotator)
         

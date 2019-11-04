@@ -92,7 +92,7 @@ import VirgilCrypto
 /// SecureChat. Class for rotating keys, starting and responding to conversation
 @objc(VSRSecureChat) open class SecureChat: NSObject {
     /// Identity private key
-    @objc public let identityPrivateKey: VirgilPrivateKey
+    @objc public let identityPrivateKey: PrivateKeyWrapper
 
     /// Crypto
     @objc public let crypto: VirgilCrypto
@@ -138,19 +138,17 @@ import VirgilCrypto
             params = nil
         }
 
-        let identityKeyPair = VirgilKeyPair(privateKey: context.identityPrivateKey,
-                                            publicKey: context.identityCard.publicKey)
         let longTermKeysStorage = try KeychainLongTermKeysStorage(identity: context.identityCard.identity,
                                                                   params: params)
         let oneTimeKeysStorage = FileOneTimeKeysStorage(identity: context.identityCard.identity,
                                                         crypto: crypto,
-                                                        identityKeyPair: identityKeyPair)
+                                                        identityPrivateKey: context.identityPrivateKey)
         let sessionStorage = FileSessionStorage(identity: context.identityCard.identity,
                                                 crypto: crypto,
-                                                identityKeyPair: identityKeyPair)
+                                                identityPrivateKey: context.identityPrivateKey)
         let groupSessionStorage = try FileGroupSessionStorage(identity: context.identityCard.identity,
                                                               crypto: crypto,
-                                                              identityKeyPair: identityKeyPair)
+                                                              identityKeyPair: context.identityPrivateKey.getKeyPair())
         let keysRotator = KeysRotator(crypto: crypto,
                                       identityPrivateKey: context.identityPrivateKey,
                                       identityCardId: context.identityCard.identifier,
@@ -186,7 +184,7 @@ import VirgilCrypto
     ///   - groupSessionStorage: group session storage
     ///   - keysRotator: keys rotation
     public init(crypto: VirgilCrypto,
-                identityPrivateKey: VirgilPrivateKey,
+                identityPrivateKey: PrivateKeyWrapper,
                 identityCard: Card,
                 client: RatchetClientProtocol,
                 longTermKeysStorage: LongTermKeysStorage,
@@ -455,12 +453,10 @@ import VirgilCrypto
             Log.error("Creating weak session with \(identity)")
         }
 
-        let privateKeyData = try self.crypto.exportPrivateKey(self.identityPrivateKey)
-
         let session = try SecureSession(crypto: self.crypto,
                                         participantIdentity: identity,
                                         name: name ?? SecureChat.defaultSessionName,
-                                        senderIdentityPrivateKey: privateKeyData,
+                                        senderIdentityPrivateKey: self.identityPrivateKey,
                                         receiverIdentityPublicKey: identityPublicKeyData,
                                         receiverLongTermPublicKey: longTermPublicKey.publicKey,
                                         receiverOneTimePublicKey: oneTimePublicKey)
@@ -649,7 +645,7 @@ import VirgilCrypto
             throw SecureChatError.sessionIdMismatch
         }
 
-        let privateKeyData = try self.crypto.exportPrivateKey(self.identityPrivateKey)
+        let privateKeyData = try self.crypto.exportPrivateKey(self.identityPrivateKey.getPrivateKey())
 
         guard let myId = Data(hexEncodedString: self.identityCard.identifier) else {
             throw SecureChatError.invalidCardId

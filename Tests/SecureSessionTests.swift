@@ -109,7 +109,7 @@ class SecureSessionTests: XCTestCase {
         let receiverFakeClient = RamClient(identity: receiverIdentity, storage: storage, cardManager: receiverCardManager)
         
         let senderSecureChat = SecureChat(crypto: crypto,
-                                          identityPrivateKey: senderIdentityKeyPair.privateKey,
+                                          identityPrivateKey: PrivateKeyWrapper(keyPair: senderIdentityKeyPair),
                                           identityCard: senderCard,
                                           client: senderFakeClient,
                                           longTermKeysStorage: RamLongTermKeysStorage(db: [:]),
@@ -118,10 +118,10 @@ class SecureSessionTests: XCTestCase {
                                           groupSessionStorage:  RamGroupSessionStorage(),
                                           keysRotator: FakeKeysRotator())
         
-        let receiverKeysRotator = KeysRotator(crypto: crypto, identityPrivateKey: receiverIdentityKeyPair.privateKey, identityCardId: receiverCard.identifier, orphanedOneTimeKeyTtl: 100, longTermKeyTtl: 100, outdatedLongTermKeyTtl: 100, desiredNumberOfOneTimeKeys: 10, longTermKeysStorage: receiverLongTermKeysStorage, oneTimeKeysStorage: receiverOneTimeKeysStorage, client: receiverFakeClient)
+        let receiverKeysRotator = KeysRotator(crypto: crypto, identityPrivateKey: PrivateKeyWrapper(keyPair: receiverIdentityKeyPair), identityCardId: receiverCard.identifier, orphanedOneTimeKeyTtl: 100, longTermKeyTtl: 100, outdatedLongTermKeyTtl: 100, desiredNumberOfOneTimeKeys: 10, longTermKeysStorage: receiverLongTermKeysStorage, oneTimeKeysStorage: receiverOneTimeKeysStorage, client: receiverFakeClient)
         
         let receiverSecureChat = SecureChat(crypto: crypto,
-                                            identityPrivateKey: receiverIdentityKeyPair.privateKey,
+                                            identityPrivateKey: PrivateKeyWrapper(keyPair: receiverIdentityKeyPair),
                                             identityCard: receiverCard,
                                             client: receiverFakeClient,
                                             longTermKeysStorage: receiverLongTermKeysStorage,

@@ -50,9 +50,9 @@ import VirgilSDK
     /// - Parameters:
     ///   - identity: identity of this user
     ///   - crypto: VirgilCrypto that will be forwarded to [SecureSession](x-source-tag://SecureSession)
-    ///   - identityKeyPair: Key pair to encrypt session
-    @objc public init(identity: String, crypto: VirgilCrypto, identityKeyPair: VirgilKeyPair) {
-        let credentials = FileSystemCredentials(crypto: crypto, keyPair: identityKeyPair)
+    ///   - identityPrivateKey: Identity private key
+    @objc public init(identity: String, crypto: VirgilCrypto, identityPrivateKey: PrivateKeyWrapper) {
+        let credentials = FileSystemCredentials(crypto: crypto, privateKeyWrapper: identityPrivateKey)
         self.fileSystem = FileSystem(prefix: "VIRGIL-RATCHET",
                                      userIdentifier: identity,
                                      pathComponents: ["SESSIONS"],

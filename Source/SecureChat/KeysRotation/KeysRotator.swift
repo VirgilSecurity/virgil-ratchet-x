@@ -56,7 +56,7 @@ import VirgilCrypto
 /// Default implementation of `KeysRotatorProtocol`
 @objc(VSRKeysRotator) public class KeysRotator: NSObject, KeysRotatorProtocol {
     private let crypto: VirgilCrypto
-    private let identityPrivateKey: VirgilPrivateKey
+    private let identityPrivateKey: PrivateKeyWrapper
     private let identityCardId: String
     private let orphanedOneTimeKeyTtl: TimeInterval
     private let longTermKeyTtl: TimeInterval
@@ -82,7 +82,7 @@ import VirgilCrypto
     ///   - oneTimeKeysStorage: one-time keys storage
     ///   - client: [RatchetClient](x-source-tag://RatchetClient)
     @objc public init(crypto: VirgilCrypto,
-                      identityPrivateKey: VirgilPrivateKey,
+                      identityPrivateKey: PrivateKeyWrapper,
                       identityCardId: String,
                       orphanedOneTimeKeyTtl: TimeInterval,
                       longTermKeyTtl: TimeInterval,
@@ -258,7 +258,7 @@ import VirgilCrypto
                     _ = try self.longTermKeysStorage.storeKey(longTermPrivateKey,
                                                               withId: longTermKeyId)
                     let longTermKeySignature = try self.crypto.generateSignature(of: longTermPublicKey,
-                                                                                 using: self.identityPrivateKey)
+                                                                                 using: self.identityPrivateKey.getPrivateKey())
                     longTermSignedPublicKey = SignedPublicKey(publicKey: longTermPublicKey,
                                                               signature: longTermKeySignature)
                 }

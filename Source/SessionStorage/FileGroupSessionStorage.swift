@@ -53,7 +53,7 @@ import VirgilSDK
     ///   - crypto: VirgilCrypto that will be forwarded to [SecureGroupSession](x-source-tag://SecureGroupSession)
     ///   - identityKeyPair: Key pair to encrypt session
     @objc public init(identity: String, crypto: VirgilCrypto, identityKeyPair: VirgilKeyPair) throws {
-        let credentials = FileSystemCredentials(crypto: crypto, keyPair: identityKeyPair)
+        let credentials = FileSystemCredentials(crypto: crypto, privateKeyWrapper: PrivateKeyWrapper(keyPair: identityKeyPair))
         self.fileSystem = FileSystem(prefix: "VIRGIL-RATCHET",
                                      userIdentifier: identity,
                                      pathComponents: ["GROUPS"],

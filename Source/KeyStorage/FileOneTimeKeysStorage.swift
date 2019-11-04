@@ -72,10 +72,12 @@ import VirgilSDK
     }
 
     /// Initializer
-    ///
-    /// - Parameter identity: identity of this user
-    @objc public init(identity: String, crypto: VirgilCrypto, identityKeyPair: VirgilKeyPair) {
-        let credentials = FileSystemCredentials(crypto: crypto, keyPair: identityKeyPair)
+    /// - Parameters:
+    ///   - identity: identity of this user
+    ///   - crypto: VirgilCrypto
+    ///   - identityPrivateKey: identity private key
+    @objc public init(identity: String, crypto: VirgilCrypto, identityPrivateKey: PrivateKeyWrapper) {
+        let credentials = FileSystemCredentials(crypto: crypto, privateKeyWrapper: identityPrivateKey)
         self.fileSystem = FileSystem(prefix: "VIRGIL-RATCHET",
                                      userIdentifier: identity,
                                      pathComponents: [],
