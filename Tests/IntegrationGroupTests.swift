@@ -102,7 +102,7 @@ class IntegrationGroupTests: XCTestCase {
                                         longTermKeysStorage: longTermKeysStorage,
                                         oneTimeKeysStorage: oneTimeKeysStorage,
                                         sessionStorage: FileSessionStorage(identity: identity, crypto: crypto, identityPrivateKey: PrivateKeyWrapper(keyPair: keyPair)),
-                                        groupSessionStorage: try FileGroupSessionStorage(identity: identity, crypto: crypto, identityKeyPair: keyPair),
+                                        groupSessionStorage: FileGroupSessionStorage(identity: identity, crypto: crypto, identityKeyPair: PrivateKeyWrapper(keyPair: keyPair)),
                                         keysRotator: keysRotator)
             
             cards.append(card)
