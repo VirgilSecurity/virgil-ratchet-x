@@ -44,7 +44,7 @@ import VirgilSDK
     private let fileSystem: FileSystem
     private let queue = DispatchQueue(label: "FileGroupSessionStorageQueue")
     private let crypto: VirgilCrypto
-    private let privateKeyData: Data
+    private let privateKey: PrivateKeyWrapper
 
     /// Initializer
     ///
@@ -52,14 +52,14 @@ import VirgilSDK
     ///   - identity: identity of this user
     ///   - crypto: VirgilCrypto that will be forwarded to [SecureGroupSession](x-source-tag://SecureGroupSession)
     ///   - identityKeyPair: Key pair to encrypt session
-    @objc public init(identity: String, crypto: VirgilCrypto, identityKeyPair: VirgilKeyPair) throws {
-        let credentials = FileSystemCredentials(crypto: crypto, privateKeyWrapper: PrivateKeyWrapper(keyPair: identityKeyPair))
+    @objc public init(identity: String, crypto: VirgilCrypto, identityKeyPair: PrivateKeyWrapper) {
+        let credentials = FileSystemCredentials(crypto: crypto, privateKeyWrapper: identityKeyPair)
         self.fileSystem = FileSystem(prefix: "VIRGIL-RATCHET",
                                      userIdentifier: identity,
                                      pathComponents: ["GROUPS"],
                                      credentials: credentials)
         self.crypto = crypto
-        self.privateKeyData = try crypto.exportPrivateKey(identityKeyPair.privateKey)
+        self.privateKey = identityKeyPair
 
         super.init()
     }
@@ -84,9 +84,14 @@ import VirgilSDK
         guard let data = try? self.fileSystem.read(name: identifier.hexEncodedString()), !data.isEmpty else {
             return nil
         }
+        
+        // TODO: Switch to support biometrics here
+        guard let privateKeyData = try? self.crypto.exportPrivateKey(self.privateKey.getPrivateKey()) else {
+            return nil
+        }
 
         return try? SecureGroupSession(data: data,
-                                       privateKeyData: self.privateKeyData,
+                                       privateKeyData: privateKeyData,
                                        crypto: self.crypto)
     }
 

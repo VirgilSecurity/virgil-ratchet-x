@@ -146,9 +146,9 @@ import VirgilCrypto
         let sessionStorage = FileSessionStorage(identity: context.identityCard.identity,
                                                 crypto: crypto,
                                                 identityPrivateKey: context.identityPrivateKey)
-        let groupSessionStorage = try FileGroupSessionStorage(identity: context.identityCard.identity,
-                                                              crypto: crypto,
-                                                              identityKeyPair: context.identityPrivateKey.getKeyPair())
+        let groupSessionStorage = FileGroupSessionStorage(identity: context.identityCard.identity,
+                                                          crypto: crypto,
+                                                          identityKeyPair: context.identityPrivateKey)
         let keysRotator = KeysRotator(crypto: crypto,
                                       identityPrivateKey: context.identityPrivateKey,
                                       identityCardId: context.identityCard.identifier,
