@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXAggregateTarget section */
@@ -181,10 +181,10 @@
 		42352608221EF1210079DD2A /* VSCCommon.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 423524BC221EE9E60079DD2A /* VSCCommon.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4235260A221EF1210079DD2A /* VSCFoundation.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 423524BD221EE9E60079DD2A /* VSCFoundation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4235260B221EF1210079DD2A /* VSCRatchet.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 423524BE221EE9E60079DD2A /* VSCRatchet.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		42499F7021EE3B3F0076851C /* VirgilSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 429D79A0217791A2003B56F8 /* VirgilSDK.framework */; };
-		42499F7121EE3B3F0076851C /* VSCCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42499F6721EE36AE0076851C /* VSCCommon.framework */; };
-		42499F7321EE3B3F0076851C /* VSCFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42499F6921EE36AE0076851C /* VSCFoundation.framework */; };
-		42499F7421EE3B3F0076851C /* VSCRatchet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42499F6821EE36AE0076851C /* VSCRatchet.framework */; };
+		42499F7021EE3B3F0076851C /* VirgilSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 429D79A0217791A2003B56F8 /* VirgilSDK.framework */; platformFilter = ios; };
+		42499F7121EE3B3F0076851C /* VSCCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42499F6721EE36AE0076851C /* VSCCommon.framework */; platformFilter = ios; };
+		42499F7321EE3B3F0076851C /* VSCFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42499F6921EE36AE0076851C /* VSCFoundation.framework */; platformFilter = ios; };
+		42499F7421EE3B3F0076851C /* VSCRatchet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42499F6821EE36AE0076851C /* VSCRatchet.framework */; platformFilter = ios; };
 		42499F8A21EE3BA30076851C /* VSCCommon.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 42499F6721EE36AE0076851C /* VSCCommon.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		42499F8B21EE3BA30076851C /* VSCFoundation.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 42499F6921EE36AE0076851C /* VSCFoundation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		42499F8C21EE3BA30076851C /* VSCRatchet.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 42499F6821EE36AE0076851C /* VSCRatchet.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -226,9 +226,9 @@
 		42C837632211B017008AFFD9 /* SecureChatContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42C837622211B017008AFFD9 /* SecureChatContext.swift */; };
 		42C837652211B283008AFFD9 /* KeysRotatorProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42C837642211B283008AFFD9 /* KeysRotatorProtocol.swift */; };
 		42CBE2AB21E656BE000F99E6 /* SecureSessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65A42183340A00AC4631 /* SecureSessionTests.swift */; };
-		42FC668C22087BFA009D3764 /* VirgilCrypto.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 429D799F217791A2003B56F8 /* VirgilCrypto.framework */; };
-		42FC668F22087D4D009D3764 /* VirgilCryptoFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42FC668722087B74009D3764 /* VirgilCryptoFoundation.framework */; };
-		42FC669022087D4D009D3764 /* VirgilCryptoRatchet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42FC668822087B74009D3764 /* VirgilCryptoRatchet.framework */; };
+		42FC668C22087BFA009D3764 /* VirgilCrypto.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 429D799F217791A2003B56F8 /* VirgilCrypto.framework */; platformFilter = ios; };
+		42FC668F22087D4D009D3764 /* VirgilCryptoFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42FC668722087B74009D3764 /* VirgilCryptoFoundation.framework */; platformFilter = ios; };
+		42FC669022087D4D009D3764 /* VirgilCryptoRatchet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42FC668822087B74009D3764 /* VirgilCryptoRatchet.framework */; platformFilter = ios; };
 		42FC669222087DC0009D3764 /* VirgilCryptoFoundation.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 42FC668722087B74009D3764 /* VirgilCryptoFoundation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		42FC669322087DC0009D3764 /* VirgilCryptoRatchet.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 42FC668822087B74009D3764 /* VirgilCryptoRatchet.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		42FC669422088083009D3764 /* VSCCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42499F6721EE36AE0076851C /* VSCCommon.framework */; };
