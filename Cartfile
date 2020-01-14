@@ -1,2 +1,2 @@
-github "VirgilSecurity/virgil-cryptowrapper-x" "develop-pqc"
-github "VirgilSecurity/virgil-sdk-x" "develop-pqc"
+github "VirgilSecurity/virgil-cryptowrapper-x" ~> 0.12.0
+github "VirgilSecurity/virgil-sdk-x" ~> 7.1.0
