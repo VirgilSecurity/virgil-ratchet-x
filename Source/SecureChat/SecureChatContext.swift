@@ -47,9 +47,6 @@ import VirgilSDK
     /// User's identity private key (corresponding to public key in identityCard)
     @objc public let identityPrivateKey: VirgilPrivateKey
 
-    /// Access token provider
-    @objc public let accessTokenProvider: AccessTokenProvider
-
     /// Time that one-time key lives in the storage after been marked as orphaned. Seconds
     @objc public var orphanedOneTimeKeyTtl: TimeInterval = 24 * 60 * 60
 
@@ -65,6 +62,9 @@ import VirgilSDK
     /// App name, defaults to Bundle.main.bundleIdentifier
     @objc public var appName: String? = nil
 
+    /// Ratchet client
+    @objc public var client: RatchetClient
+
     /// Initializer
     ///
     /// - Parameters:
@@ -76,7 +76,7 @@ import VirgilSDK
                       accessTokenProvider: AccessTokenProvider) {
         self.identityCard = identityCard
         self.identityPrivateKey = identityPrivateKey
-        self.accessTokenProvider = accessTokenProvider
+        self.client = RatchetClient(accessTokenProvider: accessTokenProvider)
 
         super.init()
     }

@@ -128,7 +128,7 @@ import VirgilCrypto
     ///   - Rethrows from `KeychainLongTermKeysStorage`
     @objc public convenience init(context: SecureChatContext) throws {
         let crypto = try VirgilCrypto()
-        let client = RatchetClient(accessTokenProvider: context.accessTokenProvider)
+        let client = context.client
 
         let params: KeychainStorageParams?
         if let appName = context.appName {
