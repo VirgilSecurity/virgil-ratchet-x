@@ -64,6 +64,8 @@ import VirgilSDK
 
     /// Ratchet client
     @objc public var client: RatchetClient
+    
+    @objc public var enablePostQuantum: Bool
 
     /// Initializer
     ///
@@ -73,10 +75,12 @@ import VirgilSDK
     ///   - accessTokenProvider: access token provider
     @objc public init(identityCard: Card,
                       identityPrivateKey: VirgilPrivateKey,
-                      accessTokenProvider: AccessTokenProvider) {
+                      accessTokenProvider: AccessTokenProvider,
+                      enablePostQuantum: Bool) {
         self.identityCard = identityCard
         self.identityPrivateKey = identityPrivateKey
         self.client = RatchetClient(accessTokenProvider: accessTokenProvider)
+        self.enablePostQuantum = enablePostQuantum
 
         super.init()
     }

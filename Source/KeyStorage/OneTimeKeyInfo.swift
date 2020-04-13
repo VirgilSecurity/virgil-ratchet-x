@@ -36,45 +36,23 @@
 
 import Foundation
 
-/// Protocol for Long-term private keys storage
-@objc(VSRLongTermKeysStorage) public protocol LongTermKeysStorage: class {
-    /// Stores key
+/// Class representing One-time key info
+@objc(VSROneTimeKeyInfo) public final class OneTimeKeyInfo: NSObject, Codable {
+    /// Key id
+    @objc public let identifier: Data
+
+    /// Date from which we found out that this key is orphaned
+    @objc public let orphanedFrom: Date?
+
+    /// Initializer
     ///
     /// - Parameters:
-    ///   - key: private key
-    ///   - id: key id
-    /// - Throws: Depends on implementation
-    @objc func storeKey(_ key: Data, withId id: Data) throws
+    ///   - identifier: key id
+    ///   - orphanedFrom: date from which we found out that this key is orphaned
+    @objc public init(identifier: Data, orphanedFrom: Date?) {
+        self.identifier = identifier
+        self.orphanedFrom = orphanedFrom
 
-    /// Retrieves key
-    ///
-    /// - Parameter id: key id
-    /// - Returns: Long-term key
-    /// - Throws: Depends on implementation
-    @objc func retrieveKey(withId id: Data) throws -> LongTermKey
-
-    /// Deletes key
-    ///
-    /// - Parameter id: key id
-    /// - Throws: Depends on implementation
-    @objc func deleteKey(withId id: Data) throws
-
-    /// Retrieves all persistent long-term keys
-    ///
-    /// - Returns: Long-term keys list
-    /// - Throws: Depends on implementation
-    @objc func retrieveAllKeys() throws -> [LongTermKey]
-
-    /// Marks key as outdated
-    ///
-    /// - Parameters:
-    ///   - date: date from which this key started to be outdated
-    ///   - keyId: key id
-    /// - Throws: Depends on implementation
-    @objc func markKeyOutdated(startingFrom date: Date, keyId: Data) throws
-
-    /// Deletes all long-term keys
-    ///
-    /// - Throws: Depends on implementation
-    @objc func reset() throws
+        super.init()
+    }
 }

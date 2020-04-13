@@ -72,23 +72,38 @@ import VirgilCryptoRatchet
     internal init(crypto: VirgilCrypto,
                   participantIdentity: String,
                   name: String,
+                  senderIdentityPublicKey: VirgilPublicKey,
                   receiverIdentityPrivateKey: VirgilPrivateKey,
                   receiverLongTermPrivateKey: LongTermKey,
                   receiverOneTimePrivateKey: OneTimeKey?,
-                  senderIdentityPublicKey: Data,
-                  ratchetMessage: RatchetMessage) throws {
+                  ratchetMessage: RatchetMessage,
+                  enablePostQuantum: Bool) throws {
         self.crypto = crypto
         self.participantIdentity = participantIdentity
         self.name = name
+        
+        let longTermKey = try crypto.importPrivateKey(from: receiverLongTermPrivateKey.key)
 
         let ratchetSession = RatchetSession()
         ratchetSession.setRng(rng: crypto.rng)
-
-        try ratchetSession.respond(senderIdentityPublicKey: senderIdentityPublicKey,
-                                   receiverIdentityPrivateKey: self.crypto.exportPrivateKey(receiverIdentityPrivateKey),
-                                   receiverLongTermPrivateKey: receiverLongTermPrivateKey.key,
-                                   receiverOneTimePrivateKey: receiverOneTimePrivateKey?.key ?? Data(),
-                                   message: ratchetMessage)
+        
+        if let oneTimeKey = receiverOneTimePrivateKey {
+            let key = try crypto.importPrivateKey(from: oneTimeKey.key)
+            
+            try ratchetSession.respond(senderIdentityPublicKey: senderIdentityPublicKey.key,
+                                       receiverIdentityPrivateKey: receiverIdentityPrivateKey.key,
+                                       receiverLongTermPrivateKey: longTermKey.privateKey.key,
+                                       receiverOneTimePrivateKey: key.privateKey.key,
+                                       message: ratchetMessage,
+                                       enablePostQuantum: enablePostQuantum)
+        }
+        else {
+            try ratchetSession.respondNoOneTimeKey(senderIdentityPublicKey: senderIdentityPublicKey.key,
+                                       receiverIdentityPrivateKey: receiverIdentityPrivateKey.key,
+                                       receiverLongTermPrivateKey: longTermKey.privateKey.key,
+                                       message: ratchetMessage,
+                                       enablePostQuantum: enablePostQuantum)
+        }
 
         self.ratchetSession = ratchetSession
 
@@ -99,21 +114,35 @@ import VirgilCryptoRatchet
     internal init(crypto: VirgilCrypto,
                   participantIdentity: String,
                   name: String,
-                  senderIdentityPrivateKey: Data,
-                  receiverIdentityPublicKey: Data,
+                  senderIdentityPrivateKey: VirgilPrivateKey,
+                  receiverIdentityPublicKey: VirgilPublicKey,
                   receiverLongTermPublicKey: Data,
-                  receiverOneTimePublicKey: Data?) throws {
+                  receiverOneTimePublicKey: Data?,
+                  enablePostQuantum: Bool) throws {
         self.crypto = crypto
         self.participantIdentity = participantIdentity
         self.name = name
 
         let ratchetSession = RatchetSession()
         ratchetSession.setRng(rng: crypto.rng)
-
-        try ratchetSession.initiate(senderIdentityPrivateKey: senderIdentityPrivateKey,
-                                    receiverIdentityPublicKey: receiverIdentityPublicKey,
-                                    receiverLongTermPublicKey: receiverLongTermPublicKey,
-                                    receiverOneTimePublicKey: receiverOneTimePublicKey ?? Data())
+        
+        let longTermKey = try crypto.importPublicKey(from: receiverLongTermPublicKey)
+        
+        if let oneTimeKey = receiverOneTimePublicKey {
+            let key = try crypto.importPublicKey(from: oneTimeKey)
+   
+            try ratchetSession.initiate(senderIdentityPrivateKey: senderIdentityPrivateKey.key, senderIdentityKeyId: senderIdentityPrivateKey.identifier,
+                                        receiverIdentityPublicKey: receiverIdentityPublicKey.key, receiverIdentityKeyId: receiverIdentityPublicKey.identifier,
+                                        receiverLongTermPublicKey: longTermKey.key, receiverLongTermKeyId: longTermKey.identifier,
+                                        receiverOneTimePublicKey: key.key, receiverOneTimeKeyId: key.identifier,
+                                        enablePostQuantum: enablePostQuantum)
+        }
+        else {
+            try ratchetSession.initiateNoOneTimeKey(senderIdentityPrivateKey: senderIdentityPrivateKey.key, senderIdentityKeyId: senderIdentityPrivateKey.identifier,
+                                                    receiverIdentityPublicKey: receiverIdentityPublicKey.key, receiverIdentityKeyId: receiverIdentityPublicKey.identifier,
+                                                    receiverLongTermPublicKey: longTermKey.key, receiverLongTermKeyId: longTermKey.identifier,
+                                                    enablePostQuantum: enablePostQuantum)
+        }
 
         self.ratchetSession = ratchetSession
 

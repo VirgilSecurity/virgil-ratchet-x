@@ -51,7 +51,6 @@ extension RatchetClient: RatchetClientProtocol {
     ///
     /// - Parameters:
     ///   - identityCardId: Identity cardId that should be available on Card service.
-    ///             It's public key should be ED25519
     ///   - longTermPublicKey: long-term public key + its signature created using identity private key.
     ///             Should be curve25519 in PKCS#8
     ///   - oneTimePublicKeys: one-time public keys (up to 150 keys in the cloud).

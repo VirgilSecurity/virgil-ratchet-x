@@ -44,9 +44,7 @@
 		421B43F02190AF5A00D4F496 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 421B43EE2190AF5A00D4F496 /* Main.storyboard */; };
 		421B43F22190AF5B00D4F496 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 421B43F12190AF5B00D4F496 /* Assets.xcassets */; };
 		421B43F52190AF5B00D4F496 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 421B43F32190AF5B00D4F496 /* LaunchScreen.storyboard */; };
-		421B440021912CA100D4F496 /* FileOneTimeKeysStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421B43FF21912CA100D4F496 /* FileOneTimeKeysStorage.swift */; };
 		42352433221AAB710079DD2A /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42352432221AAB710079DD2A /* Utils.swift */; };
-		4235243D221AEA5E0079DD2A /* KeysRotatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4235243C221AEA5E0079DD2A /* KeysRotatorTests.swift */; };
 		42352440221C59130079DD2A /* ClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4235243E221C58F70079DD2A /* ClientTests.swift */; };
 		42352442221D78B80079DD2A /* RotationLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42352441221D78B80079DD2A /* RotationLog.swift */; };
 		4235246D221EE9690079DD2A /* LongTermKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42FC66A6220DE742009D3764 /* LongTermKey.swift */; };
@@ -54,7 +52,6 @@
 		4235246F221EE9690079DD2A /* KeychainLongTermKeyStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421B43CC2190650500D4F496 /* KeychainLongTermKeyStorage.swift */; };
 		42352470221EE9690079DD2A /* OneTimeKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42FC66A8220DEB63009D3764 /* OneTimeKey.swift */; };
 		42352471221EE9690079DD2A /* OneTimeKeysStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65DC2184F31E00AC4631 /* OneTimeKeysStorage.swift */; };
-		42352472221EE9690079DD2A /* FileOneTimeKeysStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421B43FF21912CA100D4F496 /* FileOneTimeKeysStorage.swift */; };
 		42352473221EE9690079DD2A /* SessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65DF2184F31F00AC4631 /* SessionStorage.swift */; };
 		42352474221EE9690079DD2A /* FileSessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BA8F3F2194771C00075827 /* FileSessionStorage.swift */; };
 		42352475221EE9690079DD2A /* PublicKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65B7218350F700AC4631 /* PublicKeySet.swift */; };
@@ -74,7 +71,6 @@
 		42352484221EE96A0079DD2A /* KeychainLongTermKeyStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421B43CC2190650500D4F496 /* KeychainLongTermKeyStorage.swift */; };
 		42352485221EE96A0079DD2A /* OneTimeKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42FC66A8220DEB63009D3764 /* OneTimeKey.swift */; };
 		42352486221EE96A0079DD2A /* OneTimeKeysStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65DC2184F31E00AC4631 /* OneTimeKeysStorage.swift */; };
-		42352487221EE96A0079DD2A /* FileOneTimeKeysStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421B43FF21912CA100D4F496 /* FileOneTimeKeysStorage.swift */; };
 		42352488221EE96A0079DD2A /* SessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65DF2184F31F00AC4631 /* SessionStorage.swift */; };
 		42352489221EE96A0079DD2A /* FileSessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BA8F3F2194771C00075827 /* FileSessionStorage.swift */; };
 		4235248A221EE96A0079DD2A /* PublicKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65B7218350F700AC4631 /* PublicKeySet.swift */; };
@@ -94,7 +90,6 @@
 		42352499221EE96A0079DD2A /* KeychainLongTermKeyStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421B43CC2190650500D4F496 /* KeychainLongTermKeyStorage.swift */; };
 		4235249A221EE96A0079DD2A /* OneTimeKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42FC66A8220DEB63009D3764 /* OneTimeKey.swift */; };
 		4235249B221EE96A0079DD2A /* OneTimeKeysStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65DC2184F31E00AC4631 /* OneTimeKeysStorage.swift */; };
-		4235249C221EE96A0079DD2A /* FileOneTimeKeysStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421B43FF21912CA100D4F496 /* FileOneTimeKeysStorage.swift */; };
 		4235249D221EE96A0079DD2A /* SessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65DF2184F31F00AC4631 /* SessionStorage.swift */; };
 		4235249E221EE96A0079DD2A /* FileSessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BA8F3F2194771C00075827 /* FileSessionStorage.swift */; };
 		4235249F221EE96A0079DD2A /* PublicKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65B7218350F700AC4631 /* PublicKeySet.swift */; };
@@ -195,9 +190,20 @@
 		4258CD62225DDC8E003CFCBD /* SecureGroupSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4258CD60225DDC8E003CFCBD /* SecureGroupSession.swift */; };
 		4258CD63225DDC8E003CFCBD /* SecureGroupSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4258CD60225DDC8E003CFCBD /* SecureGroupSession.swift */; };
 		4258CD64225DDC8E003CFCBD /* SecureGroupSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4258CD60225DDC8E003CFCBD /* SecureGroupSession.swift */; };
-		4258CD66225DDF6D003CFCBD /* IntegrationGroupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4258CD65225DDF6D003CFCBD /* IntegrationGroupTests.swift */; };
 		4258CD67225DDF6D003CFCBD /* IntegrationGroupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4258CD65225DDF6D003CFCBD /* IntegrationGroupTests.swift */; };
 		4258CD68225DDF6D003CFCBD /* IntegrationGroupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4258CD65225DDF6D003CFCBD /* IntegrationGroupTests.swift */; };
+		42768D1A243E17B9003B0EE0 /* SQLiteOneTimeKeysStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42768D19243E17B9003B0EE0 /* SQLiteOneTimeKeysStorage.swift */; };
+		42768D1B243E17B9003B0EE0 /* SQLiteOneTimeKeysStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42768D19243E17B9003B0EE0 /* SQLiteOneTimeKeysStorage.swift */; };
+		42768D1C243E17B9003B0EE0 /* SQLiteOneTimeKeysStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42768D19243E17B9003B0EE0 /* SQLiteOneTimeKeysStorage.swift */; };
+		42768D1D243E17B9003B0EE0 /* SQLiteOneTimeKeysStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42768D19243E17B9003B0EE0 /* SQLiteOneTimeKeysStorage.swift */; };
+		42768D1F243F255A003B0EE0 /* OneTimeKeyInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42768D1E243F255A003B0EE0 /* OneTimeKeyInfo.swift */; };
+		42768D20243F255A003B0EE0 /* OneTimeKeyInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42768D1E243F255A003B0EE0 /* OneTimeKeyInfo.swift */; };
+		42768D21243F255A003B0EE0 /* OneTimeKeyInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42768D1E243F255A003B0EE0 /* OneTimeKeyInfo.swift */; };
+		42768D22243F255A003B0EE0 /* OneTimeKeyInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42768D1E243F255A003B0EE0 /* OneTimeKeyInfo.swift */; };
+		42768D2324409577003B0EE0 /* KeysRotatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4235243C221AEA5E0079DD2A /* KeysRotatorTests.swift */; };
+		42768D242440957E003B0EE0 /* Stubs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB658E21810D6C00AC4631 /* Stubs.swift */; };
+		42768D25244096D4003B0EE0 /* IntegrationGroupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4258CD65225DDF6D003CFCBD /* IntegrationGroupTests.swift */; };
+		42768D2624409768003B0EE0 /* SecureSessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65A42183340A00AC4631 /* SecureSessionTests.swift */; };
 		428184DE2270F68D00E44A6B /* IdentityPublicKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 428184DD2270F68D00E44A6B /* IdentityPublicKeySet.swift */; };
 		428184DF2270F68D00E44A6B /* IdentityPublicKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 428184DD2270F68D00E44A6B /* IdentityPublicKeySet.swift */; };
 		428184E02270F68D00E44A6B /* IdentityPublicKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 428184DD2270F68D00E44A6B /* IdentityPublicKeySet.swift */; };
@@ -208,7 +214,6 @@
 		429D79C42178B37B003B56F8 /* VirgilSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 429D79A0217791A2003B56F8 /* VirgilSDK.framework */; };
 		429D79C82178B71F003B56F8 /* TestConfig.plist in Resources */ = {isa = PBXBuildFile; fileRef = 429D79C72178B71F003B56F8 /* TestConfig.plist */; };
 		429D79CA2178B7B2003B56F8 /* TestConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429D79C92178B7B2003B56F8 /* TestConfig.swift */; };
-		42AB659021810D6F00AC4631 /* Stubs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB658E21810D6C00AC4631 /* Stubs.swift */; };
 		42AB65AD21834F0A00AC4631 /* KeysRotator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65AC21834F0A00AC4631 /* KeysRotator.swift */; };
 		42AB65BB218350F700AC4631 /* PublicKeySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65B7218350F700AC4631 /* PublicKeySet.swift */; };
 		42AB65BC218350F700AC4631 /* ValidatePublicKeysResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65B8218350F700AC4631 /* ValidatePublicKeysResponse.swift */; };
@@ -217,15 +222,14 @@
 		42AB65E22184F31F00AC4631 /* LongTermKeysStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65DB2184F31E00AC4631 /* LongTermKeysStorage.swift */; };
 		42AB65E32184F31F00AC4631 /* OneTimeKeysStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65DC2184F31E00AC4631 /* OneTimeKeysStorage.swift */; };
 		42AB65E52184F31F00AC4631 /* SessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65DF2184F31F00AC4631 /* SessionStorage.swift */; };
-		42AB65EA2185097800AC4631 /* IntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65E82185095700AC4631 /* IntegrationTests.swift */; };
 		42BA8F402194771C00075827 /* FileSessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BA8F3F2194771C00075827 /* FileSessionStorage.swift */; };
 		42BD6F7F22B2591C00B3C2DA /* SecureChat+Obj-C.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BD6F7E22B2591C00B3C2DA /* SecureChat+Obj-C.swift */; };
 		42BD6F8022B2591C00B3C2DA /* SecureChat+Obj-C.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BD6F7E22B2591C00B3C2DA /* SecureChat+Obj-C.swift */; };
 		42BD6F8122B2591C00B3C2DA /* SecureChat+Obj-C.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BD6F7E22B2591C00B3C2DA /* SecureChat+Obj-C.swift */; };
 		42BD6F8222B2591C00B3C2DA /* SecureChat+Obj-C.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BD6F7E22B2591C00B3C2DA /* SecureChat+Obj-C.swift */; };
+		42BE4E152440E4F6008BD095 /* IntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65E82185095700AC4631 /* IntegrationTests.swift */; };
 		42C837632211B017008AFFD9 /* SecureChatContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42C837622211B017008AFFD9 /* SecureChatContext.swift */; };
 		42C837652211B283008AFFD9 /* KeysRotatorProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42C837642211B283008AFFD9 /* KeysRotatorProtocol.swift */; };
-		42CBE2AB21E656BE000F99E6 /* SecureSessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AB65A42183340A00AC4631 /* SecureSessionTests.swift */; };
 		42FC668C22087BFA009D3764 /* VirgilCrypto.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 429D799F217791A2003B56F8 /* VirgilCrypto.framework */; platformFilter = ios; };
 		42FC668F22087D4D009D3764 /* VirgilCryptoFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42FC668722087B74009D3764 /* VirgilCryptoFoundation.framework */; platformFilter = ios; };
 		42FC669022087D4D009D3764 /* VirgilCryptoRatchet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42FC668822087B74009D3764 /* VirgilCryptoRatchet.framework */; platformFilter = ios; };
@@ -372,7 +376,6 @@
 		421B43F12190AF5B00D4F496 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		421B43F42190AF5B00D4F496 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		421B43F62190AF5B00D4F496 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		421B43FF21912CA100D4F496 /* FileOneTimeKeysStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileOneTimeKeysStorage.swift; sourceTree = "<group>"; };
 		42352432221AAB710079DD2A /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		4235243C221AEA5E0079DD2A /* KeysRotatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysRotatorTests.swift; sourceTree = "<group>"; };
 		4235243E221C58F70079DD2A /* ClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientTests.swift; sourceTree = "<group>"; };
@@ -420,6 +423,8 @@
 		424FAAA92177520200622A3B /* SecureSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecureSession.swift; sourceTree = "<group>"; };
 		4258CD60225DDC8E003CFCBD /* SecureGroupSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureGroupSession.swift; sourceTree = "<group>"; };
 		4258CD65225DDF6D003CFCBD /* IntegrationGroupTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntegrationGroupTests.swift; sourceTree = "<group>"; };
+		42768D19243E17B9003B0EE0 /* SQLiteOneTimeKeysStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SQLiteOneTimeKeysStorage.swift; sourceTree = "<group>"; };
+		42768D1E243F255A003B0EE0 /* OneTimeKeyInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OneTimeKeyInfo.swift; sourceTree = "<group>"; };
 		428184DD2270F68D00E44A6B /* IdentityPublicKeySet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentityPublicKeySet.swift; sourceTree = "<group>"; };
 		429D799F217791A2003B56F8 /* VirgilCrypto.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilCrypto.framework; path = Carthage/Build/iOS/VirgilCrypto.framework; sourceTree = "<group>"; };
 		429D79A0217791A2003B56F8 /* VirgilSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilSDK.framework; path = Carthage/Build/iOS/VirgilSDK.framework; sourceTree = "<group>"; };
@@ -752,8 +757,9 @@
 				42AB65DB2184F31E00AC4631 /* LongTermKeysStorage.swift */,
 				421B43CC2190650500D4F496 /* KeychainLongTermKeyStorage.swift */,
 				42FC66A8220DEB63009D3764 /* OneTimeKey.swift */,
+				42768D1E243F255A003B0EE0 /* OneTimeKeyInfo.swift */,
 				42AB65DC2184F31E00AC4631 /* OneTimeKeysStorage.swift */,
-				421B43FF21912CA100D4F496 /* FileOneTimeKeysStorage.swift */,
+				42768D19243E17B9003B0EE0 /* SQLiteOneTimeKeysStorage.swift */,
 			);
 			path = KeyStorage;
 			sourceTree = "<group>";
@@ -1154,10 +1160,11 @@
 				4219FAD22264C38800D4FBC7 /* FileGroupSessionStorage.swift in Sources */,
 				4258CD62225DDC8E003CFCBD /* SecureGroupSession.swift in Sources */,
 				4235247B221EE9690079DD2A /* RotationLog.swift in Sources */,
-				42352472221EE9690079DD2A /* FileOneTimeKeysStorage.swift in Sources */,
 				4235247C221EE9690079DD2A /* KeysRotatorProtocol.swift in Sources */,
 				42BD6F8022B2591C00B3C2DA /* SecureChat+Obj-C.swift in Sources */,
+				42768D20243F255A003B0EE0 /* OneTimeKeyInfo.swift in Sources */,
 				42352473221EE9690079DD2A /* SessionStorage.swift in Sources */,
+				42768D1B243E17B9003B0EE0 /* SQLiteOneTimeKeysStorage.swift in Sources */,
 				4235247F221EE9690079DD2A /* SecureChat.swift in Sources */,
 				4235247D221EE9690079DD2A /* KeysRotator.swift in Sources */,
 				4235247E221EE9690079DD2A /* SecureChatContext.swift in Sources */,
@@ -1187,10 +1194,11 @@
 				4219FAD32264C38800D4FBC7 /* FileGroupSessionStorage.swift in Sources */,
 				4258CD63225DDC8E003CFCBD /* SecureGroupSession.swift in Sources */,
 				42352490221EE96A0079DD2A /* RotationLog.swift in Sources */,
-				42352487221EE96A0079DD2A /* FileOneTimeKeysStorage.swift in Sources */,
 				42352491221EE96A0079DD2A /* KeysRotatorProtocol.swift in Sources */,
 				42BD6F8122B2591C00B3C2DA /* SecureChat+Obj-C.swift in Sources */,
+				42768D21243F255A003B0EE0 /* OneTimeKeyInfo.swift in Sources */,
 				42352488221EE96A0079DD2A /* SessionStorage.swift in Sources */,
+				42768D1C243E17B9003B0EE0 /* SQLiteOneTimeKeysStorage.swift in Sources */,
 				42352494221EE96A0079DD2A /* SecureChat.swift in Sources */,
 				42352492221EE96A0079DD2A /* KeysRotator.swift in Sources */,
 				42352493221EE96A0079DD2A /* SecureChatContext.swift in Sources */,
@@ -1220,10 +1228,11 @@
 				4219FAD42264C38800D4FBC7 /* FileGroupSessionStorage.swift in Sources */,
 				4258CD64225DDC8E003CFCBD /* SecureGroupSession.swift in Sources */,
 				423524A5221EE96A0079DD2A /* RotationLog.swift in Sources */,
-				4235249C221EE96A0079DD2A /* FileOneTimeKeysStorage.swift in Sources */,
 				423524A6221EE96A0079DD2A /* KeysRotatorProtocol.swift in Sources */,
 				42BD6F8222B2591C00B3C2DA /* SecureChat+Obj-C.swift in Sources */,
+				42768D22243F255A003B0EE0 /* OneTimeKeyInfo.swift in Sources */,
 				4235249D221EE96A0079DD2A /* SessionStorage.swift in Sources */,
+				42768D1D243E17B9003B0EE0 /* SQLiteOneTimeKeysStorage.swift in Sources */,
 				423524A9221EE96A0079DD2A /* SecureChat.swift in Sources */,
 				423524A7221EE96A0079DD2A /* KeysRotator.swift in Sources */,
 				423524A8221EE96A0079DD2A /* SecureChatContext.swift in Sources */,
@@ -1286,7 +1295,6 @@
 				1627515622B51DF800085775 /* KeyRotator+Obj-C.swift in Sources */,
 				424FAAAF2177520200622A3B /* SecureChat.swift in Sources */,
 				42AB65E52184F31F00AC4631 /* SessionStorage.swift in Sources */,
-				421B440021912CA100D4F496 /* FileOneTimeKeysStorage.swift in Sources */,
 				424FAAB02177520200622A3B /* SecureSession.swift in Sources */,
 				42AB65E32184F31F00AC4631 /* OneTimeKeysStorage.swift in Sources */,
 				4219FAD12264C38800D4FBC7 /* FileGroupSessionStorage.swift in Sources */,
@@ -1295,7 +1303,9 @@
 				42352442221D78B80079DD2A /* RotationLog.swift in Sources */,
 				42C837632211B017008AFFD9 /* SecureChatContext.swift in Sources */,
 				42BD6F7F22B2591C00B3C2DA /* SecureChat+Obj-C.swift in Sources */,
+				42768D1F243F255A003B0EE0 /* OneTimeKeyInfo.swift in Sources */,
 				421B43CD2190650500D4F496 /* KeychainLongTermKeyStorage.swift in Sources */,
+				42768D1A243E17B9003B0EE0 /* SQLiteOneTimeKeysStorage.swift in Sources */,
 				42AB65BE218350F700AC4631 /* RatchetClientProtocol.swift in Sources */,
 				42FC66A9220DEB63009D3764 /* OneTimeKey.swift in Sources */,
 				42FC66A7220DE742009D3764 /* LongTermKey.swift in Sources */,
@@ -1307,14 +1317,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				42BE4E152440E4F6008BD095 /* IntegrationTests.swift in Sources */,
 				42352440221C59130079DD2A /* ClientTests.swift in Sources */,
 				42352433221AAB710079DD2A /* Utils.swift in Sources */,
-				4258CD66225DDF6D003CFCBD /* IntegrationGroupTests.swift in Sources */,
-				42AB65EA2185097800AC4631 /* IntegrationTests.swift in Sources */,
-				42CBE2AB21E656BE000F99E6 /* SecureSessionTests.swift in Sources */,
-				42AB659021810D6F00AC4631 /* Stubs.swift in Sources */,
+				42768D25244096D4003B0EE0 /* IntegrationGroupTests.swift in Sources */,
 				429D79CA2178B7B2003B56F8 /* TestConfig.swift in Sources */,
-				4235243D221AEA5E0079DD2A /* KeysRotatorTests.swift in Sources */,
+				42768D2324409577003B0EE0 /* KeysRotatorTests.swift in Sources */,
+				42768D242440957E003B0EE0 /* Stubs.swift in Sources */,
+				42768D2624409768003B0EE0 /* SecureSessionTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

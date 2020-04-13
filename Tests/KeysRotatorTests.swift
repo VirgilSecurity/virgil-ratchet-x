@@ -41,7 +41,6 @@ import VirgilCryptoRatchet
 @testable import VirgilSDKRatchet
 
 class KeysRotatorTests: XCTestCase {
-    private let keyId = RatchetKeyId()
     private let crypto = try! VirgilCrypto()
     
     override func setUp() {
@@ -56,7 +55,7 @@ class KeysRotatorTests: XCTestCase {
         
         do {
             if let longTermKey = userStore.longTermPublicKey?.publicKey {
-                let keyId = try self.keyId.computePublicKeyId(publicKey: longTermKey)
+                let keyId = try self.crypto.importPublicKey(from: longTermKey).identifier
                 
                 guard try longTermStorage.retrieveKey(withId: keyId).identifier == keyId else {
                     return false
@@ -66,7 +65,7 @@ class KeysRotatorTests: XCTestCase {
             let storedOneTimeKeysIds = Set<Data>(try oneTimeStorage.retrieveAllKeys().map { $0.identifier })
             
             let cloudOneTimeKeysIds = Set<Data>(try userStore.oneTimePublicKeys.map {
-                try self.keyId.computePublicKeyId(publicKey: $0)
+                try self.crypto.importPublicKey(from: $0).identifier
             })
             
             guard storedOneTimeKeysIds == cloudOneTimeKeysIds else {
@@ -120,38 +119,40 @@ class KeysRotatorTests: XCTestCase {
     
     func test1__rotate__empty_storage__should_create_keys() {
         do {
-            let (cardManager, identity, privateKey, card) = try self.initialize()
-            
-            let numberOfOneTimeKeys = 5
-            
-            let fakeLongTermKeysStorage = RamLongTermKeysStorage(db: [:])
-            let fakeOneTimeKeysStorage = RamOneTimeKeysStorage(db: [:])
-            let fakeClient = RamClient(identity: identity, storage: RamClient.Storage(), cardManager: cardManager)
-            
-            let rotator = KeysRotator(crypto: crypto, identityPrivateKey: privateKey, identityCardId: card.identifier, orphanedOneTimeKeyTtl: 100, longTermKeyTtl: 100, outdatedLongTermKeyTtl: 100, desiredNumberOfOneTimeKeys: numberOfOneTimeKeys, longTermKeysStorage: fakeLongTermKeysStorage, oneTimeKeysStorage: fakeOneTimeKeysStorage, client: fakeClient)
-            
-            let log = try self.rotate(rotator: rotator)
-            
-            XCTAssert(log.longTermKeysRelevant == 1)
-            XCTAssert(log.longTermKeysAdded == 1)
-            XCTAssert(log.longTermKeysDeleted == 0)
-            XCTAssert(log.longTermKeysMarkedOutdated == 0)
-            XCTAssert(log.longTermKeysOutdated == 0)
-            
-            XCTAssert(log.oneTimeKeysRelevant == numberOfOneTimeKeys)
-            XCTAssert(log.oneTimeKeysAdded == numberOfOneTimeKeys)
-            XCTAssert(log.oneTimeKeysDeleted == 0)
-            XCTAssert(log.oneTimeKeysMarkedOrphaned == 0)
-            XCTAssert(log.oneTimeKeysOrphaned == 0)
-            
-            XCTAssert(fakeOneTimeKeysStorage.db.count == numberOfOneTimeKeys)
-            XCTAssert(fakeLongTermKeysStorage.db.count == 1)
-            XCTAssert(fakeClient.storage.users.count == 1)
-            
-            let user = fakeClient.storage.users.first!
-            XCTAssert(user.key == identity)
-            
-            XCTAssert(self.compareCloudAndStorage(userStore: user.value, longTermStorage: fakeLongTermKeysStorage, oneTimeStorage: fakeOneTimeKeysStorage))
+            for i in 0..<2 {
+                let (cardManager, identity, privateKey, card) = try self.initialize()
+                
+                let numberOfOneTimeKeys = 5
+                
+                let fakeLongTermKeysStorage = RamLongTermKeysStorage(db: [:])
+                let fakeOneTimeKeysStorage = RamOneTimeKeysStorage(db: [:])
+                let fakeClient = RamClient(identity: identity, storage: RamClient.Storage(), cardManager: cardManager)
+                
+                let rotator = KeysRotator(crypto: crypto, identityPrivateKey: privateKey, identityCardId: card.identifier, orphanedOneTimeKeyTtl: 100, longTermKeyTtl: 100, outdatedLongTermKeyTtl: 100, desiredNumberOfOneTimeKeys: numberOfOneTimeKeys, enablePostQuantum: i == 1, longTermKeysStorage: fakeLongTermKeysStorage, oneTimeKeysStorage: fakeOneTimeKeysStorage, client: fakeClient)
+                
+                let log = try self.rotate(rotator: rotator)
+                
+                XCTAssert(log.longTermKeysRelevant == 1)
+                XCTAssert(log.longTermKeysAdded == 1)
+                XCTAssert(log.longTermKeysDeleted == 0)
+                XCTAssert(log.longTermKeysMarkedOutdated == 0)
+                XCTAssert(log.longTermKeysOutdated == 0)
+                
+                XCTAssert(log.oneTimeKeysRelevant == numberOfOneTimeKeys)
+                XCTAssert(log.oneTimeKeysAdded == numberOfOneTimeKeys)
+                XCTAssert(log.oneTimeKeysDeleted == 0)
+                XCTAssert(log.oneTimeKeysMarkedOrphaned == 0)
+                XCTAssert(log.oneTimeKeysOrphaned == 0)
+                
+                XCTAssert(fakeOneTimeKeysStorage.db.count == numberOfOneTimeKeys)
+                XCTAssert(fakeLongTermKeysStorage.db.count == 1)
+                XCTAssert(fakeClient.storage.users.count == 1)
+                
+                let user = fakeClient.storage.users.first!
+                XCTAssert(user.key == identity)
+                
+                XCTAssert(self.compareCloudAndStorage(userStore: user.value, longTermStorage: fakeLongTermKeysStorage, oneTimeStorage: fakeOneTimeKeysStorage))
+            }
         }
         catch {
             XCTFail(error.localizedDescription)
@@ -160,52 +161,54 @@ class KeysRotatorTests: XCTestCase {
     
     func test2__rotate__old_long_term_key__should_recreate_key() {
         do {
-            let (cardManager, identity, privateKey, card) = try self.initialize()
-            
-            let numberOfOneTimeKeys = 5
-            
-            let fakeLongTermKeysStorage = RamLongTermKeysStorage(db: [:])
-            let fakeOneTimeKeysStorage = RamOneTimeKeysStorage(db: [:])
-            let fakeClient = RamClient(identity: identity, storage: RamClient.Storage(), cardManager: cardManager)
-            
-            let rotator = KeysRotator(crypto: crypto, identityPrivateKey: privateKey, identityCardId: card.identifier, orphanedOneTimeKeyTtl: 100, longTermKeyTtl: 5, outdatedLongTermKeyTtl: 2, desiredNumberOfOneTimeKeys: numberOfOneTimeKeys, longTermKeysStorage: fakeLongTermKeysStorage, oneTimeKeysStorage: fakeOneTimeKeysStorage, client: fakeClient)
-            
-            _ = try self.rotate(rotator: rotator)
-            
-            sleep(6)
-            
-            let log1 = try self.rotate(rotator: rotator)
-            
-            XCTAssert(log1.longTermKeysRelevant == 1)
-            XCTAssert(log1.longTermKeysAdded == 1)
-            XCTAssert(log1.longTermKeysDeleted == 0)
-            XCTAssert(log1.longTermKeysMarkedOutdated == 1)
-            XCTAssert(log1.longTermKeysOutdated == 1)
-            
-            XCTAssert(fakeOneTimeKeysStorage.db.count == numberOfOneTimeKeys)
-            XCTAssert(fakeLongTermKeysStorage.db.count == 2)
-            XCTAssert(fakeClient.storage.users.count == 1)
-            
-            let user = fakeClient.storage.users.first!
-            XCTAssert(user.key == identity)
-            
-            XCTAssert(self.compareCloudAndStorage(userStore: user.value, longTermStorage: fakeLongTermKeysStorage, oneTimeStorage: fakeOneTimeKeysStorage))
-            
-            sleep(2)
-            
-            let log2 = try self.rotate(rotator: rotator)
-            
-            XCTAssert(log2.longTermKeysRelevant == 1)
-            XCTAssert(log2.longTermKeysAdded == 0)
-            XCTAssert(log2.longTermKeysDeleted == 1)
-            XCTAssert(log2.longTermKeysMarkedOutdated == 0)
-            XCTAssert(log2.longTermKeysOutdated == 0)
-            
-            XCTAssert(fakeOneTimeKeysStorage.db.count == numberOfOneTimeKeys)
-            XCTAssert(fakeLongTermKeysStorage.db.count == 1)
-            XCTAssert(fakeClient.storage.users.count == 1)
-            
-            XCTAssert(self.compareCloudAndStorage(userStore: user.value, longTermStorage: fakeLongTermKeysStorage, oneTimeStorage: fakeOneTimeKeysStorage))
+            for i in 0..<2 {
+                let (cardManager, identity, privateKey, card) = try self.initialize()
+                
+                let numberOfOneTimeKeys = 5
+                
+                let fakeLongTermKeysStorage = RamLongTermKeysStorage(db: [:])
+                let fakeOneTimeKeysStorage = RamOneTimeKeysStorage(db: [:])
+                let fakeClient = RamClient(identity: identity, storage: RamClient.Storage(), cardManager: cardManager)
+                
+                let rotator = KeysRotator(crypto: crypto, identityPrivateKey: privateKey, identityCardId: card.identifier, orphanedOneTimeKeyTtl: 100, longTermKeyTtl: 5, outdatedLongTermKeyTtl: 2, desiredNumberOfOneTimeKeys: numberOfOneTimeKeys, enablePostQuantum: i == 1, longTermKeysStorage: fakeLongTermKeysStorage, oneTimeKeysStorage: fakeOneTimeKeysStorage, client: fakeClient)
+                
+                _ = try self.rotate(rotator: rotator)
+                
+                sleep(6)
+                
+                let log1 = try self.rotate(rotator: rotator)
+                
+                XCTAssert(log1.longTermKeysRelevant == 1)
+                XCTAssert(log1.longTermKeysAdded == 1)
+                XCTAssert(log1.longTermKeysDeleted == 0)
+                XCTAssert(log1.longTermKeysMarkedOutdated == 1)
+                XCTAssert(log1.longTermKeysOutdated == 1)
+                
+                XCTAssert(fakeOneTimeKeysStorage.db.count == numberOfOneTimeKeys)
+                XCTAssert(fakeLongTermKeysStorage.db.count == 2)
+                XCTAssert(fakeClient.storage.users.count == 1)
+                
+                let user = fakeClient.storage.users.first!
+                XCTAssert(user.key == identity)
+                
+                XCTAssert(self.compareCloudAndStorage(userStore: user.value, longTermStorage: fakeLongTermKeysStorage, oneTimeStorage: fakeOneTimeKeysStorage))
+                
+                sleep(2)
+                
+                let log2 = try self.rotate(rotator: rotator)
+                
+                XCTAssert(log2.longTermKeysRelevant == 1)
+                XCTAssert(log2.longTermKeysAdded == 0)
+                XCTAssert(log2.longTermKeysDeleted == 1)
+                XCTAssert(log2.longTermKeysMarkedOutdated == 0)
+                XCTAssert(log2.longTermKeysOutdated == 0)
+                
+                XCTAssert(fakeOneTimeKeysStorage.db.count == numberOfOneTimeKeys)
+                XCTAssert(fakeLongTermKeysStorage.db.count == 1)
+                XCTAssert(fakeClient.storage.users.count == 1)
+                
+                XCTAssert(self.compareCloudAndStorage(userStore: user.value, longTermStorage: fakeLongTermKeysStorage, oneTimeStorage: fakeOneTimeKeysStorage))
+            }
         }
         catch {
             XCTFail(error.localizedDescription)
@@ -214,49 +217,51 @@ class KeysRotatorTests: XCTestCase {
     
     func test3__rotate__used_one_time_key___should_recreate_key() {
         do {
-            let (cardManager, identity, privateKey, card) = try self.initialize()
-            
-            let numberOfOneTimeKeys = 5
-            
-            let fakeLongTermKeysStorage = RamLongTermKeysStorage(db: [:])
-            let fakeOneTimeKeysStorage = RamOneTimeKeysStorage(db: [:])
-            let fakeClient = RamClient(identity: identity, storage: RamClient.Storage(), cardManager: cardManager)
-            
-            let rotator = KeysRotator(crypto: crypto, identityPrivateKey: privateKey, identityCardId: card.identifier, orphanedOneTimeKeyTtl: 5, longTermKeyTtl: 100, outdatedLongTermKeyTtl: 100, desiredNumberOfOneTimeKeys: numberOfOneTimeKeys, longTermKeysStorage: fakeLongTermKeysStorage, oneTimeKeysStorage: fakeOneTimeKeysStorage, client: fakeClient)
-            
-            _ = try self.rotate(rotator: rotator)
-            
-            _ = try fakeClient.getPublicKeySet(forRecipientIdentity: identity)
-            
-            let log1 = try self.rotate(rotator: rotator)
-            
-            XCTAssert(log1.oneTimeKeysRelevant == numberOfOneTimeKeys)
-            XCTAssert(log1.oneTimeKeysAdded == 1)
-            XCTAssert(log1.oneTimeKeysDeleted == 0)
-            XCTAssert(log1.oneTimeKeysMarkedOrphaned == 1)
-            XCTAssert(log1.oneTimeKeysOrphaned == 1)
-            
-            XCTAssert(fakeOneTimeKeysStorage.db.count == numberOfOneTimeKeys + 1)
-            XCTAssert(fakeLongTermKeysStorage.db.count == 1)
-            
-            sleep(6)
-            
-            let log2 = try self.rotate(rotator: rotator)
-            
-            XCTAssert(log2.oneTimeKeysRelevant == numberOfOneTimeKeys)
-            XCTAssert(log2.oneTimeKeysAdded == 0)
-            XCTAssert(log2.oneTimeKeysDeleted == 1)
-            XCTAssert(log2.oneTimeKeysMarkedOrphaned == 0)
-            XCTAssert(log2.oneTimeKeysOrphaned == 0)
-            
-            XCTAssert(fakeOneTimeKeysStorage.db.count == numberOfOneTimeKeys)
-            XCTAssert(fakeLongTermKeysStorage.db.count == 1)
-            XCTAssert(fakeClient.storage.users.count == 1)
-            
-            let user = fakeClient.storage.users.first!
-            XCTAssert(user.key == identity)
-            
-            XCTAssert(self.compareCloudAndStorage(userStore: user.value, longTermStorage: fakeLongTermKeysStorage, oneTimeStorage: fakeOneTimeKeysStorage))
+            for i in 0..<2 {
+                let (cardManager, identity, privateKey, card) = try self.initialize()
+                
+                let numberOfOneTimeKeys = 5
+                
+                let fakeLongTermKeysStorage = RamLongTermKeysStorage(db: [:])
+                let fakeOneTimeKeysStorage = RamOneTimeKeysStorage(db: [:])
+                let fakeClient = RamClient(identity: identity, storage: RamClient.Storage(), cardManager: cardManager)
+                
+                let rotator = KeysRotator(crypto: crypto, identityPrivateKey: privateKey, identityCardId: card.identifier, orphanedOneTimeKeyTtl: 5, longTermKeyTtl: 100, outdatedLongTermKeyTtl: 100, desiredNumberOfOneTimeKeys: numberOfOneTimeKeys, enablePostQuantum: i == 1, longTermKeysStorage: fakeLongTermKeysStorage, oneTimeKeysStorage: fakeOneTimeKeysStorage, client: fakeClient)
+                
+                _ = try self.rotate(rotator: rotator)
+                
+                _ = try fakeClient.getPublicKeySet(forRecipientIdentity: identity)
+                
+                let log1 = try self.rotate(rotator: rotator)
+                
+                XCTAssert(log1.oneTimeKeysRelevant == numberOfOneTimeKeys)
+                XCTAssert(log1.oneTimeKeysAdded == 1)
+                XCTAssert(log1.oneTimeKeysDeleted == 0)
+                XCTAssert(log1.oneTimeKeysMarkedOrphaned == 1)
+                XCTAssert(log1.oneTimeKeysOrphaned == 1)
+                
+                XCTAssert(fakeOneTimeKeysStorage.db.count == numberOfOneTimeKeys + 1)
+                XCTAssert(fakeLongTermKeysStorage.db.count == 1)
+                
+                sleep(6)
+                
+                let log2 = try self.rotate(rotator: rotator)
+                
+                XCTAssert(log2.oneTimeKeysRelevant == numberOfOneTimeKeys)
+                XCTAssert(log2.oneTimeKeysAdded == 0)
+                XCTAssert(log2.oneTimeKeysDeleted == 1)
+                XCTAssert(log2.oneTimeKeysMarkedOrphaned == 0)
+                XCTAssert(log2.oneTimeKeysOrphaned == 0)
+                
+                XCTAssert(fakeOneTimeKeysStorage.db.count == numberOfOneTimeKeys)
+                XCTAssert(fakeLongTermKeysStorage.db.count == 1)
+                XCTAssert(fakeClient.storage.users.count == 1)
+                
+                let user = fakeClient.storage.users.first!
+                XCTAssert(user.key == identity)
+                
+                XCTAssert(self.compareCloudAndStorage(userStore: user.value, longTermStorage: fakeLongTermKeysStorage, oneTimeStorage: fakeOneTimeKeysStorage))
+            }
         }
         catch {
             XCTFail(error.localizedDescription)
