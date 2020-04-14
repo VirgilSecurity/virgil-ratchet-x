@@ -1,4 +1,4 @@
 github "VirgilSecurity/virgil-crypto-c" "v0.14.0-alpha"
-github "VirgilSecurity/virgil-crypto-x" "1b27c2b83cfa5f870e48ce9c3de2f9af7fbf51a1"
-github "VirgilSecurity/virgil-cryptowrapper-x" "aa534c068d65f910ce39dc963add935fcef56f23"
-github "VirgilSecurity/virgil-sdk-x" "41f6617194fbbdc96b81d4eb1e1225a3432e4741"
+github "VirgilSecurity/virgil-crypto-x" "53af1915bd3b56d37c10930c394d32c277922d64"
+github "VirgilSecurity/virgil-cryptowrapper-x" "c4ca9799a79ca5c4872bc4157558a0846fab0d83"
+github "VirgilSecurity/virgil-sdk-x" "ae3b69c71f0336eed94d487664c8148653e43a6a"
