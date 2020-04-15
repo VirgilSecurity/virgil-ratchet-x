@@ -114,7 +114,7 @@ import VirgilCrypto
 
     // Identity card id
     @objc public let identityCard: Card
-    
+
     private let keyPairType: KeyPairType
 
     private let keysRotator: KeysRotatorProtocol
@@ -143,13 +143,16 @@ import VirgilCrypto
                                             publicKey: context.identityCard.publicKey)
         let longTermKeysStorage = try KeychainLongTermKeysStorage(identity: context.identityCard.identity,
                                                                   params: params)
-        let oneTimeKeysStorage = try SQLiteOneTimeKeysStorage(identity: context.identityCard.identity,
+        let oneTimeKeysStorage = try SQLiteOneTimeKeysStorage(appGroup: context.appGroup,
+                                                              identity: context.identityCard.identity,
                                                               crypto: crypto,
                                                               identityKeyPair: identityKeyPair)
-        let sessionStorage = FileSessionStorage(identity: context.identityCard.identity,
+        let sessionStorage = FileSessionStorage(appGroup: context.appGroup,
+                                                identity: context.identityCard.identity,
                                                 crypto: crypto,
                                                 identityKeyPair: identityKeyPair)
-        let groupSessionStorage = try FileGroupSessionStorage(identity: context.identityCard.identity,
+        let groupSessionStorage = try FileGroupSessionStorage(appGroup: context.appGroup,
+                                                              identity: context.identityCard.identity,
                                                               crypto: crypto,
                                                               identityKeyPair: identityKeyPair)
         let keysRotator = KeysRotator(crypto: crypto,
@@ -163,7 +166,7 @@ import VirgilCrypto
                                       longTermKeysStorage: longTermKeysStorage,
                                       oneTimeKeysStorage: oneTimeKeysStorage,
                                       client: client)
-        
+
         let keyPairType: KeyPairType = context.enablePostQuantum ? .curve25519Round5 : .curve25519
 
         self.init(crypto: crypto,
@@ -520,7 +523,7 @@ import VirgilCrypto
                                                 ratchetMessage: RatchetMessage,
                                                 enablePostQuantum: Bool) throws -> SecureSession {
         Log.debug("Responding to session with \(senderCard.identity) queued")
-        
+
         guard self.existingSession(withParticipantIdentity: senderCard.identity, name: name) == nil else {
             throw SecureChatError.sessionAlreadyExists
         }
@@ -530,11 +533,11 @@ import VirgilCrypto
         guard ratchetMessage.getType() == .prekey else {
             throw SecureChatError.invalidMessageType
         }
-        
+
         guard ratchetMessage.getSenderIdentityKeyId() == senderCard.publicKey.identifier else {
             throw SecureChatError.identityKeyDoesntMatch
         }
-        
+
         guard ratchetMessage.getReceiverIdentityKeyId() == self.identityCard.publicKey.identifier else {
             throw SecureChatError.identityKeyDoesntMatch
         }

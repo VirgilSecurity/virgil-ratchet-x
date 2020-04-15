@@ -37,7 +37,7 @@
 import Foundation
 import VirgilSDK
 
-/// MARK: - Extension with objective-c methods
+// MARK: - Extension with objective-c methods
 public extension SecureChat {
     /// Starts new session with given participant using his identity card
     ///

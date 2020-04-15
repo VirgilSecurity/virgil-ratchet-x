@@ -36,7 +36,7 @@
 
 import Foundation
 
-/// MARK: - Extension with objective-c methods
+// MARK: - Extension with objective-c methods
 public extension KeysRotator {
     /// Rotates keys
     ///

@@ -104,8 +104,8 @@ class IntegrationTests: XCTestCase {
         let receiverLongTermKeysStorage = try KeychainLongTermKeysStorage(identity: receiverIdentity, params: params)
         let senderLongTermKeysStorage = try KeychainLongTermKeysStorage(identity: senderIdentity, params: params)
         
-        let receiverOneTimeKeysStorage = try SQLiteOneTimeKeysStorage(identity: receiverIdentity, crypto: crypto, identityKeyPair: receiverIdentityKeyPair)
-        let senderOneTimeKeysStorage = try SQLiteOneTimeKeysStorage(identity: senderIdentity, crypto: crypto, identityKeyPair: senderIdentityKeyPair)
+        let receiverOneTimeKeysStorage = try SQLiteOneTimeKeysStorage(appGroup: nil, identity: receiverIdentity, crypto: crypto, identityKeyPair: receiverIdentityKeyPair)
+        let senderOneTimeKeysStorage = try SQLiteOneTimeKeysStorage(appGroup: nil, identity: senderIdentity, crypto: crypto, identityKeyPair: senderIdentityKeyPair)
 
         let receiverClient = RatchetClient(accessTokenProvider: receiverTokenProvider, serviceUrl: URL(string: testConfig.ServiceURL)!)
         let senderClient = RatchetClient(accessTokenProvider: senderTokenProvider, serviceUrl: URL(string: testConfig.ServiceURL)!)
@@ -120,8 +120,8 @@ class IntegrationTests: XCTestCase {
                                           client: senderClient,
                                           longTermKeysStorage: senderLongTermKeysStorage,
                                           oneTimeKeysStorage: senderOneTimeKeysStorage,
-                                          sessionStorage: FileSessionStorage(identity: senderIdentity, crypto: crypto, identityKeyPair: senderIdentityKeyPair),
-                                          groupSessionStorage: try FileGroupSessionStorage(identity: senderIdentity, crypto: crypto, identityKeyPair: receiverIdentityKeyPair),
+                                          sessionStorage: FileSessionStorage(appGroup: nil, identity: senderIdentity, crypto: crypto, identityKeyPair: senderIdentityKeyPair),
+                                          groupSessionStorage: try FileGroupSessionStorage(appGroup: nil, identity: senderIdentity, crypto: crypto, identityKeyPair: receiverIdentityKeyPair),
                                           keysRotator: senderKeysRotator, keyPairType: .curve25519Round5)
         
         let receiverSecureChat = SecureChat(crypto: crypto,
@@ -130,8 +130,8 @@ class IntegrationTests: XCTestCase {
                                             client: receiverClient,
                                             longTermKeysStorage: receiverLongTermKeysStorage,
                                             oneTimeKeysStorage: receiverOneTimeKeysStorage,
-                                            sessionStorage: FileSessionStorage(identity: receiverIdentity, crypto: crypto, identityKeyPair: receiverIdentityKeyPair),
-                                            groupSessionStorage: try FileGroupSessionStorage(identity: receiverIdentity, crypto: crypto, identityKeyPair: receiverIdentityKeyPair),
+                                            sessionStorage: FileSessionStorage(appGroup: nil, identity: receiverIdentity, crypto: crypto, identityKeyPair: receiverIdentityKeyPair),
+                                            groupSessionStorage: try FileGroupSessionStorage(appGroup: nil, identity: receiverIdentity, crypto: crypto, identityKeyPair: receiverIdentityKeyPair),
                                             keysRotator: receiverKeysRotator, keyPairType: .curve25519Round5)
         
         return (senderCard, receiverCard, senderSecureChat, receiverSecureChat)

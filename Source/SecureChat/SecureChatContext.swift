@@ -61,10 +61,13 @@ import VirgilSDK
 
     /// App name, defaults to Bundle.main.bundleIdentifier
     @objc public var appName: String? = nil
+    
+    /// App group
+    @objc public var appGroup: String? = nil
 
     /// Ratchet client
     @objc public var client: RatchetClient
-    
+
     @objc public var enablePostQuantum: Bool
 
     /// Initializer

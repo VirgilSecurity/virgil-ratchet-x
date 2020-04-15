@@ -93,7 +93,7 @@ class IntegrationGroupTests: XCTestCase {
             
             let params = try KeychainStorageParams.makeKeychainStorageParams(appName: "test")
             let longTermKeysStorage = try KeychainLongTermKeysStorage(identity: identity, params: params)
-            let oneTimeKeysStorage = try SQLiteOneTimeKeysStorage(identity: identity, crypto: crypto, identityKeyPair: keyPair)
+            let oneTimeKeysStorage = try SQLiteOneTimeKeysStorage(appGroup: nil, identity: identity, crypto: crypto, identityKeyPair: keyPair)
             
             let keysRotator = KeysRotator(crypto: crypto, identityPrivateKey: keyPair.privateKey, identityCardId: card.identifier, orphanedOneTimeKeyTtl: 5, longTermKeyTtl: 10, outdatedLongTermKeyTtl: 5, desiredNumberOfOneTimeKeys: IntegrationGroupTests.desiredNumberOfOtKeys, enablePostQuantum: false, longTermKeysStorage: longTermKeysStorage, oneTimeKeysStorage: oneTimeKeysStorage, client: client)
             
@@ -103,8 +103,8 @@ class IntegrationGroupTests: XCTestCase {
                                         client: client,
                                         longTermKeysStorage: longTermKeysStorage,
                                         oneTimeKeysStorage: oneTimeKeysStorage,
-                                        sessionStorage: FileSessionStorage(identity: identity, crypto: crypto, identityKeyPair: keyPair),
-                                        groupSessionStorage: try FileGroupSessionStorage(identity: identity, crypto: crypto, identityKeyPair: keyPair),
+                                        sessionStorage: FileSessionStorage(appGroup: nil, identity: identity, crypto: crypto, identityKeyPair: keyPair),
+                                        groupSessionStorage: try FileGroupSessionStorage(appGroup: nil, identity: identity, crypto: crypto, identityKeyPair: keyPair),
                                         keysRotator: keysRotator, keyPairType: .curve25519)
             
             cards.append(card)

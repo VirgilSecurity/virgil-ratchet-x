@@ -81,15 +81,15 @@ import VirgilCryptoRatchet
         self.crypto = crypto
         self.participantIdentity = participantIdentity
         self.name = name
-        
+
         let longTermKey = try crypto.importPrivateKey(from: receiverLongTermPrivateKey.key)
 
         let ratchetSession = RatchetSession()
         ratchetSession.setRng(rng: crypto.rng)
-        
+
         if let oneTimeKey = receiverOneTimePrivateKey {
             let key = try crypto.importPrivateKey(from: oneTimeKey.key)
-            
+
             try ratchetSession.respond(senderIdentityPublicKey: senderIdentityPublicKey.key,
                                        receiverIdentityPrivateKey: receiverIdentityPrivateKey.key,
                                        receiverLongTermPrivateKey: longTermKey.privateKey.key,
@@ -125,12 +125,12 @@ import VirgilCryptoRatchet
 
         let ratchetSession = RatchetSession()
         ratchetSession.setRng(rng: crypto.rng)
-        
+
         let longTermKey = try crypto.importPublicKey(from: receiverLongTermPublicKey)
-        
+
         if let oneTimeKey = receiverOneTimePublicKey {
             let key = try crypto.importPublicKey(from: oneTimeKey)
-   
+
             try ratchetSession.initiate(senderIdentityPrivateKey: senderIdentityPrivateKey.key, senderIdentityKeyId: senderIdentityPrivateKey.identifier,
                                         receiverIdentityPublicKey: receiverIdentityPublicKey.key, receiverIdentityKeyId: receiverIdentityPublicKey.identifier,
                                         receiverLongTermPublicKey: longTermKey.key, receiverLongTermKeyId: longTermKey.identifier,

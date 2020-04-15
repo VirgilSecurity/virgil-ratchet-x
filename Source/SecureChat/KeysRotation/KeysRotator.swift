@@ -132,7 +132,7 @@ import VirgilCrypto
             }
 
             Log.debug("Started keys' rotation operation")
-            
+
             let completionWrapper: (RotationLog?, Error?) -> Void = {
                 do {
                     try self.mutex.unlock()
@@ -263,7 +263,7 @@ import VirgilCrypto
                         let keyPair = try self.crypto.generateKeyPair(ofType: self.keyPairType)
                         let oneTimePrivateKey = try self.crypto.exportPrivateKey(keyPair.privateKey)
                         let oneTimePublicKey = try self.crypto.exportPublicKey(keyPair.publicKey)
-                        
+
                         try self.oneTimeKeysStorage.storeKey(oneTimePrivateKey, withId: keyPair.identifier)
 
                         publicKeys.append(oneTimePublicKey)
