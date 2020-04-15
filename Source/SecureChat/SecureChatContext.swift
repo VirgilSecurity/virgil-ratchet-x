@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2019 Virgil Security Inc.
+// Copyright (C) 2015-2020 Virgil Security Inc.
 //
 // All rights reserved.
 //
@@ -61,7 +61,7 @@ import VirgilSDK
 
     /// App name, defaults to Bundle.main.bundleIdentifier
     @objc public var appName: String? = nil
-    
+
     /// App group
     @objc public var appGroup: String? = nil
 

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2019 Virgil Security Inc.
+// Copyright (C) 2015-2020 Virgil Security Inc.
 //
 // All rights reserved.
 //
@@ -99,10 +99,10 @@ import VirgilCryptoRatchet
         }
         else {
             try ratchetSession.respondNoOneTimeKey(senderIdentityPublicKey: senderIdentityPublicKey.key,
-                                       receiverIdentityPrivateKey: receiverIdentityPrivateKey.key,
-                                       receiverLongTermPrivateKey: longTermKey.privateKey.key,
-                                       message: ratchetMessage,
-                                       enablePostQuantum: enablePostQuantum)
+                                                   receiverIdentityPrivateKey: receiverIdentityPrivateKey.key,
+                                                   receiverLongTermPrivateKey: longTermKey.privateKey.key,
+                                                   message: ratchetMessage,
+                                                   enablePostQuantum: enablePostQuantum)
         }
 
         self.ratchetSession = ratchetSession
@@ -131,16 +131,23 @@ import VirgilCryptoRatchet
         if let oneTimeKey = receiverOneTimePublicKey {
             let key = try crypto.importPublicKey(from: oneTimeKey)
 
-            try ratchetSession.initiate(senderIdentityPrivateKey: senderIdentityPrivateKey.key, senderIdentityKeyId: senderIdentityPrivateKey.identifier,
-                                        receiverIdentityPublicKey: receiverIdentityPublicKey.key, receiverIdentityKeyId: receiverIdentityPublicKey.identifier,
-                                        receiverLongTermPublicKey: longTermKey.key, receiverLongTermKeyId: longTermKey.identifier,
-                                        receiverOneTimePublicKey: key.key, receiverOneTimeKeyId: key.identifier,
+            try ratchetSession.initiate(senderIdentityPrivateKey: senderIdentityPrivateKey.key,
+                                        senderIdentityKeyId: senderIdentityPrivateKey.identifier,
+                                        receiverIdentityPublicKey: receiverIdentityPublicKey.key,
+                                        receiverIdentityKeyId: receiverIdentityPublicKey.identifier,
+                                        receiverLongTermPublicKey: longTermKey.key,
+                                        receiverLongTermKeyId: longTermKey.identifier,
+                                        receiverOneTimePublicKey: key.key,
+                                        receiverOneTimeKeyId: key.identifier,
                                         enablePostQuantum: enablePostQuantum)
         }
         else {
-            try ratchetSession.initiateNoOneTimeKey(senderIdentityPrivateKey: senderIdentityPrivateKey.key, senderIdentityKeyId: senderIdentityPrivateKey.identifier,
-                                                    receiverIdentityPublicKey: receiverIdentityPublicKey.key, receiverIdentityKeyId: receiverIdentityPublicKey.identifier,
-                                                    receiverLongTermPublicKey: longTermKey.key, receiverLongTermKeyId: longTermKey.identifier,
+            try ratchetSession.initiateNoOneTimeKey(senderIdentityPrivateKey: senderIdentityPrivateKey.key,
+                                                    senderIdentityKeyId: senderIdentityPrivateKey.identifier,
+                                                    receiverIdentityPublicKey: receiverIdentityPublicKey.key,
+                                                    receiverIdentityKeyId: receiverIdentityPublicKey.identifier,
+                                                    receiverLongTermPublicKey: longTermKey.key,
+                                                    receiverLongTermKeyId: longTermKey.identifier,
                                                     enablePostQuantum: enablePostQuantum)
         }
 

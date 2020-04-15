@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2019 Virgil Security Inc.
+// Copyright (C) 2015-2020 Virgil Security Inc.
 //
 // All rights reserved.
 //
@@ -324,6 +324,7 @@ import VirgilCrypto
     /// - Parameters:
     ///   - receiverCard: receiver identity cards
     ///   - name: Session name
+    ///   - enablePostQuantum: enablePostQuantum
     /// - Returns: GenericOperation with [SecureSession](x-source-tag://SecureSession)
     /// - Throws:
     ///   - `SecureChatError.sessionAlreadyExists` if session already exists.
@@ -335,7 +336,9 @@ import VirgilCrypto
     ///   - Rethrows from [RatchetClient](x-source-tag://RatchetClient)
     ///   - Rethrows form [SecureSession](x-source-tag://SecureSession)
     ///   - Rethrows form `AccessTokenProvider`
-    open func startNewSessionAsSender(receiverCard: Card, name: String? = nil, enablePostQuantum: Bool) -> GenericOperation<SecureSession> {
+    open func startNewSessionAsSender(receiverCard: Card,
+                                      name: String? = nil,
+                                      enablePostQuantum: Bool) -> GenericOperation<SecureSession> {
         Log.debug("Starting new session with \(receiverCard.identity) queued")
 
         return CallbackOperation { _, completion in
@@ -542,7 +545,8 @@ import VirgilCrypto
             throw SecureChatError.identityKeyDoesntMatch
         }
 
-        let receiverLongTermPrivateKey = try self.longTermKeysStorage.retrieveKey(withId: ratchetMessage.getReceiverLongTermKeyId())
+        let longTermKeyId = ratchetMessage.getReceiverLongTermKeyId()
+        let receiverLongTermPrivateKey = try self.longTermKeysStorage.retrieveKey(withId: longTermKeyId)
 
         let receiverOneTimeKeyId = ratchetMessage.getReceiverOneTimeKeyId()
 

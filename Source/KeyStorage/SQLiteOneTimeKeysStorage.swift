@@ -41,7 +41,7 @@ import VirgilSDK
 /// Represents error of `SQLiteCardStorage`
 ///
 /// - inconsistentDb: Storage turned into inconsistency state
-/// - emptyIdentities: Empty identities
+/// - keyNotFound: Key not found
 @objc(VSRSQLiteCardStorageError) public enum SQLiteCardStorageError: Int, LocalizedError {
     case inconsistentDb = 1
     case keyNotFound = 2
@@ -57,8 +57,8 @@ import VirgilSDK
     }
 }
 
-class SQLiteOneTimeKeysStorage: OneTimeKeysStorage {
-
+/// SQLiteOneTimeKeysStorage
+public class SQLiteOneTimeKeysStorage: OneTimeKeysStorage {
     private enum Statements: String {
         case createTable = """
         CREATE TABLE IF NOT EXISTS OneTimeKeys(
@@ -94,21 +94,36 @@ class SQLiteOneTimeKeysStorage: OneTimeKeysStorage {
         return self.db.path
     }
 
-    @objc public init(appGroup: String?, identity: String, crypto: VirgilCrypto, identityKeyPair: VirgilKeyPair) throws {
+    /// Init
+    /// - Parameters:
+    ///   - appGroup: appGroup
+    ///   - identity: identity
+    ///   - crypto: crypto
+    ///   - identityKeyPair: identityKeyPair
+    /// - Throws: SQLiteError
+    @objc public init(appGroup: String?,
+                      identity: String,
+                      crypto: VirgilCrypto,
+                      identityKeyPair: VirgilKeyPair) throws {
         self.crypto = crypto
         self.identityKeyPair = identityKeyPair
 
-        self.db = try SQLiteDB(appGroup: appGroup, prefix: "VIRGIL_SQLITE", userIdentifier: identity, name: "oneTimeKeys.sqlite")
+        self.db = try SQLiteDB(appGroup: appGroup,
+                               prefix: "VIRGIL_SQLITE",
+                               userIdentifier: identity,
+                               name: "oneTimeKeys.sqlite")
 
         try self.db.executeNoResult(statement: Statements.createTable.rawValue)
         try self.db.executeNoResult(statement: Statements.createIndexId.rawValue)
         try self.db.executeNoResult(statement: Statements.createIndexOrhpaned.rawValue)
     }
 
-    func storeKey(_ key: Data, withId id: Data) throws {
+    public func storeKey(_ key: Data, withId id: Data) throws {
         let stmt = try self.db.generateStmt(statement: Statements.insertKey.rawValue)
 
-        let encryptedKey = try self.crypto.authEncrypt(key, with: self.identityKeyPair.privateKey, for: [self.identityKeyPair.publicKey])
+        let encryptedKey = try self.crypto.authEncrypt(key,
+                                                       with: self.identityKeyPair.privateKey,
+                                                       for: [self.identityKeyPair.publicKey])
 
         try self.db.bindIn(stmt: stmt,
                            value1: id.base64EncodedString(),
@@ -126,7 +141,7 @@ class SQLiteOneTimeKeysStorage: OneTimeKeysStorage {
         return int == -1 ? nil : Date(timeIntervalSince1970: Double(int))
     }
 
-    func retrieveKey(withId id: Data) throws -> OneTimeKey {
+    public func retrieveKey(withId id: Data) throws -> OneTimeKey {
         let stmt = try self.db.generateStmt(statement: Statements.selectKeyById.rawValue)
 
         try self.db.bindIn(stmt: stmt, value: id.base64EncodedString())
@@ -144,12 +159,14 @@ class SQLiteOneTimeKeysStorage: OneTimeKeysStorage {
             throw SQLiteCardStorageError.inconsistentDb
         }
 
-        let decryptedKey = try self.crypto.authDecrypt(key, with: self.identityKeyPair.privateKey, usingOneOf: [self.identityKeyPair.publicKey])
+        let decryptedKey = try self.crypto.authDecrypt(key,
+                                                       with: self.identityKeyPair.privateKey,
+                                                       usingOneOf: [self.identityKeyPair.publicKey])
 
         return OneTimeKey(identifier: id, key: decryptedKey, orphanedFrom: Self.convertIntToDate(int: orphanedInt32l))
     }
 
-    func deleteKey(withId id: Data) throws {
+    public func deleteKey(withId id: Data) throws {
         let stmt = try self.db.generateStmt(statement: Statements.deleteKeyById.rawValue)
 
         try self.db.bindIn(stmt: stmt, value: id.base64EncodedString())
@@ -157,7 +174,7 @@ class SQLiteOneTimeKeysStorage: OneTimeKeysStorage {
         try self.db.executeNoResult(statement: stmt)
     }
 
-    func retrieveAllKeys() throws -> [OneTimeKeyInfo] {
+    public func retrieveAllKeys() throws -> [OneTimeKeyInfo] {
         let stmt = try self.db.generateStmt(statement: Statements.selectAllKeyInfo.rawValue)
 
         var result: [OneTimeKeyInfo] = []
@@ -168,7 +185,9 @@ class SQLiteOneTimeKeysStorage: OneTimeKeysStorage {
 
             (keyIdBase64, orphanedInt32) = try self.db.bindOut(stmt: stmt)
 
-            guard let keyIdBase64w = keyIdBase64, let keyId = Data(base64Encoded: keyIdBase64w), let orphanedInt32l = orphanedInt32 else {
+            guard let keyIdBase64w = keyIdBase64,
+                let keyId = Data(base64Encoded: keyIdBase64w),
+                let orphanedInt32l = orphanedInt32 else {
                 throw SQLiteCardStorageError.inconsistentDb
             }
 
@@ -178,7 +197,7 @@ class SQLiteOneTimeKeysStorage: OneTimeKeysStorage {
         return result
     }
 
-    func markKeyOrphaned(startingFrom date: Date, keyId: Data) throws {
+    public func markKeyOrphaned(startingFrom date: Date, keyId: Data) throws {
         let stmt = try self.db.generateStmt(statement: Statements.markOrphaned.rawValue)
 
         try self.db.bindIn(stmt: stmt, value1: Self.convertDateToInt(date: date), value2: keyId.base64EncodedString())
@@ -186,7 +205,7 @@ class SQLiteOneTimeKeysStorage: OneTimeKeysStorage {
         try self.db.executeNoResult(statement: stmt)
     }
 
-    func reset() throws {
+    public func reset() throws {
         let stmt = try self.db.generateStmt(statement: Statements.deleteAllKeys.rawValue)
 
         try self.db.executeNoResult(statement: stmt)
