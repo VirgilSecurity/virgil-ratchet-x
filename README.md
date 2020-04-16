@@ -48,7 +48,7 @@ To integrate Virgil Ratchet SDK into your Xcode project using CocoaPods, specify
 target '<Your Target Name>' do
 use_frameworks!
 
-pod 'VirgilSDKRatchet', '~> 0.5.0'
+pod 'VirgilSDKRatchet', '~> 0.6.0'
 end
 ```
 
@@ -72,7 +72,7 @@ $ brew install carthage
 To integrate the Virgil Ratchet SDK into your Xcode project using Carthage, create an empty file with name *Cartfile* in your project's root folder and add following lines to your *Cartfile*
 
 ```
-github "VirgilSecurity/virgil-ratchet-x" ~> 0.5.0
+github "VirgilSecurity/virgil-ratchet-x" ~> 0.6.0
 ```
 
 #### Linking against pre-built binaries
