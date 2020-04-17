@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2019 Virgil Security Inc.
+// Copyright (C) 2015-2020 Virgil Security Inc.
 //
 // All rights reserved.
 //
@@ -42,6 +42,8 @@ import VirgilCryptoRatchet
 @testable import VirgilSDKRatchet
 
 class IntegrationGroupTests: XCTestCase {
+    
+    static let desiredNumberOfOtKeys = 5
     
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -91,9 +93,9 @@ class IntegrationGroupTests: XCTestCase {
             
             let params = try KeychainStorageParams.makeKeychainStorageParams(appName: "test")
             let longTermKeysStorage = try KeychainLongTermKeysStorage(identity: identity, params: params)
-            let oneTimeKeysStorage = FileOneTimeKeysStorage(identity: identity, crypto: crypto, identityKeyPair: keyPair)
+            let oneTimeKeysStorage = try SQLiteOneTimeKeysStorage(appGroup: nil, identity: identity, crypto: crypto, identityKeyPair: keyPair)
             
-            let keysRotator = KeysRotator(crypto: crypto, identityPrivateKey: keyPair.privateKey, identityCardId: card.identifier, orphanedOneTimeKeyTtl: 5, longTermKeyTtl: 10, outdatedLongTermKeyTtl: 5, desiredNumberOfOneTimeKeys: IntegrationTests.desiredNumberOfOtKeys, longTermKeysStorage: longTermKeysStorage, oneTimeKeysStorage: oneTimeKeysStorage, client: client)
+            let keysRotator = KeysRotator(crypto: crypto, identityPrivateKey: keyPair.privateKey, identityCardId: card.identifier, orphanedOneTimeKeyTtl: 5, longTermKeyTtl: 10, outdatedLongTermKeyTtl: 5, desiredNumberOfOneTimeKeys: IntegrationGroupTests.desiredNumberOfOtKeys, enablePostQuantum: false, longTermKeysStorage: longTermKeysStorage, oneTimeKeysStorage: oneTimeKeysStorage, client: client)
             
             let secureChat = SecureChat(crypto: crypto,
                                         identityPrivateKey: keyPair.privateKey,
@@ -101,9 +103,9 @@ class IntegrationGroupTests: XCTestCase {
                                         client: client,
                                         longTermKeysStorage: longTermKeysStorage,
                                         oneTimeKeysStorage: oneTimeKeysStorage,
-                                        sessionStorage: FileSessionStorage(identity: identity, crypto: crypto, identityKeyPair: keyPair),
-                                        groupSessionStorage: try FileGroupSessionStorage(identity: identity, crypto: crypto, identityKeyPair: keyPair),
-                                        keysRotator: keysRotator)
+                                        sessionStorage: FileSessionStorage(appGroup: nil, identity: identity, crypto: crypto, identityKeyPair: keyPair),
+                                        groupSessionStorage: try FileGroupSessionStorage(appGroup: nil, identity: identity, crypto: crypto, identityKeyPair: keyPair),
+                                        keysRotator: keysRotator, keyPairType: .curve25519)
             
             cards.append(card)
             chats.append(secureChat)

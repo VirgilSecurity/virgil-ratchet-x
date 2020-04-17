@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2019 Virgil Security Inc.
+// Copyright (C) 2015-2020 Virgil Security Inc.
 //
 // All rights reserved.
 //
@@ -42,8 +42,6 @@ import VirgilCryptoFoundation
 @testable import VirgilSDKRatchet
 
 class ClientTests: XCTestCase {
-    let keyId = RatchetKeyId()
-    
     private func initialize() throws -> (String, VirgilPrivateKey, Card, RatchetClient) {
         let testConfig = TestConfig.readFromBundle()
         
@@ -88,14 +86,13 @@ class ClientTests: XCTestCase {
             let longTermKey = try crypto.generateKeyPair(ofType: .curve25519)
             
             let longTermPublicKey = try crypto.exportPublicKey(longTermKey.publicKey)
-            let longTermKeyId = try self.keyId.computePublicKeyId(publicKey: longTermPublicKey)
             let signature = try crypto.generateSignature(of: longTermPublicKey, using: privateKey)
             
             let signedLongTermKey = SignedPublicKey(publicKey: longTermPublicKey, signature: signature)
             
             try client.uploadPublicKeys(identityCardId: card.identifier, longTermPublicKey: signedLongTermKey, oneTimePublicKeys: [])
             
-            let response1 = try client.validatePublicKeys(longTermKeyId: longTermKeyId, oneTimeKeysIds: [])
+            let response1 = try client.validatePublicKeys(longTermKeyId: longTermKey.identifier, oneTimeKeysIds: [])
             
             XCTAssert(response1.usedLongTermKeyId == nil)
             
@@ -117,21 +114,19 @@ class ClientTests: XCTestCase {
             let crypto = try VirgilCrypto()
             
             let longTermKey = try crypto.generateKeyPair(ofType: .curve25519)
-            let oneTimeKey1 = try crypto.exportPublicKey(try crypto.generateKeyPair(ofType: .curve25519).publicKey)
-            let oneTimeKey2 = try crypto.exportPublicKey(try crypto.generateKeyPair(ofType: .curve25519).publicKey)
-            
-            let oneTimeKeyId1 = try self.keyId.computePublicKeyId(publicKey: oneTimeKey1)
-            let oneTimeKeyId2 = try self.keyId.computePublicKeyId(publicKey: oneTimeKey2)
-            
+            let oneTimeKey1 = try crypto.generateKeyPair(ofType: .curve25519)
+            let oneTimeKey2 = try crypto.generateKeyPair(ofType: .curve25519)
+        
             let longTermPublicKey = try crypto.exportPublicKey(longTermKey.publicKey)
-            let longTermKeyId = try self.keyId.computePublicKeyId(publicKey: longTermPublicKey)
+            let oneTimePublicKey1 = try crypto.exportPublicKey(oneTimeKey1.publicKey)
+            let oneTimePublicKey2 = try crypto.exportPublicKey(oneTimeKey2.publicKey)
             let signature = try crypto.generateSignature(of: longTermPublicKey, using: privateKey)
             
             let signedLongTermKey = SignedPublicKey(publicKey: longTermPublicKey, signature: signature)
             
-            try client.uploadPublicKeys(identityCardId: card.identifier, longTermPublicKey: signedLongTermKey, oneTimePublicKeys: [oneTimeKey1, oneTimeKey2])
+            try client.uploadPublicKeys(identityCardId: card.identifier, longTermPublicKey: signedLongTermKey, oneTimePublicKeys: [oneTimePublicKey1, oneTimePublicKey2])
             
-            let response1 = try client.validatePublicKeys(longTermKeyId: longTermKeyId, oneTimeKeysIds: [oneTimeKeyId1, oneTimeKeyId2])
+            let response1 = try client.validatePublicKeys(longTermKeyId: longTermKey.identifier, oneTimeKeysIds: [oneTimeKey1.identifier, oneTimeKey2.identifier])
             
             XCTAssert(response1.usedLongTermKeyId == nil)
             XCTAssert(response1.usedOneTimeKeysIds.isEmpty)
@@ -142,18 +137,18 @@ class ClientTests: XCTestCase {
             XCTAssert(response2.longTermPublicKey.signature == signedLongTermKey.signature)
             
             let usedKeyId: Data
-            if (response2.oneTimePublicKey == oneTimeKey1) {
-                usedKeyId = oneTimeKeyId1
+            if (response2.oneTimePublicKey == oneTimePublicKey1) {
+                usedKeyId = oneTimeKey1.identifier
             }
-            else if (response2.oneTimePublicKey == oneTimeKey2) {
-                usedKeyId = oneTimeKeyId2
+            else if (response2.oneTimePublicKey == oneTimePublicKey2) {
+                usedKeyId = oneTimeKey2.identifier
             }
             else {
                 usedKeyId = Data()
                 XCTFail()
             }
             
-            let response3 = try client.validatePublicKeys(longTermKeyId: longTermKeyId, oneTimeKeysIds: [oneTimeKeyId1, oneTimeKeyId2])
+            let response3 = try client.validatePublicKeys(longTermKeyId: longTermKey.identifier, oneTimeKeysIds: [oneTimeKey1.identifier, oneTimeKey2.identifier])
             
             XCTAssert(response3.usedLongTermKeyId == nil)
             XCTAssert(response3.usedOneTimeKeysIds.count == 1)

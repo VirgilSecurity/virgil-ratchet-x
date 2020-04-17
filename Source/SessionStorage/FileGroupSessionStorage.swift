@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2019 Virgil Security Inc.
+// Copyright (C) 2015-2020 Virgil Security Inc.
 //
 // All rights reserved.
 //
@@ -49,12 +49,17 @@ import VirgilSDK
     /// Initializer
     ///
     /// - Parameters:
+    ///   - appGroup: appGroup
     ///   - identity: identity of this user
     ///   - crypto: VirgilCrypto that will be forwarded to [SecureGroupSession](x-source-tag://SecureGroupSession)
     ///   - identityKeyPair: Key pair to encrypt session
-    @objc public init(identity: String, crypto: VirgilCrypto, identityKeyPair: VirgilKeyPair) throws {
+    @objc public init(appGroup: String?,
+                      identity: String,
+                      crypto: VirgilCrypto,
+                      identityKeyPair: VirgilKeyPair) throws {
         let credentials = FileSystemCredentials(crypto: crypto, keyPair: identityKeyPair)
-        self.fileSystem = FileSystem(prefix: "VIRGIL-RATCHET",
+        self.fileSystem = FileSystem(appGroup: appGroup,
+                                     prefix: "VIRGIL-RATCHET",
                                      userIdentifier: identity,
                                      pathComponents: ["GROUPS"],
                                      credentials: credentials)

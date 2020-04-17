@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2019 Virgil Security Inc.
+// Copyright (C) 2015-2020 Virgil Security Inc.
 //
 // All rights reserved.
 //
@@ -51,7 +51,6 @@ extension RatchetClient: RatchetClientProtocol {
     ///
     /// - Parameters:
     ///   - identityCardId: Identity cardId that should be available on Card service.
-    ///             It's public key should be ED25519
     ///   - longTermPublicKey: long-term public key + its signature created using identity private key.
     ///             Should be curve25519 in PKCS#8
     ///   - oneTimePublicKeys: one-time public keys (up to 150 keys in the cloud).
@@ -65,7 +64,7 @@ extension RatchetClient: RatchetClientProtocol {
     @objc public func uploadPublicKeys(identityCardId: String?,
                                        longTermPublicKey: SignedPublicKey?,
                                        oneTimePublicKeys: [Data]) throws {
-        guard let url = URL(string: "pfs/v2/keys", relativeTo: self.serviceUrl) else {
+        guard let url = URL(string: "pfs/v3/keys", relativeTo: self.serviceUrl) else {
             throw RatchetClientError.constructingUrl
         }
 
@@ -119,7 +118,7 @@ extension RatchetClient: RatchetClientProtocol {
             return ValidatePublicKeysResponse(usedLongTermKeyId: nil, usedOneTimeKeysIds: [])
         }
 
-        guard let url = URL(string: "pfs/v2/keys/actions/validate", relativeTo: self.serviceUrl) else {
+        guard let url = URL(string: "pfs/v3/keys/actions/validate", relativeTo: self.serviceUrl) else {
             throw RatchetClientError.constructingUrl
         }
 
@@ -155,7 +154,7 @@ extension RatchetClient: RatchetClientProtocol {
     ///   - Rethrows from `JSONDecoder`
     ///   - Rethrows from `BaseClient`
     @objc public func getPublicKeySet(forRecipientIdentity identity: String) throws -> PublicKeySet {
-        guard let url = URL(string: "pfs/v2/keys/actions/pick-one", relativeTo: self.serviceUrl) else {
+        guard let url = URL(string: "pfs/v3/keys/actions/pick-one", relativeTo: self.serviceUrl) else {
             throw RatchetClientError.constructingUrl
         }
 
@@ -184,7 +183,7 @@ extension RatchetClient: RatchetClientProtocol {
     ///   - Rethrows from `BaseClient`
     @objc public func getMultiplePublicKeysSets(forRecipientsIdentities identities: [String])
         throws -> [IdentityPublicKeySet] {
-        guard let url = URL(string: "pfs/v2/keys/actions/pick-batch", relativeTo: self.serviceUrl) else {
+        guard let url = URL(string: "pfs/v3/keys/actions/pick-batch", relativeTo: self.serviceUrl) else {
             throw RatchetClientError.constructingUrl
         }
 
@@ -210,7 +209,7 @@ extension RatchetClient: RatchetClientProtocol {
     ///   - Rethrows from `JSONDecoder`
     ///   - Rethrows from `BaseClient`
     @objc public func deleteKeysEntity() throws {
-        guard let url = URL(string: "pfs/v2/keys", relativeTo: self.serviceUrl) else {
+        guard let url = URL(string: "pfs/v3/keys", relativeTo: self.serviceUrl) else {
             throw RatchetClientError.constructingUrl
         }
 

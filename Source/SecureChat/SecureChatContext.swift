@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2019 Virgil Security Inc.
+// Copyright (C) 2015-2020 Virgil Security Inc.
 //
 // All rights reserved.
 //
@@ -62,8 +62,13 @@ import VirgilSDK
     /// App name, defaults to Bundle.main.bundleIdentifier
     @objc public var appName: String? = nil
 
+    /// App group
+    @objc public var appGroup: String? = nil
+
     /// Ratchet client
     @objc public var client: RatchetClient
+
+    @objc public var enablePostQuantum: Bool
 
     /// Initializer
     ///
@@ -73,10 +78,12 @@ import VirgilSDK
     ///   - accessTokenProvider: access token provider
     @objc public init(identityCard: Card,
                       identityPrivateKey: VirgilPrivateKey,
-                      accessTokenProvider: AccessTokenProvider) {
+                      accessTokenProvider: AccessTokenProvider,
+                      enablePostQuantum: Bool) {
         self.identityCard = identityCard
         self.identityPrivateKey = identityPrivateKey
         self.client = RatchetClient(accessTokenProvider: accessTokenProvider)
+        self.enablePostQuantum = enablePostQuantum
 
         super.init()
     }

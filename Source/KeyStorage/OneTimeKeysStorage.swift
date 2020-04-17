@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2019 Virgil Security Inc.
+// Copyright (C) 2015-2020 Virgil Security Inc.
 //
 // All rights reserved.
 //
@@ -38,28 +38,13 @@ import VirgilSDK
 
 /// One-time keys storage
 @objc(VSROneTimeKeysStorage) public protocol OneTimeKeysStorage: class {
-    /// Starts interaction with storage
-    /// - Important: This method should be called before any other interaction with storage
-    /// - Note: This method can be called many times and works like a stack
-    ///
-    /// - Throws: Depends on implementation
-    @objc func startInteraction() throws
-
-    /// Stops interaction with storage
-    /// This method should be called after all interactions with storage
-    /// This method can be called many times and works like a stack
-    ///
-    /// - Throws: Depends on implementation
-    @objc func stopInteraction() throws
-
     /// Stores key
     ///
     /// - Parameters:
     ///   - key: private key
     ///   - id: key id
-    /// - Returns: One-time private key
     /// - Throws: Depends on implementation
-    @objc func storeKey(_ key: Data, withId id: Data) throws -> OneTimeKey
+    @objc func storeKey(_ key: Data, withId id: Data) throws
 
     /// Retrieves key
     ///
@@ -78,7 +63,7 @@ import VirgilSDK
     ///
     /// - Returns: Returns all keys
     /// - Throws: Depends on implementation
-    @objc func retrieveAllKeys() throws -> [OneTimeKey]
+    @objc func retrieveAllKeys() throws -> [OneTimeKeyInfo]
 
     /// Marks key as orphaned
     ///

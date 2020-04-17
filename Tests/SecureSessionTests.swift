@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2019 Virgil Security Inc.
+// Copyright (C) 2015-2020 Virgil Security Inc.
 //
 // All rights reserved.
 //
@@ -54,8 +54,8 @@ class SecureSessionTests: XCTestCase {
         let testConfig = TestConfig.readFromBundle()
         
         let crypto = try! VirgilCrypto()
-        let receiverIdentityKeyPair = try! crypto.generateKeyPair(ofType: .ed25519)
-        let senderIdentityKeyPair = try! crypto.generateKeyPair(ofType: .ed25519)
+        let receiverIdentityKeyPair = try! crypto.generateKeyPair(ofType: .curve25519Round5Ed25519Falcon)
+        let senderIdentityKeyPair = try! crypto.generateKeyPair(ofType: .curve25519Round5Ed25519Falcon)
         
         let senderIdentity = NSUUID().uuidString
         let receiverIdentity = NSUUID().uuidString
@@ -116,9 +116,9 @@ class SecureSessionTests: XCTestCase {
                                           oneTimeKeysStorage: RamOneTimeKeysStorage(db: [:]),
                                           sessionStorage: RamSessionStorage(),
                                           groupSessionStorage:  RamGroupSessionStorage(),
-                                          keysRotator: FakeKeysRotator())
+                                          keysRotator: FakeKeysRotator(), keyPairType: .curve25519Round5)
         
-        let receiverKeysRotator = KeysRotator(crypto: crypto, identityPrivateKey: receiverIdentityKeyPair.privateKey, identityCardId: receiverCard.identifier, orphanedOneTimeKeyTtl: 100, longTermKeyTtl: 100, outdatedLongTermKeyTtl: 100, desiredNumberOfOneTimeKeys: 10, longTermKeysStorage: receiverLongTermKeysStorage, oneTimeKeysStorage: receiverOneTimeKeysStorage, client: receiverFakeClient)
+        let receiverKeysRotator = KeysRotator(crypto: crypto, identityPrivateKey: receiverIdentityKeyPair.privateKey, identityCardId: receiverCard.identifier, orphanedOneTimeKeyTtl: 100, longTermKeyTtl: 100, outdatedLongTermKeyTtl: 100, desiredNumberOfOneTimeKeys: 10, enablePostQuantum: true, longTermKeysStorage: receiverLongTermKeysStorage, oneTimeKeysStorage: receiverOneTimeKeysStorage, client: receiverFakeClient)
         
         let receiverSecureChat = SecureChat(crypto: crypto,
                                             identityPrivateKey: receiverIdentityKeyPair.privateKey,
@@ -128,29 +128,31 @@ class SecureSessionTests: XCTestCase {
                                             oneTimeKeysStorage: receiverOneTimeKeysStorage,
                                             sessionStorage: RamSessionStorage(),
                                             groupSessionStorage:  RamGroupSessionStorage(),
-                                            keysRotator: receiverKeysRotator)
+                                            keysRotator: receiverKeysRotator, keyPairType: .curve25519Round5)
     
         return (senderCard, receiverCard, senderSecureChat, receiverSecureChat)
     }
 
     func test1__encrypt_decrypt__random_uuid_messages_ram_client__should_decrypt() {
         do {
-            let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = try self.initChat()
-            
-            _ = try receiverSecureChat.rotateKeys().startSync().get()
-            
-            let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().get()
-            
-            let plainText = UUID().uuidString
-            let cipherText = try senderSession.encrypt(string: plainText)
-            
-            let receiverSession = try receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, ratchetMessage: cipherText)
-            
-            let decryptedMessage = try receiverSession.decryptString(from: cipherText)
-            
-            XCTAssert(decryptedMessage == plainText)
-            
-            try Utils.encryptDecrypt100Times(senderSession: senderSession, receiverSession: receiverSession)
+            for i in 0..<2 {
+                let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = try self.initChat()
+                
+                _ = try receiverSecureChat.rotateKeys().startSync().get()
+                
+                let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard, enablePostQuantum: i == 1).startSync().get()
+                
+                let plainText = UUID().uuidString
+                let cipherText = try senderSession.encrypt(string: plainText)
+                
+                let receiverSession = try receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, ratchetMessage: cipherText, enablePostQuantum: i == 1)
+                
+                let decryptedMessage = try receiverSession.decryptString(from: cipherText)
+                
+                XCTAssert(decryptedMessage == plainText)
+                
+                try Utils.encryptDecrypt100Times(senderSession: senderSession, receiverSession: receiverSession)
+            }
         }
         catch {
             XCTFail(error.localizedDescription)
@@ -159,30 +161,32 @@ class SecureSessionTests: XCTestCase {
     
     func test2__session_persistence__random_uuid_messages_ram_client__should_decrypt() {
         do {
-            let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = try self.initChat()
-            
-            _ = try receiverSecureChat.rotateKeys().startSync().get()
-            
-            let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().get()
-            
-            try senderSecureChat.storeSession(senderSession)
-            
-            XCTAssert(senderSecureChat.existingSession(withParticipantIdentity: receiverCard.identity) != nil)
-            
-            let plainText = UUID().uuidString
-            let cipherText = try senderSession.encrypt(string: plainText)
-            
-            let receiverSession = try receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, ratchetMessage: cipherText)
-            
-            try receiverSecureChat.storeSession(receiverSession)
-            
-            XCTAssert(receiverSecureChat.existingSession(withParticipantIdentity: senderCard.identity) != nil)
-            
-            let decryptedMessage = try receiverSession.decryptString(from: cipherText)
-            
-            XCTAssert(decryptedMessage == plainText)
-            
-            try Utils.encryptDecrypt100TimesRestored(senderSecureChat: senderSecureChat, senderIdentity: senderCard.identity, receiverSecureChat: receiverSecureChat, receiverIdentity: receiverCard.identity)
+            for i in 0..<2 {
+                let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = try self.initChat()
+                
+                _ = try receiverSecureChat.rotateKeys().startSync().get()
+                
+                let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard, enablePostQuantum: i == 1).startSync().get()
+                
+                try senderSecureChat.storeSession(senderSession)
+                
+                XCTAssert(senderSecureChat.existingSession(withParticipantIdentity: receiverCard.identity) != nil)
+                
+                let plainText = UUID().uuidString
+                let cipherText = try senderSession.encrypt(string: plainText)
+                
+                let receiverSession = try receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, ratchetMessage: cipherText, enablePostQuantum: i == 1)
+                
+                try receiverSecureChat.storeSession(receiverSession)
+                
+                XCTAssert(receiverSecureChat.existingSession(withParticipantIdentity: senderCard.identity) != nil)
+                
+                let decryptedMessage = try receiverSession.decryptString(from: cipherText)
+                
+                XCTAssert(decryptedMessage == plainText)
+                
+                try Utils.encryptDecrypt100TimesRestored(senderSecureChat: senderSecureChat, senderIdentity: senderCard.identity, receiverSecureChat: receiverSecureChat, receiverIdentity: receiverCard.identity)
+            }
         }
         catch {
             XCTFail(error.localizedDescription)
@@ -191,55 +195,57 @@ class SecureSessionTests: XCTestCase {
     
     func test3__session_persistence__recreate_session__should_throw_error() {
         do {
-            let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = try self.initChat()
-            
-            _ = try receiverSecureChat.rotateKeys().startSync().get()
-            
-            let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().get()
-            
-            try senderSecureChat.storeSession(senderSession)
-            
-            let plainText = UUID().uuidString
-            let cipherText = try senderSession.encrypt(string: plainText)
-            
-            let receiverSession = try receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, ratchetMessage: cipherText)
-            
-            try receiverSecureChat.storeSession(receiverSession)
-            
-            do {
-                _ = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().get()
-                XCTFail()
-            }
-            catch SecureChatError.sessionAlreadyExists { }
-            catch {
-                XCTFail()
-            }
-            
-            do {
-                _ = try senderSecureChat.startNewSessionAsReceiver(senderCard: receiverCard, ratchetMessage: cipherText)
-                XCTFail()
-            }
-            catch SecureChatError.sessionAlreadyExists { }
-            catch {
-                XCTFail()
-            }
-            
-            do {
-                _ = try receiverSecureChat.startNewSessionAsSender(receiverCard: senderCard).startSync().get()
-                XCTFail()
-            }
-            catch SecureChatError.sessionAlreadyExists { }
-            catch {
-                XCTFail()
-            }
-            
-            do {
-                _ = try receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, ratchetMessage: cipherText)
-                XCTFail()
-            }
-            catch SecureChatError.sessionAlreadyExists { }
-            catch {
-                XCTFail()
+            for i in 0..<2 {
+                let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = try self.initChat()
+                
+                _ = try receiverSecureChat.rotateKeys().startSync().get()
+                
+                let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard, enablePostQuantum: i == 1).startSync().get()
+                
+                try senderSecureChat.storeSession(senderSession)
+                
+                let plainText = UUID().uuidString
+                let cipherText = try senderSession.encrypt(string: plainText)
+                
+                let receiverSession = try receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, ratchetMessage: cipherText, enablePostQuantum: i == 1)
+                
+                try receiverSecureChat.storeSession(receiverSession)
+                
+                do {
+                    _ = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard, enablePostQuantum: i == 1).startSync().get()
+                    XCTFail()
+                }
+                catch SecureChatError.sessionAlreadyExists { }
+                catch {
+                    XCTFail()
+                }
+                
+                do {
+                    _ = try senderSecureChat.startNewSessionAsReceiver(senderCard: receiverCard, ratchetMessage: cipherText, enablePostQuantum: i == 1)
+                    XCTFail()
+                }
+                catch SecureChatError.sessionAlreadyExists { }
+                catch {
+                    XCTFail()
+                }
+                
+                do {
+                    _ = try receiverSecureChat.startNewSessionAsSender(receiverCard: senderCard, enablePostQuantum: i == 1).startSync().get()
+                    XCTFail()
+                }
+                catch SecureChatError.sessionAlreadyExists { }
+                catch {
+                    XCTFail()
+                }
+                
+                do {
+                    _ = try receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, ratchetMessage: cipherText, enablePostQuantum: i == 1)
+                    XCTFail()
+                }
+                catch SecureChatError.sessionAlreadyExists { }
+                catch {
+                    XCTFail()
+                }
             }
         }
         catch {

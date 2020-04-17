@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2019 Virgil Security Inc.
+// Copyright (C) 2015-2020 Virgil Security Inc.
 //
 // All rights reserved.
 //
@@ -35,15 +35,24 @@
 //
 
 import Foundation
-import VirgilCryptoRatchet
 
-@objc(VSRSecureGroupSessionTicket) public final class SecureGroupSessionTicket: NSObject {
-    @objc public let ticket: RatchetGroupTicket
+/// Class representing One-time key info
+@objc(VSROneTimeKeyInfo) public final class OneTimeKeyInfo: NSObject, Codable {
+    /// Key id
+    @objc public let identifier: Data
 
-    public init(ticket: RatchetGroupTicket) {
-        self.ticket = ticket
+    /// Date from which we found out that this key is orphaned
+    @objc public let orphanedFrom: Date?
+
+    /// Initializer
+    ///
+    /// - Parameters:
+    ///   - identifier: key id
+    ///   - orphanedFrom: date from which we found out that this key is orphaned
+    @objc public init(identifier: Data, orphanedFrom: Date?) {
+        self.identifier = identifier
+        self.orphanedFrom = orphanedFrom
 
         super.init()
     }
-
 }

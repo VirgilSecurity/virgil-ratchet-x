@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2019 Virgil Security Inc.
+// Copyright (C) 2015-2020 Virgil Security Inc.
 //
 // All rights reserved.
 //
@@ -66,7 +66,7 @@ import VirgilCrypto
     private let oneTimeKeysStorage: OneTimeKeysStorage
     private let client: RatchetClientProtocol
     private let mutex = Mutex()
-    private let keyId = RatchetKeyId()
+    private let keyPairType: KeyPairType
 
     /// Initializer
     ///
@@ -88,6 +88,7 @@ import VirgilCrypto
                       longTermKeyTtl: TimeInterval,
                       outdatedLongTermKeyTtl: TimeInterval,
                       desiredNumberOfOneTimeKeys: Int,
+                      enablePostQuantum: Bool,
                       longTermKeysStorage: LongTermKeysStorage,
                       oneTimeKeysStorage: OneTimeKeysStorage,
                       client: RatchetClientProtocol) {
@@ -101,6 +102,7 @@ import VirgilCrypto
         self.longTermKeysStorage = longTermKeysStorage
         self.oneTimeKeysStorage = oneTimeKeysStorage
         self.client = client
+        self.keyPairType = enablePostQuantum ? .curve25519Round5 : .curve25519
 
         super.init()
     }
@@ -131,8 +133,6 @@ import VirgilCrypto
 
             Log.debug("Started keys' rotation operation")
 
-            var interactionStarted = false
-
             let completionWrapper: (RotationLog?, Error?) -> Void = {
                 do {
                     try self.mutex.unlock()
@@ -140,17 +140,6 @@ import VirgilCrypto
                 catch {
                     completion(nil, error)
                     return
-                }
-
-                if interactionStarted {
-                    do {
-                        try self.oneTimeKeysStorage.stopInteraction()
-                    }
-                    catch {
-                        Log.debug("Completed keys' rotation with storage error")
-                        completion(nil, error)
-                        return
-                    }
                 }
 
                 if let error = $1 {
@@ -171,9 +160,6 @@ import VirgilCrypto
                 let now = Date()
 
                 let rotationLog = RotationLog()
-
-                try self.oneTimeKeysStorage.startInteraction()
-                interactionStarted = true
 
                 let oneTimeKeys = try self.oneTimeKeysStorage.retrieveAllKeys()
                 var oneTimeKeysIds = [Data]()
@@ -251,12 +237,11 @@ import VirgilCrypto
                 let longTermSignedPublicKey: SignedPublicKey?
                 if rotateLongTermKey {
                     Log.debug("Rotating long-term key")
-                    let longTermKeyPair = try self.crypto.generateKeyPair(ofType: .curve25519)
+                    let longTermKeyPair = try self.crypto.generateKeyPair(ofType: self.keyPairType)
                     let longTermPrivateKey = try self.crypto.exportPrivateKey(longTermKeyPair.privateKey)
                     let longTermPublicKey = try self.crypto.exportPublicKey(longTermKeyPair.publicKey)
-                    let longTermKeyId = try self.keyId.computePublicKeyId(publicKey: longTermPublicKey)
-                    _ = try self.longTermKeysStorage.storeKey(longTermPrivateKey,
-                                                              withId: longTermKeyId)
+                    try self.longTermKeysStorage.storeKey(longTermPrivateKey,
+                                                          withId: longTermKeyPair.identifier)
                     let longTermKeySignature = try self.crypto.generateSignature(of: longTermPublicKey,
                                                                                  using: self.identityPrivateKey)
                     longTermSignedPublicKey = SignedPublicKey(publicKey: longTermPublicKey,
@@ -275,11 +260,11 @@ import VirgilCrypto
                     var publicKeys = [Data]()
                     publicKeys.reserveCapacity(Int(numbOfOneTimeKeysToGen))
                     for _ in 0..<numbOfOneTimeKeysToGen {
-                        let keyPair = try self.crypto.generateKeyPair(ofType: .curve25519)
+                        let keyPair = try self.crypto.generateKeyPair(ofType: self.keyPairType)
                         let oneTimePrivateKey = try self.crypto.exportPrivateKey(keyPair.privateKey)
                         let oneTimePublicKey = try self.crypto.exportPublicKey(keyPair.publicKey)
-                        let keyId = try self.keyId.computePublicKeyId(publicKey: oneTimePublicKey)
-                        _ = try self.oneTimeKeysStorage.storeKey(oneTimePrivateKey, withId: keyId)
+
+                        try self.oneTimeKeysStorage.storeKey(oneTimePrivateKey, withId: keyPair.identifier)
 
                         publicKeys.append(oneTimePublicKey)
                     }

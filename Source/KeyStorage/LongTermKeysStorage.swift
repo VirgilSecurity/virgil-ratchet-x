@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2019 Virgil Security Inc.
+// Copyright (C) 2015-2020 Virgil Security Inc.
 //
 // All rights reserved.
 //
@@ -43,9 +43,8 @@ import Foundation
     /// - Parameters:
     ///   - key: private key
     ///   - id: key id
-    /// - Returns: LongTermKey
     /// - Throws: Depends on implementation
-    @objc func storeKey(_ key: Data, withId id: Data) throws -> LongTermKey
+    @objc func storeKey(_ key: Data, withId id: Data) throws
 
     /// Retrieves key
     ///

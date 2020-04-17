@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2019 Virgil Security Inc.
+// Copyright (C) 2015-2020 Virgil Security Inc.
 //
 // All rights reserved.
 //
@@ -90,10 +90,9 @@ class RamLongTermKeysStorage: LongTermKeysStorage {
         self.db = db
     }
 
-    func storeKey(_ key: Data, withId id: Data) throws -> LongTermKey {
+    func storeKey(_ key: Data, withId id: Data) throws {
         let longTermKey = LongTermKey(identifier: id, key: key, creationDate: Date(), outdatedFrom: nil)
         self.db[id] = longTermKey
-        return longTermKey
     }
     
     func retrieveKey(withId id: Data) throws -> LongTermKey {
@@ -134,14 +133,9 @@ class RamOneTimeKeysStorage: OneTimeKeysStorage {
         self.db = db
     }
     
-    func startInteraction() throws { }
-    
-    func stopInteraction() throws { }
-    
-    func storeKey(_ key: Data, withId id: Data) throws -> OneTimeKey {
+    func storeKey(_ key: Data, withId id: Data) throws {
         let oneTimeKey = OneTimeKey(identifier: id, key: key, orphanedFrom: nil)
         self.db[id] = oneTimeKey
-        return oneTimeKey
     }
     
     func retrieveKey(withId id: Data) throws -> OneTimeKey {
@@ -158,8 +152,8 @@ class RamOneTimeKeysStorage: OneTimeKeysStorage {
         }
     }
     
-    func retrieveAllKeys() throws -> [OneTimeKey] {
-        return [OneTimeKey](self.db.values)
+    func retrieveAllKeys() throws -> [OneTimeKeyInfo] {
+        return [OneTimeKey](self.db.values).map { OneTimeKeyInfo(identifier: $0.identifier, orphanedFrom: $0.orphanedFrom) }
     }
     
     func markKeyOrphaned(startingFrom date: Date, keyId: Data) throws {
@@ -190,7 +184,6 @@ class RamClient: RatchetClientProtocol {
         var users: [String: UserEntry] = [:]
     }
     
-    private let keyId = RatchetKeyId()
     private let cardManager: CardManager
     private let crypto = try! VirgilCrypto()
     private let identity: String
@@ -252,14 +245,17 @@ class RamClient: RatchetClientProtocol {
         
         if let longTermKeyId = longTermKeyId,
             let storedLongTermPublicKey = userStore.longTermPublicKey?.publicKey,
-            try self.keyId.computePublicKeyId(publicKey: storedLongTermPublicKey) == longTermKeyId {
+
+            try self.crypto.importPublicKey(from: storedLongTermPublicKey).identifier == longTermKeyId {
                 usedLongTermKeyId = nil
         }
         else {
             usedLongTermKeyId = longTermKeyId
         }
         
-        let usedOneTimeKeysIds: [Data] = Array<Data>(Set<Data>(oneTimeKeysIds).subtracting(userStore.oneTimePublicKeys.map { try! self.keyId.computePublicKeyId(publicKey: $0) }))
+        let usedOneTimeKeysIds: [Data] = Array<Data>(Set<Data>(oneTimeKeysIds).subtracting(userStore.oneTimePublicKeys.map {
+            try! self.crypto.importPublicKey(from: $0).identifier
+        }))
         
         return ValidatePublicKeysResponse(usedLongTermKeyId: usedLongTermKeyId, usedOneTimeKeysIds: usedOneTimeKeysIds)
     }

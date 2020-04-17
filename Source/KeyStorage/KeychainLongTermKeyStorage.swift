@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2019 Virgil Security Inc.
+// Copyright (C) 2015-2020 Virgil Security Inc.
 //
 // All rights reserved.
 //
@@ -108,14 +108,11 @@ import VirgilSDK
     /// - Parameters:
     ///   - key: private key
     ///   - id: key id
-    /// - Returns: LongTermKey
     /// - Throws:
     ///   - `KeychainLongTermKeysStorageError.invalidKeyId`
     ///   - Rethrows from `SandboxedKeychainStorage`
-    @objc public func storeKey(_ key: Data, withId id: Data) throws -> LongTermKey {
-        let entry = try self.keychain.store(data: key, withName: id.base64EncodedString(), meta: [:])
-
-        return try self.mapEntry(entry)
+    @objc public func storeKey(_ key: Data, withId id: Data) throws {
+        _ = try self.keychain.store(data: key, withName: id.base64EncodedString(), meta: [:])
     }
 
     /// Retrieves key

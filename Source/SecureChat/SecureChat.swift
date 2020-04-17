@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2019 Virgil Security Inc.
+// Copyright (C) 2015-2020 Virgil Security Inc.
 //
 // All rights reserved.
 //
@@ -115,7 +115,8 @@ import VirgilCrypto
     // Identity card id
     @objc public let identityCard: Card
 
-    private let keyId = RatchetKeyId()
+    private let keyPairType: KeyPairType
+
     private let keysRotator: KeysRotatorProtocol
 
     /// Default session name (if nil is passed)
@@ -142,13 +143,16 @@ import VirgilCrypto
                                             publicKey: context.identityCard.publicKey)
         let longTermKeysStorage = try KeychainLongTermKeysStorage(identity: context.identityCard.identity,
                                                                   params: params)
-        let oneTimeKeysStorage = FileOneTimeKeysStorage(identity: context.identityCard.identity,
-                                                        crypto: crypto,
-                                                        identityKeyPair: identityKeyPair)
-        let sessionStorage = FileSessionStorage(identity: context.identityCard.identity,
+        let oneTimeKeysStorage = try SQLiteOneTimeKeysStorage(appGroup: context.appGroup,
+                                                              identity: context.identityCard.identity,
+                                                              crypto: crypto,
+                                                              identityKeyPair: identityKeyPair)
+        let sessionStorage = FileSessionStorage(appGroup: context.appGroup,
+                                                identity: context.identityCard.identity,
                                                 crypto: crypto,
                                                 identityKeyPair: identityKeyPair)
-        let groupSessionStorage = try FileGroupSessionStorage(identity: context.identityCard.identity,
+        let groupSessionStorage = try FileGroupSessionStorage(appGroup: context.appGroup,
+                                                              identity: context.identityCard.identity,
                                                               crypto: crypto,
                                                               identityKeyPair: identityKeyPair)
         let keysRotator = KeysRotator(crypto: crypto,
@@ -158,9 +162,12 @@ import VirgilCrypto
                                       longTermKeyTtl: context.longTermKeyTtl,
                                       outdatedLongTermKeyTtl: context.outdatedLongTermKeyTtl,
                                       desiredNumberOfOneTimeKeys: context.desiredNumberOfOneTimeKeys,
+                                      enablePostQuantum: context.enablePostQuantum,
                                       longTermKeysStorage: longTermKeysStorage,
                                       oneTimeKeysStorage: oneTimeKeysStorage,
                                       client: client)
+
+        let keyPairType: KeyPairType = context.enablePostQuantum ? .curve25519Round5 : .curve25519
 
         self.init(crypto: crypto,
                   identityPrivateKey: context.identityPrivateKey,
@@ -170,7 +177,8 @@ import VirgilCrypto
                   oneTimeKeysStorage: oneTimeKeysStorage,
                   sessionStorage: sessionStorage,
                   groupSessionStorage: groupSessionStorage,
-                  keysRotator: keysRotator)
+                  keysRotator: keysRotator,
+                  keyPairType: keyPairType)
     }
 
     /// Initializer
@@ -193,7 +201,8 @@ import VirgilCrypto
                 oneTimeKeysStorage: OneTimeKeysStorage,
                 sessionStorage: SessionStorage,
                 groupSessionStorage: GroupSessionStorage,
-                keysRotator: KeysRotatorProtocol) {
+                keysRotator: KeysRotatorProtocol,
+                keyPairType: KeyPairType) {
         self.crypto = crypto
         self.identityPrivateKey = identityPrivateKey
         self.identityCard = identityCard
@@ -203,6 +212,7 @@ import VirgilCrypto
         self.sessionStorage = sessionStorage
         self.groupSessionStorage = groupSessionStorage
         self.keysRotator = keysRotator
+        self.keyPairType = keyPairType
 
         super.init()
     }
@@ -314,6 +324,7 @@ import VirgilCrypto
     /// - Parameters:
     ///   - receiverCard: receiver identity cards
     ///   - name: Session name
+    ///   - enablePostQuantum: enablePostQuantum
     /// - Returns: GenericOperation with [SecureSession](x-source-tag://SecureSession)
     /// - Throws:
     ///   - `SecureChatError.sessionAlreadyExists` if session already exists.
@@ -325,7 +336,9 @@ import VirgilCrypto
     ///   - Rethrows from [RatchetClient](x-source-tag://RatchetClient)
     ///   - Rethrows form [SecureSession](x-source-tag://SecureSession)
     ///   - Rethrows form `AccessTokenProvider`
-    open func startNewSessionAsSender(receiverCard: Card, name: String? = nil) -> GenericOperation<SecureSession> {
+    open func startNewSessionAsSender(receiverCard: Card,
+                                      name: String? = nil,
+                                      enablePostQuantum: Bool) -> GenericOperation<SecureSession> {
         Log.debug("Starting new session with \(receiverCard.identity) queued")
 
         return CallbackOperation { _, completion in
@@ -339,18 +352,14 @@ import VirgilCrypto
 
                 let identityPublicKey = receiverCard.publicKey
 
-                guard identityPublicKey.keyType == .ed25519 else {
-                    throw SecureChatError.invalidKeyType
-                }
-
                 let publicKeySet = try self.client.getPublicKeySet(forRecipientIdentity: receiverCard.identity)
 
                 let session = try self.startNewSessionAsSender(identity: receiverCard.identity,
                                                                identityPublicKey: identityPublicKey,
                                                                name: name,
-                                                               identityPublicKeyData: publicKeySet.identityPublicKey,
                                                                longTermPublicKey: publicKeySet.longTermPublicKey,
-                                                               oneTimePublicKey: publicKeySet.oneTimePublicKey)
+                                                               oneTimePublicKey: publicKeySet.oneTimePublicKey,
+                                                               enablePostQuantum: enablePostQuantum)
 
                 completion(session, nil)
             }
@@ -378,7 +387,8 @@ import VirgilCrypto
     ///   - Rethrows form [SecureSession](x-source-tag://SecureSession)
     ///   - Rethrows form `AccessTokenProvider`
     open func startMutipleNewSessionsAsSender(receiverCards: [Card],
-                                              name: String? = nil) -> GenericOperation<[SecureSession]> {
+                                              name: String? = nil,
+                                              enablePostQuantum: Bool) -> GenericOperation<[SecureSession]> {
         Log.debug("Starting new session with \(receiverCards.map { $0.identity }) queued")
 
         return CallbackOperation { _, completion in
@@ -389,12 +399,6 @@ import VirgilCrypto
                     guard self.existingSession(withParticipantIdentity: card.identity,
                                                name: name ?? SecureChat.defaultSessionName) == nil else {
                         throw SecureChatError.sessionAlreadyExists
-                    }
-
-                    let identityPublicKey = card.publicKey
-
-                    guard identityPublicKey.keyType == .ed25519 else {
-                        throw SecureChatError.invalidKeyType
                     }
                 }
 
@@ -420,9 +424,9 @@ import VirgilCrypto
                         .startNewSessionAsSender(identity: card.identity,
                                                  identityPublicKey: identityPublicKey,
                                                  name: name,
-                                                 identityPublicKeyData: publicKeySet.identityPublicKey,
                                                  longTermPublicKey: publicKeySet.longTermPublicKey,
-                                                 oneTimePublicKey: publicKeySet.oneTimePublicKey)
+                                                 oneTimePublicKey: publicKeySet.oneTimePublicKey,
+                                                 enablePostQuantum: enablePostQuantum)
 
                     sessions.append(session)
                 }
@@ -438,13 +442,9 @@ import VirgilCrypto
     private func startNewSessionAsSender(identity: String,
                                          identityPublicKey: VirgilPublicKey,
                                          name: String? = nil,
-                                         identityPublicKeyData: Data,
                                          longTermPublicKey: SignedPublicKey,
-                                         oneTimePublicKey: Data?) throws -> SecureSession {
-        guard try self.crypto.exportPublicKey(identityPublicKey) == identityPublicKeyData else {
-            throw SecureChatError.identityKeyDoesntMatch
-        }
-
+                                         oneTimePublicKey: Data?,
+                                         enablePostQuantum: Bool) throws -> SecureSession {
         guard try self.crypto.verifySignature(longTermPublicKey.signature,
                                               of: longTermPublicKey.publicKey,
                                               with: identityPublicKey) else {
@@ -455,15 +455,14 @@ import VirgilCrypto
             Log.error("Creating weak session with \(identity)")
         }
 
-        let privateKeyData = try self.crypto.exportPrivateKey(self.identityPrivateKey)
-
         let session = try SecureSession(crypto: self.crypto,
                                         participantIdentity: identity,
                                         name: name ?? SecureChat.defaultSessionName,
-                                        senderIdentityPrivateKey: privateKeyData,
-                                        receiverIdentityPublicKey: identityPublicKeyData,
+                                        senderIdentityPrivateKey: self.identityPrivateKey,
+                                        receiverIdentityPublicKey: identityPublicKey,
                                         receiverLongTermPublicKey: longTermPublicKey.publicKey,
-                                        receiverOneTimePublicKey: oneTimePublicKey)
+                                        receiverOneTimePublicKey: oneTimePublicKey,
+                                        enablePostQuantum: enablePostQuantum)
 
         return session
     }
@@ -480,19 +479,12 @@ import VirgilCrypto
             let oneTimePublicKey: Data
 
             do {
-                try self.oneTimeKeysStorage.startInteraction()
-
-                defer {
-                    try? self.oneTimeKeysStorage.stopInteraction()
-                }
-
-                let keyPair = try self.crypto.generateKeyPair(ofType: .curve25519)
+                let keyPair = try self.crypto.generateKeyPair(ofType: self.keyPairType)
 
                 let oneTimePrivateKey = try self.crypto.exportPrivateKey(keyPair.privateKey)
                 oneTimePublicKey = try self.crypto.exportPublicKey(keyPair.publicKey)
-                let keyId = try self.keyId.computePublicKeyId(publicKey: oneTimePublicKey)
 
-                _ = try self.oneTimeKeysStorage.storeKey(oneTimePrivateKey, withId: keyId)
+                try self.oneTimeKeysStorage.storeKey(oneTimePrivateKey, withId: keyPair.identifier)
 
                 Log.debug("Saved one-time key successfully")
             }
@@ -531,7 +523,8 @@ import VirgilCrypto
     ///   - Rethrows form `AccessTokenProvider`
     @objc public func startNewSessionAsReceiver(senderCard: Card,
                                                 name: String? = nil,
-                                                ratchetMessage: RatchetMessage) throws -> SecureSession {
+                                                ratchetMessage: RatchetMessage,
+                                                enablePostQuantum: Bool) throws -> SecureSession {
         Log.debug("Responding to session with \(senderCard.identity) queued")
 
         guard self.existingSession(withParticipantIdentity: senderCard.identity, name: name) == nil else {
@@ -540,58 +533,43 @@ import VirgilCrypto
 
         let senderIdentityPublicKey = senderCard.publicKey
 
-        guard senderIdentityPublicKey.keyType == .ed25519 else {
-            throw SecureChatError.invalidKeyType
-        }
-
         guard ratchetMessage.getType() == .prekey else {
             throw SecureChatError.invalidMessageType
         }
 
-        let receiverLongTermPublicKey = ratchetMessage.getLongTermPublicKey()
-        let longTermKeyId = try self.keyId.computePublicKeyId(publicKey: receiverLongTermPublicKey)
+        guard ratchetMessage.getSenderIdentityKeyId() == senderCard.publicKey.identifier else {
+            throw SecureChatError.identityKeyDoesntMatch
+        }
+
+        guard ratchetMessage.getReceiverIdentityKeyId() == self.identityCard.publicKey.identifier else {
+            throw SecureChatError.identityKeyDoesntMatch
+        }
+
+        let longTermKeyId = ratchetMessage.getReceiverLongTermKeyId()
         let receiverLongTermPrivateKey = try self.longTermKeysStorage.retrieveKey(withId: longTermKeyId)
 
-        let receiverOneTimePublicKey = ratchetMessage.getOneTimePublicKey()
-        let receiverOneTimeKeyId: Data?
-
-        if receiverOneTimePublicKey.isEmpty {
-            receiverOneTimeKeyId = nil
-        }
-        else {
-            receiverOneTimeKeyId = try self.keyId.computePublicKeyId(publicKey: receiverOneTimePublicKey)
-        }
+        let receiverOneTimeKeyId = ratchetMessage.getReceiverOneTimeKeyId()
 
         let receiverOneTimePrivateKey: OneTimeKey?
 
-        var interactionStarted = false
-
-        if let receiverOneTimeKeyId = receiverOneTimeKeyId {
-            try self.oneTimeKeysStorage.startInteraction()
-            interactionStarted = true
-
+        if !receiverOneTimeKeyId.isEmpty {
             receiverOneTimePrivateKey = try self.oneTimeKeysStorage.retrieveKey(withId: receiverOneTimeKeyId)
         }
         else {
             receiverOneTimePrivateKey = nil
         }
 
-        defer {
-            if interactionStarted {
-                try? self.oneTimeKeysStorage.stopInteraction()
-            }
-        }
-
         let session = try SecureSession(crypto: self.crypto,
                                         participantIdentity: senderCard.identity,
                                         name: name ?? SecureChat.defaultSessionName,
+                                        senderIdentityPublicKey: senderIdentityPublicKey,
                                         receiverIdentityPrivateKey: self.identityPrivateKey,
                                         receiverLongTermPrivateKey: receiverLongTermPrivateKey,
                                         receiverOneTimePrivateKey: receiverOneTimePrivateKey,
-                                        senderIdentityPublicKey: self.crypto.exportPublicKey(senderIdentityPublicKey),
-                                        ratchetMessage: ratchetMessage)
+                                        ratchetMessage: ratchetMessage,
+                                        enablePostQuantum: enablePostQuantum)
 
-        if let receiverOneTimeKeyId = receiverOneTimeKeyId {
+        if !receiverOneTimeKeyId.isEmpty {
             try self.oneTimeKeysStorage.deleteKey(withId: receiverOneTimeKeyId)
 
             self.scheduleOneTimeKeyReplacement()
