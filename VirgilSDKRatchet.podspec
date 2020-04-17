@@ -13,5 +13,5 @@ Pod::Spec.new do |s|
   s.watchos.deployment_target   = "2.0"
   s.source_files                = 'Source/**/*.{h,m,swift}'
   s.dependency "VirgilCryptoRatchet", "~> 0.14.0"
-  s.dependency "VirgilSDK", "~> 7.4"
+  s.dependency "VirgilSDK", "~> 7.2"
 end
