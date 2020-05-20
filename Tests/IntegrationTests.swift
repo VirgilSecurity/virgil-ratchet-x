@@ -121,7 +121,6 @@ class IntegrationTests: XCTestCase {
                                           longTermKeysStorage: senderLongTermKeysStorage,
                                           oneTimeKeysStorage: senderOneTimeKeysStorage,
                                           sessionStorage: FileSessionStorage(appGroup: nil, identity: senderIdentity, crypto: crypto, identityKeyPair: senderIdentityKeyPair),
-                                          groupSessionStorage: try FileGroupSessionStorage(appGroup: nil, identity: senderIdentity, crypto: crypto, identityKeyPair: receiverIdentityKeyPair),
                                           keysRotator: senderKeysRotator, keyPairType: .curve25519Round5)
         
         let receiverSecureChat = SecureChat(crypto: crypto,
@@ -131,7 +130,6 @@ class IntegrationTests: XCTestCase {
                                             longTermKeysStorage: receiverLongTermKeysStorage,
                                             oneTimeKeysStorage: receiverOneTimeKeysStorage,
                                             sessionStorage: FileSessionStorage(appGroup: nil, identity: receiverIdentity, crypto: crypto, identityKeyPair: receiverIdentityKeyPair),
-                                            groupSessionStorage: try FileGroupSessionStorage(appGroup: nil, identity: receiverIdentity, crypto: crypto, identityKeyPair: receiverIdentityKeyPair),
                                             keysRotator: receiverKeysRotator, keyPairType: .curve25519Round5)
         
         return (senderCard, receiverCard, senderSecureChat, receiverSecureChat)

@@ -115,7 +115,6 @@ class SecureSessionTests: XCTestCase {
                                           longTermKeysStorage: RamLongTermKeysStorage(db: [:]),
                                           oneTimeKeysStorage: RamOneTimeKeysStorage(db: [:]),
                                           sessionStorage: RamSessionStorage(),
-                                          groupSessionStorage:  RamGroupSessionStorage(),
                                           keysRotator: FakeKeysRotator(), keyPairType: .curve25519Round5)
         
         let receiverKeysRotator = KeysRotator(crypto: crypto, identityPrivateKey: receiverIdentityKeyPair.privateKey, identityCardId: receiverCard.identifier, orphanedOneTimeKeyTtl: 100, longTermKeyTtl: 100, outdatedLongTermKeyTtl: 100, desiredNumberOfOneTimeKeys: 10, enablePostQuantum: true, longTermKeysStorage: receiverLongTermKeysStorage, oneTimeKeysStorage: receiverOneTimeKeysStorage, client: receiverFakeClient)
@@ -127,7 +126,6 @@ class SecureSessionTests: XCTestCase {
                                             longTermKeysStorage: receiverLongTermKeysStorage,
                                             oneTimeKeysStorage: receiverOneTimeKeysStorage,
                                             sessionStorage: RamSessionStorage(),
-                                            groupSessionStorage:  RamGroupSessionStorage(),
                                             keysRotator: receiverKeysRotator, keyPairType: .curve25519Round5)
     
         return (senderCard, receiverCard, senderSecureChat, receiverSecureChat)

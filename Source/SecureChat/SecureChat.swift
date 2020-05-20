@@ -106,9 +106,6 @@ import VirgilCrypto
     /// Session storage
     @objc public let sessionStorage: SessionStorage
 
-    /// Group session storage
-    @objc public let groupSessionStorage: GroupSessionStorage
-
     /// Client
     @objc public let client: RatchetClientProtocol
 
@@ -151,10 +148,6 @@ import VirgilCrypto
                                                 identity: context.identityCard.identity,
                                                 crypto: crypto,
                                                 identityKeyPair: identityKeyPair)
-        let groupSessionStorage = try FileGroupSessionStorage(appGroup: context.appGroup,
-                                                              identity: context.identityCard.identity,
-                                                              crypto: crypto,
-                                                              identityKeyPair: identityKeyPair)
         let keysRotator = KeysRotator(crypto: crypto,
                                       identityPrivateKey: context.identityPrivateKey,
                                       identityCardId: context.identityCard.identifier,
@@ -176,7 +169,6 @@ import VirgilCrypto
                   longTermKeysStorage: longTermKeysStorage,
                   oneTimeKeysStorage: oneTimeKeysStorage,
                   sessionStorage: sessionStorage,
-                  groupSessionStorage: groupSessionStorage,
                   keysRotator: keysRotator,
                   keyPairType: keyPairType)
     }
@@ -191,7 +183,6 @@ import VirgilCrypto
     ///   - longTermKeysStorage: long-term keys storage
     ///   - oneTimeKeysStorage: one-time keys storage
     ///   - sessionStorage: session storage
-    ///   - groupSessionStorage: group session storage
     ///   - keysRotator: keys rotation
     public init(crypto: VirgilCrypto,
                 identityPrivateKey: VirgilPrivateKey,
@@ -200,7 +191,6 @@ import VirgilCrypto
                 longTermKeysStorage: LongTermKeysStorage,
                 oneTimeKeysStorage: OneTimeKeysStorage,
                 sessionStorage: SessionStorage,
-                groupSessionStorage: GroupSessionStorage,
                 keysRotator: KeysRotatorProtocol,
                 keyPairType: KeyPairType) {
         self.crypto = crypto
@@ -210,7 +200,6 @@ import VirgilCrypto
         self.longTermKeysStorage = longTermKeysStorage
         self.oneTimeKeysStorage = oneTimeKeysStorage
         self.sessionStorage = sessionStorage
-        self.groupSessionStorage = groupSessionStorage
         self.keysRotator = keysRotator
         self.keyPairType = keyPairType
 
@@ -249,19 +238,6 @@ import VirgilCrypto
         Log.debug("Storing session with \(session.participantIdentity) name: \(session.name)")
 
         try self.sessionStorage.storeSession(session)
-    }
-
-    /// Stores group session
-    /// - Note: This method is used for storing new session as well as updating existing ones
-    ///         after operations that change session's state (encrypt, decrypt, setParticipants, updateParticipants),
-    ///         therefore is session already exists in storage, it will be overwritten
-    ///
-    /// - Parameter session: [SecureGroupSession](x-source-tag://SecureGroupSession) to store
-    /// - Throws: Rethrows from `GroupSessionStorage`
-    @objc open func storeGroupSession(_ session: SecureGroupSession) throws {
-        Log.debug("Storing group session with id \(session.identifier.hexEncodedString())")
-
-        try self.groupSessionStorage.storeSession(session)
     }
 
     /// Checks for existing session with given participent in the storage
@@ -306,16 +282,6 @@ import VirgilCrypto
         Log.debug("Deleting session with \(participantIdentity)")
 
         try self.sessionStorage.deleteSession(participantIdentity: participantIdentity, name: nil)
-    }
-
-    /// Deletes group session with given identifier
-    ///
-    /// - Parameter sessionId: session identifier
-    /// - Throws: Rethrows from SessionGroupStorage
-    @objc public func deleteGroupSession(sessionId: Data) throws {
-        Log.debug("Deleting group session with \(sessionId.hexEncodedString())")
-
-        try self.groupSessionStorage.deleteSession(identifier: sessionId)
     }
 
     /// Starts new session with given participant using his identity card
@@ -576,85 +542,6 @@ import VirgilCrypto
         }
 
         return session
-    }
-
-    /// Creates RatchetGroupMessage that starts new group chat
-    /// - Important: Session id is REQUIRED to be unique and tied to transport layer (channel id or similar)
-    /// - Note: Other participants should receive this message using encrypted channel
-    ///         ([SecureSession](x-source-tag://SecureSession))
-    ///
-    /// - Parameter sessionId: Session Id. Should be 32 byte.
-    /// - Returns: RatchetGroupMessage that should be then passed to startGroupSession()
-    /// - Throws:
-    ///   - `SecureChatError.invalidSessionIdLen`
-    ///   - Rethrows from `RatchetGroupTicket`
-    @objc public func startNewGroupSession(sessionId: Data) throws -> RatchetGroupMessage {
-        let ticket = RatchetGroupTicket()
-        ticket.setRng(rng: self.crypto.rng)
-
-        guard sessionId.count == RatchetCommon.sessionIdLen else {
-            throw SecureChatError.invalidSessionIdLen
-        }
-
-        try ticket.setupTicketAsNew(sessionId: sessionId)
-
-        return ticket.getTicketMessage()
-    }
-
-    /// Creates secure group session that was initiated by someone.
-    /// - Important: RatchetGroupMessage should have .groupInfo type.
-    ///              Such messages should be sent encrypted (using [SecureSession](x-source-tag://SecureSession))
-    /// - Important: Session id is REQUIRED to be unique and tied to transport layer (channel id or similar)
-    /// - Note: This operation doesn't store session to storage automatically. Use storeGroupSession()
-    ///
-    /// - Parameters:
-    ///   - receiversCards: participant cards (excluding creating user itself)
-    ///   - sessionId: Session Id. Should be 32 byte.
-    ///   - ratchetMessage: ratchet group message with .groupInfo type
-    /// - Returns: [SecureGroupSession](x-source-tag://SecureGroupSession)
-    /// - Throws:
-    ///   - `SecureChatError.invalidMessageType`
-    ///   - `SecureChatError.invalidCardId`
-    ///   - Rethrows from [SecureGroupSession](x-source-tag://SecureGroupSession)
-    @objc public func startGroupSession(with receiversCards: [Card],
-                                        sessionId: Data,
-                                        using ratchetMessage: RatchetGroupMessage) throws -> SecureGroupSession {
-        guard ratchetMessage.getType() == .groupInfo else {
-            throw SecureChatError.invalidMessageType
-        }
-
-        guard ratchetMessage.getSessionId() == sessionId else {
-            throw SecureChatError.sessionIdMismatch
-        }
-
-        let privateKeyData = try self.crypto.exportPrivateKey(self.identityPrivateKey)
-
-        guard let myId = Data(hexEncodedString: self.identityCard.identifier) else {
-            throw SecureChatError.invalidCardId
-        }
-
-        return try SecureGroupSession(crypto: self.crypto,
-                                      privateKeyData: privateKeyData,
-                                      myId: myId,
-                                      ratchetGroupMessage: ratchetMessage,
-                                      cards: receiversCards)
-    }
-
-    /// Returns existing group session
-    ///
-    /// - Parameter sessionId: session identifier
-    /// - Returns: Stored session if found, nil otherwise
-    @objc public func existingGroupSession(sessionId: Data) -> SecureGroupSession? {
-        if let session = self.groupSessionStorage.retrieveSession(identifier: sessionId) {
-            Log.debug("Found existing group session with identifier: \(sessionId)")
-
-            return session
-        }
-        else {
-            Log.debug("Existing session with identifier: \(sessionId) was not found")
-
-            return nil
-        }
     }
 
     /// Removes all data corresponding to this user: sessions and keys.
