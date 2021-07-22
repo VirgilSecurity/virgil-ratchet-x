@@ -37,7 +37,7 @@
 import VirgilSDK
 
 /// One-time keys storage
-@objc(VSROneTimeKeysStorage) public protocol OneTimeKeysStorage: class {
+@objc(VSROneTimeKeysStorage) public protocol OneTimeKeysStorage: AnyObject {
     /// Stores key
     ///
     /// - Parameters:

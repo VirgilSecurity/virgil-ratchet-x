@@ -37,7 +37,7 @@
 import VirgilSDK
 
 /// Protocol for keys rotation
-public protocol KeysRotatorProtocol: class {
+public protocol KeysRotatorProtocol: AnyObject {
     /// Rotates keys
     ///
     /// - Returns: GenericOperation

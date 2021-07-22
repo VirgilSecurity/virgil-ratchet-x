@@ -37,7 +37,7 @@
 import Foundation
 
 /// Protocol for session storage
-@objc(VSRSessionStorage) public protocol SessionStorage: class {
+@objc(VSRSessionStorage) public protocol SessionStorage: AnyObject {
     /// Stores session
     ///
     /// - Parameter session: session to store

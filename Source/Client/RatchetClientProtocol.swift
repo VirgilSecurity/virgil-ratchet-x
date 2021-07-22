@@ -37,7 +37,7 @@
 import Foundation
 
 /// Client used to communicate with ratchet service
-@objc(VSRRatchetClientProtocol) public protocol RatchetClientProtocol: class {
+@objc(VSRRatchetClientProtocol) public protocol RatchetClientProtocol: AnyObject {
     /// Uploads public keys
     ///
     /// Long-term public key signature should be verified.

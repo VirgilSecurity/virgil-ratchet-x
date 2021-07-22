@@ -37,7 +37,7 @@
 import Foundation
 
 /// Protocol for Long-term private keys storage
-@objc(VSRLongTermKeysStorage) public protocol LongTermKeysStorage: class {
+@objc(VSRLongTermKeysStorage) public protocol LongTermKeysStorage: AnyObject {
     /// Stores key
     ///
     /// - Parameters:
