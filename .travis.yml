@@ -68,9 +68,6 @@ script:
       ./CI/publish-docs.sh;
     fi
 
-before_deploy:
-  - carthage archive
-
 deploy:
   - provider: releases
     api_key: $GITHUB_ACCESS_TOKEN
