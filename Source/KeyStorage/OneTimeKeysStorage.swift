@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2020 Virgil Security Inc.
+// Copyright (C) 2015-2021 Virgil Security Inc.
 //
 // All rights reserved.
 //
@@ -37,7 +37,7 @@
 import VirgilSDK
 
 /// One-time keys storage
-@objc(VSROneTimeKeysStorage) public protocol OneTimeKeysStorage: class {
+@objc(VSROneTimeKeysStorage) public protocol OneTimeKeysStorage: AnyObject {
     /// Stores key
     ///
     /// - Parameters:

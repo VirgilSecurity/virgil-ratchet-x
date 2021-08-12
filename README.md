@@ -48,7 +48,7 @@ To integrate Virgil Ratchet SDK into your Xcode project using CocoaPods, specify
 target '<Your Target Name>' do
 use_frameworks!
 
-pod 'VirgilSDKRatchet', '~> 0.6.0'
+pod 'VirgilSDKRatchet', '~> 0.8.0'
 end
 ```
 
@@ -72,7 +72,7 @@ $ brew install carthage
 To integrate the Virgil Ratchet SDK into your Xcode project using Carthage, create an empty file with name *Cartfile* in your project's root folder and add following lines to your *Cartfile*
 
 ```
-github "VirgilSecurity/virgil-ratchet-x" ~> 0.6.0
+github "VirgilSecurity/virgil-ratchet-x" ~> 0.7.0
 ```
 
 #### Linking against pre-built binaries
@@ -80,7 +80,7 @@ github "VirgilSecurity/virgil-ratchet-x" ~> 0.6.0
 To link pre-built frameworks to your app, run the following command:
 
 ```bash
-$ carthage update
+$ carthage update --use-xcframeworks
 ```
 
 This will build each dependency or download a pre-compiled framework from the github releases.
@@ -97,24 +97,7 @@ On your application targets’ “General" settings tab, in the “Linked Framew
  - VSCFoundation
  - VSCRatchet
 
-On your application targets’ “Build Phases" settings tab, click the “+” icon and choose “New Run Script Phase.” Create a Run Script to specify your shell (ex: */bin/sh*) then add the following contents:
-
-```bash
-/usr/local/bin/carthage copy-frameworks
-```
-
-Then add the paths to the frameworks you want to use under “Input Files”, e.g.:
-
-```
-$(SRCROOT)/Carthage/Build/iOS/VirgilSDKRatchet.framework
-$(SRCROOT)/Carthage/Build/iOS/VirgilSDK.framework
-$(SRCROOT)/Carthage/Build/iOS/VirgilCrypto.framework
-$(SRCROOT)/Carthage/Build/iOS/VirgilCryptoFoundation.framework
-$(SRCROOT)/Carthage/Build/iOS/VirgilCryptoRatchet.framework
-$(SRCROOT)/Carthage/Build/iOS/VSCCommon.framework
-$(SRCROOT)/Carthage/Build/iOS/VSCFoundation.framework
-$(SRCROOT)/Carthage/Build/iOS/VSCRatchet.framework
-```
+Check Embed & sign for each.
 
 ##### Building for macOS
 

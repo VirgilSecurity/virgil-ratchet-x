@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2020 Virgil Security Inc.
+// Copyright (C) 2015-2021 Virgil Security Inc.
 //
 // All rights reserved.
 //
@@ -37,7 +37,7 @@
 import Foundation
 
 /// Protocol for session storage
-@objc(VSRSessionStorage) public protocol SessionStorage: class {
+@objc(VSRSessionStorage) public protocol SessionStorage: AnyObject {
     /// Stores session
     ///
     /// - Parameter session: session to store

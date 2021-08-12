@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2020 Virgil Security Inc.
+// Copyright (C) 2015-2021 Virgil Security Inc.
 //
 // All rights reserved.
 //
@@ -37,7 +37,7 @@
 import Foundation
 
 /// Protocol for Long-term private keys storage
-@objc(VSRLongTermKeysStorage) public protocol LongTermKeysStorage: class {
+@objc(VSRLongTermKeysStorage) public protocol LongTermKeysStorage: AnyObject {
     /// Stores key
     ///
     /// - Parameters:
