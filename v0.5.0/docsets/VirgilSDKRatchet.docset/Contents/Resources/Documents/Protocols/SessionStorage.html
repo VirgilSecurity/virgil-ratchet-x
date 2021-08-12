@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>SessionStorage Protocol Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Protocol/SessionStorage" class="dashAnchor"></a>
+    <a title="SessionStorage Protocol Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html">VirgilSDKRatchet Docs</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html">VirgilSDKRatchet Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        SessionStorage Protocol Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/FileGroupSessionStorage.html">FileGroupSessionStorage</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/FileOneTimeKeysStorage.html">FileOneTimeKeysStorage</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/FileSessionStorage.html">FileSessionStorage</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/IdentityPublicKeySet.html">IdentityPublicKeySet</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/KeychainLongTermKeysStorage.html">KeychainLongTermKeysStorage</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/KeysRotator.html">KeysRotator</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/LongTermKey.html">LongTermKey</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/OneTimeKey.html">OneTimeKey</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/PublicKeySet.html">PublicKeySet</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RatchetClient.html">RatchetClient</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RotationLog.html">RotationLog</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SecureChat.html">SecureChat</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SecureChatContext.html">SecureChatContext</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SecureGroupSession.html">SecureGroupSession</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SecureSession.html">SecureSession</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SignedPublicKey.html">SignedPublicKey</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ValidatePublicKeysResponse.html">ValidatePublicKeysResponse</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Enums.html">Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Enums/FileOneTimeKeysStorageError.html">FileOneTimeKeysStorageError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/KeychainLongTermKeysStorageError.html">KeychainLongTermKeysStorageError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/KeysRotatorError.html">KeysRotatorError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/RatchetClientError.html">RatchetClientError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/SecureChatError.html">SecureChatError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/SecureGroupSessionError.html">SecureGroupSessionError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/SecureSessionError.html">SecureSessionError</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/GroupSessionStorage.html">GroupSessionStorage</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/KeysRotatorProtocol.html">KeysRotatorProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/LongTermKeysStorage.html">LongTermKeysStorage</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/OneTimeKeysStorage.html">OneTimeKeysStorage</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/RatchetClientProtocol.html">RatchetClientProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SessionStorage.html">SessionStorage</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>SessionStorage</h1>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight swift"><code><span class="kd">@objc(VSRSessionStorage)</span>
+<span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">SessionStorage</span> <span class="p">:</span> <span class="kt">AnyObject</span></code></pre>
+
+                </div>
+              </div>
+            <p>Protocol for session storage</p>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@VirgilSDKRatchet@objc(pl)VSRSessionStorage(im)storeSession:error:"></a>
+                    <a name="//apple_ref/swift/Method/storeSession(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@VirgilSDKRatchet@objc(pl)VSRSessionStorage(im)storeSession:error:">storeSession(_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Stores session</p>
+<div class="aside aside-throws">
+    <p class="aside-title">Throws</p>
+    Depends on implementation
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">func</span> <span class="nf">storeSession</span><span class="p">(</span><span class="n">_</span> <span class="nv">session</span><span class="p">:</span> <span class="kt"><a href="../Classes/SecureSession.html">SecureSession</a></span><span class="p">)</span> <span class="k">throws</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>session</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>session to store</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@VirgilSDKRatchet@objc(pl)VSRSessionStorage(im)retrieveSessionWithParticipantIdentity:name:"></a>
+                    <a name="//apple_ref/swift/Method/retrieveSession(participantIdentity:name:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@VirgilSDKRatchet@objc(pl)VSRSessionStorage(im)retrieveSessionWithParticipantIdentity:name:">retrieveSession(participantIdentity:name:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Retrieves session</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">func</span> <span class="nf">retrieveSession</span><span class="p">(</span><span class="nv">participantIdentity</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/SecureSession.html">SecureSession</a></span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>participantIdentity</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>participant identity</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>name</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>session name</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>Stored session if found, nil otherwise</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@VirgilSDKRatchet@objc(pl)VSRSessionStorage(im)deleteSessionWithParticipantIdentity:name:error:"></a>
+                    <a name="//apple_ref/swift/Method/deleteSession(participantIdentity:name:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@VirgilSDKRatchet@objc(pl)VSRSessionStorage(im)deleteSessionWithParticipantIdentity:name:error:">deleteSession(participantIdentity:name:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Deletes session</p>
+<div class="aside aside-throws">
+    <p class="aside-title">Throws</p>
+    Depends on implementation
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">func</span> <span class="nf">deleteSession</span><span class="p">(</span><span class="nv">participantIdentity</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span><span class="p">?)</span> <span class="k">throws</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>participantIdentity</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>participant identity</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>name</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>session name</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@VirgilSDKRatchet@objc(pl)VSRSessionStorage(im)resetAndReturnError:"></a>
+                    <a name="//apple_ref/swift/Method/reset()" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@VirgilSDKRatchet@objc(pl)VSRSessionStorage(im)resetAndReturnError:">reset()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Removes all sessions</p>
+<div class="aside aside-throws">
+    <p class="aside-title">Throws</p>
+    Depends on implementation
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">func</span> <span class="nf">reset</span><span class="p">()</span> <span class="k">throws</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2020 <a class="link" href="https://virgilsecurity.com/" target="_blank" rel="external">Virgil Security</a>. All rights reserved. (Last updated: 2020-01-16)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.1</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

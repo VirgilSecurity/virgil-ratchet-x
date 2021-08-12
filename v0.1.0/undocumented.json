@@ -1,0 +1,180 @@
+{
+  "warnings": [
+    {
+      "file": "/Users/travis/build/VirgilSecurity/virgil-ratchet-x/Source/Client/RatchetClient.swift",
+      "line": 43,
+      "symbol": "RatchetClientError.constructingUrl",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/travis/build/VirgilSecurity/virgil-ratchet-x/Source/KeyStorage/FileOneTimeKeysStorage.swift",
+      "line": 47,
+      "symbol": "FileOneTimeKeysStorageError.keyAlreadyExists",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/travis/build/VirgilSecurity/virgil-ratchet-x/Source/KeyStorage/FileOneTimeKeysStorage.swift",
+      "line": 48,
+      "symbol": "FileOneTimeKeysStorageError.keyNotFound",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/travis/build/VirgilSecurity/virgil-ratchet-x/Source/KeyStorage/FileOneTimeKeysStorage.swift",
+      "line": 49,
+      "symbol": "FileOneTimeKeysStorageError.keyAlreadyMarked",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/travis/build/VirgilSecurity/virgil-ratchet-x/Source/KeyStorage/KeychainLongTermKeyStorage.swift",
+      "line": 44,
+      "symbol": "KeychainLongTermKeysStorageError.invalidKeyId",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/travis/build/VirgilSecurity/virgil-ratchet-x/Source/KeyStorage/KeychainLongTermKeyStorage.swift",
+      "line": 45,
+      "symbol": "KeychainLongTermKeysStorageError.invalidMeta",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/travis/build/VirgilSecurity/virgil-ratchet-x/Source/SecureChat/KeysRotation/KeysRotator.swift",
+      "line": 45,
+      "symbol": "KeysRotatorError.concurrentRotation",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/travis/build/VirgilSecurity/virgil-ratchet-x/Source/SecureChat/SecureChat.swift",
+      "line": 54,
+      "symbol": "SecureChatError.sessionAlreadyExists",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/travis/build/VirgilSecurity/virgil-ratchet-x/Source/SecureChat/SecureChat.swift",
+      "line": 55,
+      "symbol": "SecureChatError.wrongIdentityPublicKeyCrypto",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/travis/build/VirgilSecurity/virgil-ratchet-x/Source/SecureChat/SecureChat.swift",
+      "line": 56,
+      "symbol": "SecureChatError.identityKeyDoesntMatch",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/travis/build/VirgilSecurity/virgil-ratchet-x/Source/SecureChat/SecureChat.swift",
+      "line": 57,
+      "symbol": "SecureChatError.invalidLongTermKeySignature",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/travis/build/VirgilSecurity/virgil-ratchet-x/Source/SecureChat/SecureChat.swift",
+      "line": 58,
+      "symbol": "SecureChatError.invalidMessageType",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/travis/build/VirgilSecurity/virgil-ratchet-x/Source/SecureChat/SecureChat.swift",
+      "line": 59,
+      "symbol": "SecureChatError.invalidKeyType",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/travis/build/VirgilSecurity/virgil-ratchet-x/Source/SecureChat/SecureChat.swift",
+      "line": 60,
+      "symbol": "SecureChatError.publicKeysSetsMismatch",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/travis/build/VirgilSecurity/virgil-ratchet-x/Source/SecureChat/SecureChat.swift",
+      "line": 61,
+      "symbol": "SecureChatError.invalidSessionIdLen",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/travis/build/VirgilSecurity/virgil-ratchet-x/Source/SecureChat/SecureChat.swift",
+      "line": 62,
+      "symbol": "SecureChatError.invalidCardId",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/travis/build/VirgilSecurity/virgil-ratchet-x/Source/SecureChat/SecureChat.swift",
+      "line": 63,
+      "symbol": "SecureChatError.sessionIdMismatch",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/travis/build/VirgilSecurity/virgil-ratchet-x/Source/SecureChat/SecureChat.swift",
+      "line": 116,
+      "symbol": "SecureChat.identityCard",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/travis/build/VirgilSecurity/virgil-ratchet-x/Source/SecureChat/SecureGroupSession.swift",
+      "line": 50,
+      "symbol": "SecureGroupSessionError.invalidUtf8String",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/travis/build/VirgilSecurity/virgil-ratchet-x/Source/SecureChat/SecureGroupSession.swift",
+      "line": 51,
+      "symbol": "SecureGroupSessionError.notConsequentTicket",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/travis/build/VirgilSecurity/virgil-ratchet-x/Source/SecureChat/SecureGroupSession.swift",
+      "line": 52,
+      "symbol": "SecureGroupSessionError.invalidMessageType",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/travis/build/VirgilSecurity/virgil-ratchet-x/Source/SecureChat/SecureGroupSession.swift",
+      "line": 53,
+      "symbol": "SecureGroupSessionError.invalidCardId",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/travis/build/VirgilSecurity/virgil-ratchet-x/Source/SecureChat/SecureGroupSession.swift",
+      "line": 54,
+      "symbol": "SecureGroupSessionError.publicKeyIsNotVirgil",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/travis/build/VirgilSecurity/virgil-ratchet-x/Source/SecureChat/SecureGroupSession.swift",
+      "line": 55,
+      "symbol": "SecureGroupSessionError.wrongSender",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/travis/build/VirgilSecurity/virgil-ratchet-x/Source/SecureChat/SecureSession.swift",
+      "line": 44,
+      "symbol": "SecureSessionError.invalidUtf8String",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    }
+  ],
+  "source_directory": "/Users/travis/build/VirgilSecurity/virgil-ratchet-x"
+}

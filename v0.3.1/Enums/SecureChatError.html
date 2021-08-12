@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>SecureChatError Enumeration Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Enum/SecureChatError" class="dashAnchor"></a>
+    <a title="SecureChatError Enumeration Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html">VirgilSDKRatchet Docs</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html">VirgilSDKRatchet Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        SecureChatError Enumeration Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/FileGroupSessionStorage.html">FileGroupSessionStorage</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/FileOneTimeKeysStorage.html">FileOneTimeKeysStorage</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/FileSessionStorage.html">FileSessionStorage</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/IdentityPublicKeySet.html">IdentityPublicKeySet</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/KeychainLongTermKeysStorage.html">KeychainLongTermKeysStorage</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/KeysRotator.html">KeysRotator</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/LongTermKey.html">LongTermKey</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/OneTimeKey.html">OneTimeKey</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/PublicKeySet.html">PublicKeySet</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RatchetClient.html">RatchetClient</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RotationLog.html">RotationLog</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SecureChat.html">SecureChat</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SecureChatContext.html">SecureChatContext</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SecureGroupSession.html">SecureGroupSession</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SecureSession.html">SecureSession</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SignedPublicKey.html">SignedPublicKey</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ValidatePublicKeysResponse.html">ValidatePublicKeysResponse</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Enums.html">Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Enums/FileOneTimeKeysStorageError.html">FileOneTimeKeysStorageError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/KeychainLongTermKeysStorageError.html">KeychainLongTermKeysStorageError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/KeysRotatorError.html">KeysRotatorError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/RatchetClientError.html">RatchetClientError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/SecureChatError.html">SecureChatError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/SecureGroupSessionError.html">SecureGroupSessionError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/SecureSessionError.html">SecureSessionError</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/GroupSessionStorage.html">GroupSessionStorage</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/KeysRotatorProtocol.html">KeysRotatorProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/LongTermKeysStorage.html">LongTermKeysStorage</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/OneTimeKeysStorage.html">OneTimeKeysStorage</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/RatchetClientProtocol.html">RatchetClientProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SessionStorage.html">SessionStorage</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>SecureChatError</h1>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight swift"><code><span class="kd">@objc(VSRSecureChatError)</span>
+<span class="kd">public</span> <span class="kd">enum</span> <span class="kt">SecureChatError</span> <span class="p">:</span> <span class="kt">Int</span><span class="p">,</span> <span class="kt">LocalizedError</span></code></pre>
+
+                </div>
+              </div>
+            <p>SecureChat errors</p>
+
+<ul>
+<li>sessionAlreadyExists: Session with this participant already exists</li>
+<li>wrongIdentityPublicKeyCrypto: PublicKey is not VirgilPublicKey</li>
+<li>identityKeyDoesntMatch: Identity key in the Card and on Ratchet Cloud doesn&rsquo;t match</li>
+<li>invalidLongTermKeySignature: Long-term key signature is invalid</li>
+<li>invalidMessageType: Message type should be .prekey</li>
+<li>invalidKeyType: Invalid key type</li>
+<li>publicKeysSetsMismatch: PublicKeysSets mismatch</li>
+<li>invalidSessionIdLen: Session Id should be 32-byte</li>
+<li>invalidCardId: Invalid card id</li>
+<li>sessionIdMismatch: Session id mismatch</li>
+</ul>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@VirgilSDKRatchet@E@VSRSecureChatError@VSRSecureChatErrorSessionAlreadyExists"></a>
+                    <a name="//apple_ref/swift/Element/sessionAlreadyExists" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@VirgilSDKRatchet@E@VSRSecureChatError@VSRSecureChatErrorSessionAlreadyExists">sessionAlreadyExists</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">sessionAlreadyExists</span> <span class="o">=</span> <span class="mi">1</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@VirgilSDKRatchet@E@VSRSecureChatError@VSRSecureChatErrorWrongIdentityPublicKeyCrypto"></a>
+                    <a name="//apple_ref/swift/Element/wrongIdentityPublicKeyCrypto" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@VirgilSDKRatchet@E@VSRSecureChatError@VSRSecureChatErrorWrongIdentityPublicKeyCrypto">wrongIdentityPublicKeyCrypto</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">wrongIdentityPublicKeyCrypto</span> <span class="o">=</span> <span class="mi">2</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@VirgilSDKRatchet@E@VSRSecureChatError@VSRSecureChatErrorIdentityKeyDoesntMatch"></a>
+                    <a name="//apple_ref/swift/Element/identityKeyDoesntMatch" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@VirgilSDKRatchet@E@VSRSecureChatError@VSRSecureChatErrorIdentityKeyDoesntMatch">identityKeyDoesntMatch</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">identityKeyDoesntMatch</span> <span class="o">=</span> <span class="mi">3</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@VirgilSDKRatchet@E@VSRSecureChatError@VSRSecureChatErrorInvalidLongTermKeySignature"></a>
+                    <a name="//apple_ref/swift/Element/invalidLongTermKeySignature" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@VirgilSDKRatchet@E@VSRSecureChatError@VSRSecureChatErrorInvalidLongTermKeySignature">invalidLongTermKeySignature</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">invalidLongTermKeySignature</span> <span class="o">=</span> <span class="mi">4</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@VirgilSDKRatchet@E@VSRSecureChatError@VSRSecureChatErrorInvalidMessageType"></a>
+                    <a name="//apple_ref/swift/Element/invalidMessageType" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@VirgilSDKRatchet@E@VSRSecureChatError@VSRSecureChatErrorInvalidMessageType">invalidMessageType</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">invalidMessageType</span> <span class="o">=</span> <span class="mi">5</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@VirgilSDKRatchet@E@VSRSecureChatError@VSRSecureChatErrorInvalidKeyType"></a>
+                    <a name="//apple_ref/swift/Element/invalidKeyType" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@VirgilSDKRatchet@E@VSRSecureChatError@VSRSecureChatErrorInvalidKeyType">invalidKeyType</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">invalidKeyType</span> <span class="o">=</span> <span class="mi">6</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@VirgilSDKRatchet@E@VSRSecureChatError@VSRSecureChatErrorPublicKeysSetsMismatch"></a>
+                    <a name="//apple_ref/swift/Element/publicKeysSetsMismatch" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@VirgilSDKRatchet@E@VSRSecureChatError@VSRSecureChatErrorPublicKeysSetsMismatch">publicKeysSetsMismatch</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">publicKeysSetsMismatch</span> <span class="o">=</span> <span class="mi">7</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@VirgilSDKRatchet@E@VSRSecureChatError@VSRSecureChatErrorInvalidSessionIdLen"></a>
+                    <a name="//apple_ref/swift/Element/invalidSessionIdLen" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@VirgilSDKRatchet@E@VSRSecureChatError@VSRSecureChatErrorInvalidSessionIdLen">invalidSessionIdLen</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">invalidSessionIdLen</span> <span class="o">=</span> <span class="mi">8</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@VirgilSDKRatchet@E@VSRSecureChatError@VSRSecureChatErrorInvalidCardId"></a>
+                    <a name="//apple_ref/swift/Element/invalidCardId" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@VirgilSDKRatchet@E@VSRSecureChatError@VSRSecureChatErrorInvalidCardId">invalidCardId</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">invalidCardId</span> <span class="o">=</span> <span class="mi">9</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@VirgilSDKRatchet@E@VSRSecureChatError@VSRSecureChatErrorSessionIdMismatch"></a>
+                    <a name="//apple_ref/swift/Element/sessionIdMismatch" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@VirgilSDKRatchet@E@VSRSecureChatError@VSRSecureChatErrorSessionIdMismatch">sessionIdMismatch</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">sessionIdMismatch</span> <span class="o">=</span> <span class="mi">10</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:16VirgilSDKRatchet15SecureChatErrorO16errorDescriptionSSvp"></a>
+                    <a name="//apple_ref/swift/Property/errorDescription" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16VirgilSDKRatchet15SecureChatErrorO16errorDescriptionSSvp">errorDescription</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Human-readable localized description</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">errorDescription</span><span class="p">:</span> <span class="kt">String</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2019 <a class="link" href="https://virgilsecurity.com/" target="_blank" rel="external">Virgil Security</a>. All rights reserved. (Last updated: 2019-10-22)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.11.2</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

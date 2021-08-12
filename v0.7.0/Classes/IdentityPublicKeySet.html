@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>IdentityPublicKeySet Class Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Class/IdentityPublicKeySet" class="dashAnchor"></a>
+    <a title="IdentityPublicKeySet Class Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html">VirgilSDKRatchet 0.7.0 Docs</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html">VirgilSDKRatchet Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        IdentityPublicKeySet Class Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/FileSessionStorage.html">FileSessionStorage</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/IdentityPublicKeySet.html">IdentityPublicKeySet</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/KeychainLongTermKeysStorage.html">KeychainLongTermKeysStorage</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/KeysRotator.html">KeysRotator</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/LongTermKey.html">LongTermKey</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/OneTimeKey.html">OneTimeKey</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/OneTimeKeyInfo.html">OneTimeKeyInfo</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/PublicKeySet.html">PublicKeySet</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RatchetClient.html">RatchetClient</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RotationLog.html">RotationLog</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SQLiteOneTimeKeysStorage.html">SQLiteOneTimeKeysStorage</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SecureChat.html">SecureChat</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SecureChatContext.html">SecureChatContext</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SecureSession.html">SecureSession</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SignedPublicKey.html">SignedPublicKey</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ValidatePublicKeysResponse.html">ValidatePublicKeysResponse</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Enums.html">Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Enums/KeychainLongTermKeysStorageError.html">KeychainLongTermKeysStorageError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/KeysRotatorError.html">KeysRotatorError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/RatchetClientError.html">RatchetClientError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/SQLiteCardStorageError.html">SQLiteCardStorageError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/SecureChatError.html">SecureChatError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/SecureSessionError.html">SecureSessionError</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/KeysRotatorProtocol.html">KeysRotatorProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/LongTermKeysStorage.html">LongTermKeysStorage</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/OneTimeKeysStorage.html">OneTimeKeysStorage</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/RatchetClientProtocol.html">RatchetClientProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/SessionStorage.html">SessionStorage</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>IdentityPublicKeySet</h1>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight swift"><code><span class="kd">@objc(VSRIdentityPublicKeySet)</span>
+<span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">IdentityPublicKeySet</span> <span class="p">:</span> <span class="kt">NSObject</span><span class="p">,</span> <span class="kt">Decodable</span></code></pre>
+
+                </div>
+              </div>
+            <p>Set of public keys for some receiver</p>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@VirgilSDKRatchet@objc(cs)VSRIdentityPublicKeySet(py)identity"></a>
+                    <a name="//apple_ref/swift/Property/identity" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@VirgilSDKRatchet@objc(cs)VSRIdentityPublicKeySet(py)identity">identity</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Identity</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="k">let</span> <span class="nv">identity</span><span class="p">:</span> <span class="kt">String</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@VirgilSDKRatchet@objc(cs)VSRIdentityPublicKeySet(py)identityPublicKey"></a>
+                    <a name="//apple_ref/swift/Property/identityPublicKey" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@VirgilSDKRatchet@objc(cs)VSRIdentityPublicKeySet(py)identityPublicKey">identityPublicKey</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Identity public key</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="k">let</span> <span class="nv">identityPublicKey</span><span class="p">:</span> <span class="kt">Data</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@VirgilSDKRatchet@objc(cs)VSRIdentityPublicKeySet(py)longTermPublicKey"></a>
+                    <a name="//apple_ref/swift/Property/longTermPublicKey" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@VirgilSDKRatchet@objc(cs)VSRIdentityPublicKeySet(py)longTermPublicKey">longTermPublicKey</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Long-term public key</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="k">let</span> <span class="nv">longTermPublicKey</span><span class="p">:</span> <span class="kt"><a href="../Classes/SignedPublicKey.html">SignedPublicKey</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@VirgilSDKRatchet@objc(cs)VSRIdentityPublicKeySet(py)oneTimePublicKey"></a>
+                    <a name="//apple_ref/swift/Property/oneTimePublicKey" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@VirgilSDKRatchet@objc(cs)VSRIdentityPublicKeySet(py)oneTimePublicKey">oneTimePublicKey</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>One-time public key</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="k">let</span> <span class="nv">oneTimePublicKey</span><span class="p">:</span> <span class="kt">Data</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2020 <a class="link" href="https://virgilsecurity.com/" target="_blank" rel="external">Virgil Security</a>. All rights reserved. (Last updated: 2020-05-21)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>
