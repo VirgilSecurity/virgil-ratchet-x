@@ -35,6 +35,7 @@
 //
 
 import Foundation
+import Foundation
 import VirgilSDK
 
 // MARK: - Extension with objective-c methods
