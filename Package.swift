@@ -15,7 +15,7 @@ let package = Package(
     ],
 
     dependencies: [
-        .package(url: "https://github.com/VirgilSecurity/virgil-sdk-x.git", branch: "develop")
+        .package(url: "https://github.com/VirgilSecurity/virgil-sdk-x.git", branch: "develop-spm-test")
     ],
 
     targets: [

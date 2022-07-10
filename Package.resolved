@@ -23,8 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/VirgilSecurity/virgil-sdk-x.git",
       "state" : {
-        "branch" : "develop",
-        "revision" : "591bb89594b2f97dbe9bd2f7653e23fc065367f9"
+        "branch" : "develop-spm-test",
+        "revision" : "43d2acffa1523e2f18e72a8a381808dbf0be7bd1"
       }
     }
   ],
