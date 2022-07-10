@@ -25,6 +25,17 @@ let package = Package(
                 .product(name: "VirgilSDK", package: "virgil-sdk-x"),
             ],
             path: "Source"
+        ),
+        .testTarget(
+            name: "VirgilSDKRatchetTest",
+            dependencies: ["VirgilSDKRatchet"],
+            path: "Tests",
+            resources: [
+                .process("Data/TestConfig.plist")
+            ],
+            swiftSettings: [
+                .define("SPM_BUILD")
+            ]
         )
     ]
 )

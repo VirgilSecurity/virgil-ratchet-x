@@ -156,6 +156,9 @@
 		42C837652211B283008AFFD9 /* KeysRotatorProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42C837642211B283008AFFD9 /* KeysRotatorProtocol.swift */; };
 		42FC66A7220DE742009D3764 /* LongTermKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42FC66A6220DE742009D3764 /* LongTermKey.swift */; };
 		42FC66A9220DEB63009D3764 /* OneTimeKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42FC66A8220DEB63009D3764 /* OneTimeKey.swift */; };
+		973E09A4287B24F200F11F3F /* Bundle+SPM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 973E09A3287B24F200F11F3F /* Bundle+SPM.swift */; };
+		973E09A5287B24F200F11F3F /* Bundle+SPM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 973E09A3287B24F200F11F3F /* Bundle+SPM.swift */; };
+		973E09A6287B24F200F11F3F /* Bundle+SPM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 973E09A3287B24F200F11F3F /* Bundle+SPM.swift */; };
 		979DA60826AA1FF200641A06 /* VirgilCryptoFoundation.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 979DA60126AA1FF200641A06 /* VirgilCryptoFoundation.xcframework */; };
 		979DA60A26AA1FF200641A06 /* VSCCommon.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 979DA60226AA1FF200641A06 /* VSCCommon.xcframework */; };
 		979DA60C26AA1FF200641A06 /* VirgilSDK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 979DA60326AA1FF200641A06 /* VirgilSDK.xcframework */; };
@@ -378,6 +381,7 @@
 		42C837642211B283008AFFD9 /* KeysRotatorProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysRotatorProtocol.swift; sourceTree = "<group>"; };
 		42FC66A6220DE742009D3764 /* LongTermKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LongTermKey.swift; sourceTree = "<group>"; };
 		42FC66A8220DEB63009D3764 /* OneTimeKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneTimeKey.swift; sourceTree = "<group>"; };
+		973E09A3287B24F200F11F3F /* Bundle+SPM.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Bundle+SPM.swift"; sourceTree = "<group>"; };
 		979DA60126AA1FF200641A06 /* VirgilCryptoFoundation.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = VirgilCryptoFoundation.xcframework; path = Carthage/Build/VirgilCryptoFoundation.xcframework; sourceTree = "<group>"; };
 		979DA60226AA1FF200641A06 /* VSCCommon.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = VSCCommon.xcframework; path = Carthage/Build/VSCCommon.xcframework; sourceTree = "<group>"; };
 		979DA60326AA1FF200641A06 /* VirgilSDK.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = VirgilSDK.xcframework; path = Carthage/Build/VirgilSDK.xcframework; sourceTree = "<group>"; };
@@ -552,6 +556,7 @@
 			children = (
 				429D79C62178B71F003B56F8 /* Data */,
 				429D79C92178B7B2003B56F8 /* TestConfig.swift */,
+				973E09A3287B24F200F11F3F /* Bundle+SPM.swift */,
 				42AB658E21810D6C00AC4631 /* Stubs.swift */,
 				4235243C221AEA5E0079DD2A /* KeysRotatorTests.swift */,
 				42AB65A42183340A00AC4631 /* SecureSessionTests.swift */,
@@ -1133,6 +1138,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				973E09A6287B24F200F11F3F /* Bundle+SPM.swift in Sources */,
 				4235253B221EEE3B0079DD2A /* TestConfig.swift in Sources */,
 				4235253E221EEE3B0079DD2A /* SecureSessionTests.swift in Sources */,
 				4235253F221EEE3B0079DD2A /* IntegrationTests.swift in Sources */,
@@ -1147,6 +1153,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				973E09A5287B24F200F11F3F /* Bundle+SPM.swift in Sources */,
 				42352534221EEE3B0079DD2A /* TestConfig.swift in Sources */,
 				42352537221EEE3B0079DD2A /* SecureSessionTests.swift in Sources */,
 				42352538221EEE3B0079DD2A /* IntegrationTests.swift in Sources */,
@@ -1192,6 +1199,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				973E09A4287B24F200F11F3F /* Bundle+SPM.swift in Sources */,
 				42BE4E152440E4F6008BD095 /* IntegrationTests.swift in Sources */,
 				42352440221C59130079DD2A /* ClientTests.swift in Sources */,
 				42352433221AAB710079DD2A /* Utils.swift in Sources */,
