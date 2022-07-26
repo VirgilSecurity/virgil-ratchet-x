@@ -43,8 +43,7 @@ import Foundation
     @objc public let ServiceURL: String
     
     @objc public static func readFromBundle() -> TestConfig {
-        let bundle = Bundle(for: self)
-        let configFileUrl = bundle.url(forResource: "TestConfig", withExtension: "plist")!
+        let configFileUrl = Bundle.module.url(forResource: "TestConfig", withExtension: "plist")!
         let data = try! Data(contentsOf: configFileUrl)
         
         return try! PropertyListDecoder().decode(TestConfig.self, from: data)

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2021 Virgil Security Inc.
+// Copyright (C) 2015-2022 Virgil Security Inc.
 //
 // All rights reserved.
 //
@@ -35,12 +35,18 @@
 //
 
 import Foundation
-import VirgilSDK
 
-/// Protocol for keys rotation
-public protocol KeysRotatorProtocol: AnyObject {
-    /// Rotates keys
-    ///
-    /// - Returns: GenericOperation
-    func rotateKeysOperation() -> GenericOperation<RotationLog>
+// Note: SPM can access resources only by it's extended Bundle.module, which is not accessable from xcodeproj.
+// Added this trick in order to not transfer whole project & targets from xcodeproj to module structure
+
+#if !SPM_BUILD
+
+class BundleToken { }
+
+extension Foundation.Bundle {
+    static var module: Bundle = {
+        Bundle(for: BundleToken.self)
+    }()
 }
+
+#endif
