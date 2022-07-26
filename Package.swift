@@ -15,7 +15,9 @@ let package = Package(
     ],
 
     dependencies: [
-        .package(url: "https://github.com/VirgilSecurity/virgil-sdk-x.git", branch: "develop")
+        .package(url: "https://github.com/VirgilSecurity/virgil-sdk-x.git",
+                 Range(uncheckedBounds: (lower: Version(8, 1, 0), upper: Version(8, 2, 0)))),
+        .package(url: "https://github.com/VirgilSecurity/virgil-cryptowrapper-x.git", exact: .init(0, 16, 1))
     ],
 
     targets: [
@@ -23,6 +25,7 @@ let package = Package(
             name: "VirgilSDKRatchet",
             dependencies: [
                 .product(name: "VirgilSDK", package: "virgil-sdk-x"),
+                .product(name: "VirgilCryptoRatchet", package: "virgil-cryptowrapper-x")
             ],
             path: "Source"
         ),
