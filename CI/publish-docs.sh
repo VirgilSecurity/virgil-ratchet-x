@@ -40,8 +40,6 @@ DOCS_DIR="${GITHUB_WORKSPACE}/docs"
 mkdir -p ${DOCS_DIR}
 git clone -b gh-pages "${REPO_PATH}" --single-branch ${DOCS_DIR}
 
-INFOPLIST_FILE_PATH="${GITHUB_WORKSPACE}/VirgilSDKRatchet/Info.plist"
-
 # Define SDK versions
 VIRGIL_SDK_VERSION="v0.10.0"
 CURRENT_VERSION_DIR="${DOCS_DIR}/${VIRGIL_SDK_VERSION}"
