@@ -786,7 +786,7 @@
 			attributes = {
 				LastSwiftUpdateCheck = 1010;
 				LastUpgradeCheck = 1000;
-				ORGANIZATIONNAME = "Oleksandr Deundiak";
+				ORGANIZATIONNAME = "Virgil Security Inc";
 				TargetAttributes = {
 					421B43E72190AF5900D4F496 = {
 						CreatedOnToolsVersion = 10.1;
