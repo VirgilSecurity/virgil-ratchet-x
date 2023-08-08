@@ -1918,7 +1918,7 @@
 			repositoryURL = "https://github.com/VirgilSecurity/virgil-sdk-x";
 			requirement = {
 				kind = exactVersion;
-				version = "9.0.0-dev.1";
+				version = 9.0.0;
 			};
 		};
 		F44C27812A82F24400EC1F75 /* XCRemoteSwiftPackageReference "virgil-crypto-c" */ = {
