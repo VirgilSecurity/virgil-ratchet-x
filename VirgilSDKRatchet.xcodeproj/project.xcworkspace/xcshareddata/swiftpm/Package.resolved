@@ -21,7 +21,7 @@
     {
       "identity" : "virgil-sdk-x",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/VirgilSecurity/virgil-sdk-x.git",
+      "location" : "https://github.com/VirgilSecurity/virgil-sdk-x",
       "state" : {
         "revision" : "7165aafa08be93a874097033ec903bac447e4b9b",
         "version" : "9.0.0"

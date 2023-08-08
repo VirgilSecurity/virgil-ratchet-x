@@ -159,55 +159,14 @@
 		973E09A4287B24F200F11F3F /* Bundle+SPM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 973E09A3287B24F200F11F3F /* Bundle+SPM.swift */; };
 		973E09A5287B24F200F11F3F /* Bundle+SPM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 973E09A3287B24F200F11F3F /* Bundle+SPM.swift */; };
 		973E09A6287B24F200F11F3F /* Bundle+SPM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 973E09A3287B24F200F11F3F /* Bundle+SPM.swift */; };
-		979DA60826AA1FF200641A06 /* VirgilCryptoFoundation.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 979DA60126AA1FF200641A06 /* VirgilCryptoFoundation.xcframework */; };
-		979DA60A26AA1FF200641A06 /* VSCCommon.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 979DA60226AA1FF200641A06 /* VSCCommon.xcframework */; };
-		979DA60C26AA1FF200641A06 /* VirgilSDK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 979DA60326AA1FF200641A06 /* VirgilSDK.xcframework */; };
-		979DA60E26AA1FF200641A06 /* VirgilCrypto.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 979DA60426AA1FF200641A06 /* VirgilCrypto.xcframework */; };
-		979DA61026AA1FF200641A06 /* VirgilCryptoRatchet.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 979DA60526AA1FF200641A06 /* VirgilCryptoRatchet.xcframework */; };
-		979DA61226AA1FF200641A06 /* VSCRatchet.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 979DA60626AA1FF200641A06 /* VSCRatchet.xcframework */; };
-		979DA61426AA1FF200641A06 /* VSCFoundation.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 979DA60726AA1FF200641A06 /* VSCFoundation.xcframework */; };
-		979DA61726AA200A00641A06 /* VirgilCrypto.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 979DA60426AA1FF200641A06 /* VirgilCrypto.xcframework */; };
-		979DA61926AA200A00641A06 /* VirgilCryptoFoundation.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 979DA60126AA1FF200641A06 /* VirgilCryptoFoundation.xcframework */; };
-		979DA61B26AA200A00641A06 /* VirgilCryptoRatchet.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 979DA60526AA1FF200641A06 /* VirgilCryptoRatchet.xcframework */; };
-		979DA61D26AA200A00641A06 /* VirgilSDK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 979DA60326AA1FF200641A06 /* VirgilSDK.xcframework */; };
-		979DA61F26AA200B00641A06 /* VSCCommon.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 979DA60226AA1FF200641A06 /* VSCCommon.xcframework */; };
-		979DA62126AA200B00641A06 /* VSCFoundation.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 979DA60726AA1FF200641A06 /* VSCFoundation.xcframework */; };
-		979DA62326AA200B00641A06 /* VSCRatchet.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 979DA60626AA1FF200641A06 /* VSCRatchet.xcframework */; };
-		979DA62626AA202300641A06 /* VirgilCrypto.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 979DA60426AA1FF200641A06 /* VirgilCrypto.xcframework */; };
-		979DA62826AA202300641A06 /* VirgilCryptoFoundation.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 979DA60126AA1FF200641A06 /* VirgilCryptoFoundation.xcframework */; };
-		979DA62A26AA202300641A06 /* VirgilCryptoRatchet.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 979DA60526AA1FF200641A06 /* VirgilCryptoRatchet.xcframework */; };
-		979DA62C26AA202300641A06 /* VirgilSDK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 979DA60326AA1FF200641A06 /* VirgilSDK.xcframework */; };
-		979DA62E26AA202300641A06 /* VSCCommon.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 979DA60226AA1FF200641A06 /* VSCCommon.xcframework */; };
-		979DA63026AA202300641A06 /* VSCFoundation.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 979DA60726AA1FF200641A06 /* VSCFoundation.xcframework */; };
-		979DA63226AA202300641A06 /* VSCRatchet.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 979DA60626AA1FF200641A06 /* VSCRatchet.xcframework */; };
-		979DA63526AA203600641A06 /* VirgilCrypto.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 979DA60426AA1FF200641A06 /* VirgilCrypto.xcframework */; };
-		979DA63726AA203600641A06 /* VirgilCryptoFoundation.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 979DA60126AA1FF200641A06 /* VirgilCryptoFoundation.xcframework */; };
-		979DA63926AA203600641A06 /* VirgilCryptoRatchet.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 979DA60526AA1FF200641A06 /* VirgilCryptoRatchet.xcframework */; };
-		979DA63B26AA203600641A06 /* VirgilSDK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 979DA60326AA1FF200641A06 /* VirgilSDK.xcframework */; };
-		979DA63D26AA203600641A06 /* VSCCommon.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 979DA60226AA1FF200641A06 /* VSCCommon.xcframework */; };
-		979DA63F26AA203600641A06 /* VSCFoundation.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 979DA60726AA1FF200641A06 /* VSCFoundation.xcframework */; };
-		979DA64126AA203600641A06 /* VSCRatchet.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 979DA60626AA1FF200641A06 /* VSCRatchet.xcframework */; };
-		979DA64426AA208100641A06 /* VirgilCrypto.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 979DA60426AA1FF200641A06 /* VirgilCrypto.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		979DA64526AA208100641A06 /* VirgilCryptoFoundation.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 979DA60126AA1FF200641A06 /* VirgilCryptoFoundation.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		979DA64626AA208100641A06 /* VirgilCryptoRatchet.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 979DA60526AA1FF200641A06 /* VirgilCryptoRatchet.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		979DA64726AA208100641A06 /* VirgilSDK.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 979DA60326AA1FF200641A06 /* VirgilSDK.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		979DA64826AA208100641A06 /* VSCCommon.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 979DA60226AA1FF200641A06 /* VSCCommon.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		979DA64926AA208100641A06 /* VSCFoundation.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 979DA60726AA1FF200641A06 /* VSCFoundation.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		979DA64A26AA208100641A06 /* VSCRatchet.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 979DA60626AA1FF200641A06 /* VSCRatchet.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		979DA64B26AA209A00641A06 /* VirgilCrypto.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 979DA60426AA1FF200641A06 /* VirgilCrypto.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		979DA64C26AA209A00641A06 /* VirgilCryptoFoundation.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 979DA60126AA1FF200641A06 /* VirgilCryptoFoundation.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		979DA64D26AA209A00641A06 /* VirgilCryptoRatchet.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 979DA60526AA1FF200641A06 /* VirgilCryptoRatchet.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		979DA64E26AA209A00641A06 /* VirgilSDK.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 979DA60326AA1FF200641A06 /* VirgilSDK.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		979DA64F26AA209A00641A06 /* VSCCommon.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 979DA60226AA1FF200641A06 /* VSCCommon.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		979DA65026AA209A00641A06 /* VSCFoundation.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 979DA60726AA1FF200641A06 /* VSCFoundation.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		979DA65126AA209A00641A06 /* VSCRatchet.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 979DA60626AA1FF200641A06 /* VSCRatchet.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		979DA65226AA20A000641A06 /* VirgilCrypto.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 979DA60426AA1FF200641A06 /* VirgilCrypto.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		979DA65326AA20A000641A06 /* VirgilCryptoFoundation.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 979DA60126AA1FF200641A06 /* VirgilCryptoFoundation.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		979DA65426AA20A000641A06 /* VirgilCryptoRatchet.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 979DA60526AA1FF200641A06 /* VirgilCryptoRatchet.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		979DA65526AA20A000641A06 /* VirgilSDK.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 979DA60326AA1FF200641A06 /* VirgilSDK.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		979DA65626AA20A000641A06 /* VSCCommon.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 979DA60226AA1FF200641A06 /* VSCCommon.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		979DA65726AA20A000641A06 /* VSCFoundation.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 979DA60726AA1FF200641A06 /* VSCFoundation.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		979DA65826AA20A000641A06 /* VSCRatchet.xcframework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 979DA60626AA1FF200641A06 /* VSCRatchet.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F44C27802A82F18B00EC1F75 /* VirgilSDK in Frameworks */ = {isa = PBXBuildFile; productRef = F44C277F2A82F18B00EC1F75 /* VirgilSDK */; };
+		F44C27832A82F24400EC1F75 /* VirgilCryptoRatchet in Frameworks */ = {isa = PBXBuildFile; productRef = F44C27822A82F24400EC1F75 /* VirgilCryptoRatchet */; };
+		F44C27852A82F25A00EC1F75 /* VirgilSDK in Frameworks */ = {isa = PBXBuildFile; productRef = F44C27842A82F25A00EC1F75 /* VirgilSDK */; };
+		F44C27872A82F25A00EC1F75 /* VirgilCryptoRatchet in Frameworks */ = {isa = PBXBuildFile; productRef = F44C27862A82F25A00EC1F75 /* VirgilCryptoRatchet */; };
+		F44C27892A82F26100EC1F75 /* VirgilSDK in Frameworks */ = {isa = PBXBuildFile; productRef = F44C27882A82F26100EC1F75 /* VirgilSDK */; };
+		F44C278B2A82F26100EC1F75 /* VirgilCryptoRatchet in Frameworks */ = {isa = PBXBuildFile; productRef = F44C278A2A82F26100EC1F75 /* VirgilCryptoRatchet */; };
+		F44C278D2A82F26800EC1F75 /* VirgilSDK in Frameworks */ = {isa = PBXBuildFile; productRef = F44C278C2A82F26800EC1F75 /* VirgilSDK */; };
+		F44C278F2A82F26800EC1F75 /* VirgilCryptoRatchet in Frameworks */ = {isa = PBXBuildFile; productRef = F44C278E2A82F26800EC1F75 /* VirgilCryptoRatchet */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -283,13 +242,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				979DA65226AA20A000641A06 /* VirgilCrypto.xcframework in CopyFiles */,
-				979DA65326AA20A000641A06 /* VirgilCryptoFoundation.xcframework in CopyFiles */,
-				979DA65426AA20A000641A06 /* VirgilCryptoRatchet.xcframework in CopyFiles */,
-				979DA65526AA20A000641A06 /* VirgilSDK.xcframework in CopyFiles */,
-				979DA65626AA20A000641A06 /* VSCCommon.xcframework in CopyFiles */,
-				979DA65726AA20A000641A06 /* VSCFoundation.xcframework in CopyFiles */,
-				979DA65826AA20A000641A06 /* VSCRatchet.xcframework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -299,13 +251,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				979DA64B26AA209A00641A06 /* VirgilCrypto.xcframework in CopyFiles */,
-				979DA64C26AA209A00641A06 /* VirgilCryptoFoundation.xcframework in CopyFiles */,
-				979DA64D26AA209A00641A06 /* VirgilCryptoRatchet.xcframework in CopyFiles */,
-				979DA64E26AA209A00641A06 /* VirgilSDK.xcframework in CopyFiles */,
-				979DA64F26AA209A00641A06 /* VSCCommon.xcframework in CopyFiles */,
-				979DA65026AA209A00641A06 /* VSCFoundation.xcframework in CopyFiles */,
-				979DA65126AA209A00641A06 /* VSCRatchet.xcframework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -315,13 +260,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				979DA64426AA208100641A06 /* VirgilCrypto.xcframework in CopyFiles */,
-				979DA64526AA208100641A06 /* VirgilCryptoFoundation.xcframework in CopyFiles */,
-				979DA64626AA208100641A06 /* VirgilCryptoRatchet.xcframework in CopyFiles */,
-				979DA64726AA208100641A06 /* VirgilSDK.xcframework in CopyFiles */,
-				979DA64826AA208100641A06 /* VSCCommon.xcframework in CopyFiles */,
-				979DA64926AA208100641A06 /* VSCFoundation.xcframework in CopyFiles */,
-				979DA64A26AA208100641A06 /* VSCRatchet.xcframework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -355,7 +293,6 @@
 		4235251B221EEDCB0079DD2A /* VirgilSDKRatchetTests tvOS.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "VirgilSDKRatchetTests tvOS.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		42352529221EEDE70079DD2A /* VirgilSDKRatchetTests macOS.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "VirgilSDKRatchetTests macOS.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		424FAA062177506100622A3B /* VirgilSDKRatchet.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = VirgilSDKRatchet.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		424FAA0A2177506100622A3B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		424FAA0F2177506100622A3B /* VirgilSDKRatchetTests iOS.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "VirgilSDKRatchetTests iOS.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		424FAAA82177520200622A3B /* SecureChat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecureChat.swift; sourceTree = "<group>"; };
 		424FAAA92177520200622A3B /* SecureSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecureSession.swift; sourceTree = "<group>"; };
@@ -382,13 +319,6 @@
 		42FC66A6220DE742009D3764 /* LongTermKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LongTermKey.swift; sourceTree = "<group>"; };
 		42FC66A8220DEB63009D3764 /* OneTimeKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneTimeKey.swift; sourceTree = "<group>"; };
 		973E09A3287B24F200F11F3F /* Bundle+SPM.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Bundle+SPM.swift"; sourceTree = "<group>"; };
-		979DA60126AA1FF200641A06 /* VirgilCryptoFoundation.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = VirgilCryptoFoundation.xcframework; path = Carthage/Build/VirgilCryptoFoundation.xcframework; sourceTree = "<group>"; };
-		979DA60226AA1FF200641A06 /* VSCCommon.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = VSCCommon.xcframework; path = Carthage/Build/VSCCommon.xcframework; sourceTree = "<group>"; };
-		979DA60326AA1FF200641A06 /* VirgilSDK.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = VirgilSDK.xcframework; path = Carthage/Build/VirgilSDK.xcframework; sourceTree = "<group>"; };
-		979DA60426AA1FF200641A06 /* VirgilCrypto.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = VirgilCrypto.xcframework; path = Carthage/Build/VirgilCrypto.xcframework; sourceTree = "<group>"; };
-		979DA60526AA1FF200641A06 /* VirgilCryptoRatchet.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = VirgilCryptoRatchet.xcframework; path = Carthage/Build/VirgilCryptoRatchet.xcframework; sourceTree = "<group>"; };
-		979DA60626AA1FF200641A06 /* VSCRatchet.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = VSCRatchet.xcframework; path = Carthage/Build/VSCRatchet.xcframework; sourceTree = "<group>"; };
-		979DA60726AA1FF200641A06 /* VSCFoundation.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = VSCFoundation.xcframework; path = Carthage/Build/VSCFoundation.xcframework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -403,13 +333,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				979DA61F26AA200B00641A06 /* VSCCommon.xcframework in Frameworks */,
-				979DA61926AA200A00641A06 /* VirgilCryptoFoundation.xcframework in Frameworks */,
-				979DA62326AA200B00641A06 /* VSCRatchet.xcframework in Frameworks */,
-				979DA62126AA200B00641A06 /* VSCFoundation.xcframework in Frameworks */,
-				979DA61B26AA200A00641A06 /* VirgilCryptoRatchet.xcframework in Frameworks */,
-				979DA61726AA200A00641A06 /* VirgilCrypto.xcframework in Frameworks */,
-				979DA61D26AA200A00641A06 /* VirgilSDK.xcframework in Frameworks */,
+				F44C27872A82F25A00EC1F75 /* VirgilCryptoRatchet in Frameworks */,
+				F44C27852A82F25A00EC1F75 /* VirgilSDK in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -417,13 +342,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				979DA62826AA202300641A06 /* VirgilCryptoFoundation.xcframework in Frameworks */,
-				979DA62626AA202300641A06 /* VirgilCrypto.xcframework in Frameworks */,
-				979DA62E26AA202300641A06 /* VSCCommon.xcframework in Frameworks */,
-				979DA62A26AA202300641A06 /* VirgilCryptoRatchet.xcframework in Frameworks */,
-				979DA62C26AA202300641A06 /* VirgilSDK.xcframework in Frameworks */,
-				979DA63026AA202300641A06 /* VSCFoundation.xcframework in Frameworks */,
-				979DA63226AA202300641A06 /* VSCRatchet.xcframework in Frameworks */,
+				F44C278B2A82F26100EC1F75 /* VirgilCryptoRatchet in Frameworks */,
+				F44C27892A82F26100EC1F75 /* VirgilSDK in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -431,13 +351,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				979DA63726AA203600641A06 /* VirgilCryptoFoundation.xcframework in Frameworks */,
-				979DA63526AA203600641A06 /* VirgilCrypto.xcframework in Frameworks */,
-				979DA63D26AA203600641A06 /* VSCCommon.xcframework in Frameworks */,
-				979DA63926AA203600641A06 /* VirgilCryptoRatchet.xcframework in Frameworks */,
-				979DA63B26AA203600641A06 /* VirgilSDK.xcframework in Frameworks */,
-				979DA63F26AA203600641A06 /* VSCFoundation.xcframework in Frameworks */,
-				979DA64126AA203600641A06 /* VSCRatchet.xcframework in Frameworks */,
+				F44C278F2A82F26800EC1F75 /* VirgilCryptoRatchet in Frameworks */,
+				F44C278D2A82F26800EC1F75 /* VirgilSDK in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -468,13 +383,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				979DA61226AA1FF200641A06 /* VSCRatchet.xcframework in Frameworks */,
-				979DA60E26AA1FF200641A06 /* VirgilCrypto.xcframework in Frameworks */,
-				979DA60A26AA1FF200641A06 /* VSCCommon.xcframework in Frameworks */,
-				979DA61426AA1FF200641A06 /* VSCFoundation.xcframework in Frameworks */,
-				979DA60826AA1FF200641A06 /* VirgilCryptoFoundation.xcframework in Frameworks */,
-				979DA60C26AA1FF200641A06 /* VirgilSDK.xcframework in Frameworks */,
-				979DA61026AA1FF200641A06 /* VirgilCryptoRatchet.xcframework in Frameworks */,
+				F44C27832A82F24400EC1F75 /* VirgilCryptoRatchet in Frameworks */,
+				F44C27802A82F18B00EC1F75 /* VirgilSDK in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -517,7 +427,6 @@
 		424FA9FC2177506100622A3B = {
 			isa = PBXGroup;
 			children = (
-				424FAA082177506100622A3B /* VirgilSDKRatchet */,
 				424FAAA52177520200622A3B /* Source */,
 				424FAA132177506100622A3B /* Test */,
 				421B43E92190AF5900D4F496 /* RatchetTestApp iOS */,
@@ -543,14 +452,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		424FAA082177506100622A3B /* VirgilSDKRatchet */ = {
-			isa = PBXGroup;
-			children = (
-				424FAA0A2177506100622A3B /* Info.plist */,
-			);
-			path = VirgilSDKRatchet;
-			sourceTree = "<group>";
-		};
 		424FAA132177506100622A3B /* Test */ = {
 			isa = PBXGroup;
 			children = (
@@ -571,13 +472,6 @@
 		424FAA972177511100622A3B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				979DA60426AA1FF200641A06 /* VirgilCrypto.xcframework */,
-				979DA60126AA1FF200641A06 /* VirgilCryptoFoundation.xcframework */,
-				979DA60526AA1FF200641A06 /* VirgilCryptoRatchet.xcframework */,
-				979DA60326AA1FF200641A06 /* VirgilSDK.xcframework */,
-				979DA60226AA1FF200641A06 /* VSCCommon.xcframework */,
-				979DA60726AA1FF200641A06 /* VSCFoundation.xcframework */,
-				979DA60626AA1FF200641A06 /* VSCRatchet.xcframework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -734,6 +628,10 @@
 			dependencies = (
 			);
 			name = "VirgilSDKRatchet macOS";
+			packageProductDependencies = (
+				F44C27842A82F25A00EC1F75 /* VirgilSDK */,
+				F44C27862A82F25A00EC1F75 /* VirgilCryptoRatchet */,
+			);
 			productName = "VirgilSDKRatchet macOS";
 			productReference = 4235244B221EE9360079DD2A /* VirgilSDKRatchet.framework */;
 			productType = "com.apple.product-type.framework";
@@ -752,6 +650,10 @@
 			dependencies = (
 			);
 			name = "VirgilSDKRatchet tvOS";
+			packageProductDependencies = (
+				F44C27882A82F26100EC1F75 /* VirgilSDK */,
+				F44C278A2A82F26100EC1F75 /* VirgilCryptoRatchet */,
+			);
 			productName = "VirgilSDKRatchet tvOS";
 			productReference = 42352458221EE9460079DD2A /* VirgilSDKRatchet.framework */;
 			productType = "com.apple.product-type.framework";
@@ -770,6 +672,10 @@
 			dependencies = (
 			);
 			name = "VirgilSDKRatchet watchOS";
+			packageProductDependencies = (
+				F44C278C2A82F26800EC1F75 /* VirgilSDK */,
+				F44C278E2A82F26800EC1F75 /* VirgilCryptoRatchet */,
+			);
 			productName = "VirgilSDKRatchet watchOS";
 			productReference = 42352465221EE9530079DD2A /* VirgilSDKRatchet.framework */;
 			productType = "com.apple.product-type.framework";
@@ -844,6 +750,10 @@
 			dependencies = (
 			);
 			name = "VirgilSDKRatchet iOS";
+			packageProductDependencies = (
+				F44C277F2A82F18B00EC1F75 /* VirgilSDK */,
+				F44C27822A82F24400EC1F75 /* VirgilCryptoRatchet */,
+			);
 			productName = VirgilSDKRatchet;
 			productReference = 424FAA062177506100622A3B /* VirgilSDKRatchet.framework */;
 			productType = "com.apple.product-type.framework";
@@ -876,7 +786,7 @@
 			attributes = {
 				LastSwiftUpdateCheck = 1010;
 				LastUpgradeCheck = 1000;
-				ORGANIZATIONNAME = "Oleksandr Deundiak";
+				ORGANIZATIONNAME = "Virgil Security Inc";
 				TargetAttributes = {
 					421B43E72190AF5900D4F496 = {
 						CreatedOnToolsVersion = 10.1;
@@ -930,6 +840,10 @@
 				Base,
 			);
 			mainGroup = 424FA9FC2177506100622A3B;
+			packageReferences = (
+				F44C277E2A82F18B00EC1F75 /* XCRemoteSwiftPackageReference "virgil-sdk-x" */,
+				F44C27812A82F24400EC1F75 /* XCRemoteSwiftPackageReference "virgil-crypto-c" */,
+			);
 			productRefGroup = 424FAA072177506100622A3B /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -1293,13 +1207,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				INFOPLIST_FILE = "RatchetTestApp iOS/Info.plist";
+				CURRENT_PROJECT_VERSION = 0.10.0;
+				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MARKETING_VERSION = 0.10.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.virgilsecurity.RatchetTestApp-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -1312,13 +1228,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				INFOPLIST_FILE = "RatchetTestApp iOS/Info.plist";
+				CURRENT_PROJECT_VERSION = 0.10.0;
+				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MARKETING_VERSION = 0.10.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.virgilsecurity.RatchetTestApp-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -1333,23 +1251,22 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 0.10.0;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				FRAMEWORK_VERSION = A;
-				INFOPLIST_FILE = VirgilSDKRatchet/Info.plist;
+				GENERATE_INFOPLIST_FILE = YES;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MARKETING_VERSION = 0.10.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.virgilsecurity.VirgilSDKRatchet;
 				PRODUCT_NAME = VirgilSDKRatchet;
 				SDKROOT = macosx;
@@ -1365,23 +1282,22 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 0.10.0;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				FRAMEWORK_VERSION = A;
-				INFOPLIST_FILE = VirgilSDKRatchet/Info.plist;
+				GENERATE_INFOPLIST_FILE = YES;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MARKETING_VERSION = 0.10.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.virgilsecurity.VirgilSDKRatchet;
 				PRODUCT_NAME = VirgilSDKRatchet;
 				SDKROOT = macosx;
@@ -1396,28 +1312,27 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 0.10.0;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build",
-				);
-				INFOPLIST_FILE = VirgilSDKRatchet/Info.plist;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				GENERATE_INFOPLIST_FILE = YES;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MARKETING_VERSION = 0.10.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.virgilsecurity.VirgilSDKRatchet;
 				PRODUCT_NAME = VirgilSDKRatchet;
 				SDKROOT = appletvos;
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 3;
-				TVOS_DEPLOYMENT_TARGET = 9.0;
+				TVOS_DEPLOYMENT_TARGET = 11.0;
 			};
 			name = Debug;
 		};
@@ -1427,28 +1342,27 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 0.10.0;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build",
-				);
-				INFOPLIST_FILE = VirgilSDKRatchet/Info.plist;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				GENERATE_INFOPLIST_FILE = YES;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MARKETING_VERSION = 0.10.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.virgilsecurity.VirgilSDKRatchet;
 				PRODUCT_NAME = VirgilSDKRatchet;
 				SDKROOT = appletvos;
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 3;
-				TVOS_DEPLOYMENT_TARGET = 9.0;
+				TVOS_DEPLOYMENT_TARGET = 11.0;
 			};
 			name = Release;
 		};
@@ -1458,28 +1372,27 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 0.10.0;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build",
-				);
-				INFOPLIST_FILE = VirgilSDKRatchet/Info.plist;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				GENERATE_INFOPLIST_FILE = YES;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MARKETING_VERSION = 0.10.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.virgilsecurity.VirgilSDKRatchet;
 				PRODUCT_NAME = VirgilSDKRatchet;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 2.0;
+				WATCHOS_DEPLOYMENT_TARGET = 4.0;
 			};
 			name = Debug;
 		};
@@ -1489,28 +1402,27 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 0.10.0;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build",
-				);
-				INFOPLIST_FILE = VirgilSDKRatchet/Info.plist;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				GENERATE_INFOPLIST_FILE = YES;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MARKETING_VERSION = 0.10.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.virgilsecurity.VirgilSDKRatchet;
 				PRODUCT_NAME = VirgilSDKRatchet;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 2.0;
+				WATCHOS_DEPLOYMENT_TARGET = 4.0;
 			};
 			name = Release;
 		};
@@ -1536,12 +1448,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_STYLE = Automatic;
-				INFOPLIST_FILE = "RatchetTestApp tvOS/Info.plist";
+				CURRENT_PROJECT_VERSION = 0.10.0;
+				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MARKETING_VERSION = 0.10.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.virgilsecurity.RatchetTestApp-tvOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
@@ -1557,12 +1471,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_STYLE = Automatic;
-				INFOPLIST_FILE = "RatchetTestApp tvOS/Info.plist";
+				CURRENT_PROJECT_VERSION = 0.10.0;
+				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MARKETING_VERSION = 0.10.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.virgilsecurity.RatchetTestApp-tvOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
@@ -1576,16 +1492,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build",
-				);
+				CURRENT_PROJECT_VERSION = 0.10.0;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MARKETING_VERSION = 0.10.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.virgilsecurity.VirgilSDKRatchetTests-tvOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
@@ -1600,16 +1516,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build",
-				);
+				CURRENT_PROJECT_VERSION = 0.10.0;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MARKETING_VERSION = 0.10.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.virgilsecurity.VirgilSDKRatchetTests-tvOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
@@ -1626,16 +1542,16 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build",
-				);
+				CURRENT_PROJECT_VERSION = 0.10.0;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 					"@loader_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MARKETING_VERSION = 0.10.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.virgilsecurity.VirgilSDKRatchetTests-macOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -1649,16 +1565,16 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build",
-				);
+				CURRENT_PROJECT_VERSION = 0.10.0;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 					"@loader_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MARKETING_VERSION = 0.10.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.virgilsecurity.VirgilSDKRatchetTests-macOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -1670,7 +1586,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -1688,7 +1603,6 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
@@ -1735,7 +1649,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -1753,7 +1666,6 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
@@ -1796,22 +1708,21 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 0.10.0;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build",
-				);
-				INFOPLIST_FILE = VirgilSDKRatchet/Info.plist;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				GENERATE_INFOPLIST_FILE = YES;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MARKETING_VERSION = 0.10.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.virgilsecurity.VirgilSDKRatchet;
 				PRODUCT_MODULE_NAME = VirgilSDKRatchet;
 				PRODUCT_NAME = VirgilSDKRatchet;
@@ -1827,22 +1738,21 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 0.10.0;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build",
-				);
-				INFOPLIST_FILE = VirgilSDKRatchet/Info.plist;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				GENERATE_INFOPLIST_FILE = YES;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MARKETING_VERSION = 0.10.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.virgilsecurity.VirgilSDKRatchet;
 				PRODUCT_MODULE_NAME = VirgilSDKRatchet;
 				PRODUCT_NAME = VirgilSDKRatchet;
@@ -1857,16 +1767,16 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build",
-				);
+				CURRENT_PROJECT_VERSION = 0.10.0;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MARKETING_VERSION = 0.10.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.virgilsecurity.VirgilSDKRatchetTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -1880,16 +1790,16 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build",
-				);
+				CURRENT_PROJECT_VERSION = 0.10.0;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MARKETING_VERSION = 0.10.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.virgilsecurity.VirgilSDKRatchetTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -2001,6 +1911,68 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		F44C277E2A82F18B00EC1F75 /* XCRemoteSwiftPackageReference "virgil-sdk-x" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/VirgilSecurity/virgil-sdk-x";
+			requirement = {
+				kind = exactVersion;
+				version = 9.0.0;
+			};
+		};
+		F44C27812A82F24400EC1F75 /* XCRemoteSwiftPackageReference "virgil-crypto-c" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/VirgilSecurity/virgil-crypto-c";
+			requirement = {
+				kind = exactVersion;
+				version = 0.17.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F44C277F2A82F18B00EC1F75 /* VirgilSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F44C277E2A82F18B00EC1F75 /* XCRemoteSwiftPackageReference "virgil-sdk-x" */;
+			productName = VirgilSDK;
+		};
+		F44C27822A82F24400EC1F75 /* VirgilCryptoRatchet */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F44C27812A82F24400EC1F75 /* XCRemoteSwiftPackageReference "virgil-crypto-c" */;
+			productName = VirgilCryptoRatchet;
+		};
+		F44C27842A82F25A00EC1F75 /* VirgilSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F44C277E2A82F18B00EC1F75 /* XCRemoteSwiftPackageReference "virgil-sdk-x" */;
+			productName = VirgilSDK;
+		};
+		F44C27862A82F25A00EC1F75 /* VirgilCryptoRatchet */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F44C27812A82F24400EC1F75 /* XCRemoteSwiftPackageReference "virgil-crypto-c" */;
+			productName = VirgilCryptoRatchet;
+		};
+		F44C27882A82F26100EC1F75 /* VirgilSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F44C277E2A82F18B00EC1F75 /* XCRemoteSwiftPackageReference "virgil-sdk-x" */;
+			productName = VirgilSDK;
+		};
+		F44C278A2A82F26100EC1F75 /* VirgilCryptoRatchet */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F44C27812A82F24400EC1F75 /* XCRemoteSwiftPackageReference "virgil-crypto-c" */;
+			productName = VirgilCryptoRatchet;
+		};
+		F44C278C2A82F26800EC1F75 /* VirgilSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F44C277E2A82F18B00EC1F75 /* XCRemoteSwiftPackageReference "virgil-sdk-x" */;
+			productName = VirgilSDK;
+		};
+		F44C278E2A82F26800EC1F75 /* VirgilCryptoRatchet */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F44C27812A82F24400EC1F75 /* XCRemoteSwiftPackageReference "virgil-crypto-c" */;
+			productName = VirgilCryptoRatchet;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 424FA9FD2177506100622A3B /* Project object */;
 }
