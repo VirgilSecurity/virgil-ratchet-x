@@ -48,7 +48,7 @@ To integrate Virgil Ratchet SDK into your Xcode project using CocoaPods, specify
 target '<Your Target Name>' do
 use_frameworks!
 
-pod 'VirgilSDKRatchet', '~> 0.8.0'
+pod 'VirgilSDKRatchet', '~> 0.10.1'
 end
 ```
 
