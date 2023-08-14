@@ -3,7 +3,8 @@ name: tests
 on:
   push:
     branches:
-      - develop
+      - '**'
+      - '!master'
 
 jobs:
   Tests:
