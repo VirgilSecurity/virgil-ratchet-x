@@ -1918,7 +1918,7 @@
 			repositoryURL = "https://github.com/VirgilSecurity/virgil-sdk-x";
 			requirement = {
 				kind = exactVersion;
-				version = 9.0.0;
+				version = 9.0.1;
 			};
 		};
 		F44C27812A82F24400EC1F75 /* XCRemoteSwiftPackageReference "virgil-crypto-c" */ = {
@@ -1926,7 +1926,7 @@
 			repositoryURL = "https://github.com/VirgilSecurity/virgil-crypto-c";
 			requirement = {
 				kind = exactVersion;
-				version = 0.17.0;
+				version = 0.17.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

@@ -26,7 +26,7 @@ Ratchet SDK interacts with the [PFS service](https://developer.virgilsecurity.co
 
 ## Installation
 
-Virgil Ratchet SDK is provided as a set of frameworks distributed via Carthage and CocoaPods.
+Virgil Ratchet SDK is provided as a set of frameworks distributed via SPM and CocoaPods.
 
 All frameworks are available for:
 - iOS 9.0+
