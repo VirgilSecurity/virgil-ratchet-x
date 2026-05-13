@@ -102,7 +102,7 @@ import VirgilCrypto
         self.longTermKeysStorage = longTermKeysStorage
         self.oneTimeKeysStorage = oneTimeKeysStorage
         self.client = client
-        self.keyPairType = .curve25519
+        self.keyPairType = .curve25519Round5
 
         super.init()
     }
