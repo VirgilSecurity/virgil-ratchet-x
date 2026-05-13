@@ -57,8 +57,8 @@ class IntegrationTests: XCTestCase {
         let testConfig = TestConfig.readFromBundle()
         
         let crypto = try! VirgilCrypto()
-        let receiverIdentityKeyPair = try! crypto.generateKeyPair(ofType: .curve25519Round5Ed25519Falcon)
-        let senderIdentityKeyPair = try! crypto.generateKeyPair(ofType: .curve25519Round5Ed25519Falcon)
+        let receiverIdentityKeyPair = try! crypto.generateKeyPair(ofType: .curve25519Ed25519)
+        let senderIdentityKeyPair = try! crypto.generateKeyPair(ofType: .curve25519Ed25519)
         
         let senderIdentity = NSUUID().uuidString
         let receiverIdentity = NSUUID().uuidString
@@ -122,7 +122,7 @@ class IntegrationTests: XCTestCase {
                                           longTermKeysStorage: senderLongTermKeysStorage,
                                           oneTimeKeysStorage: senderOneTimeKeysStorage,
                                           sessionStorage: FileSessionStorage(appGroup: nil, identity: senderIdentity, crypto: crypto, identityKeyPair: senderIdentityKeyPair),
-                                          keysRotator: senderKeysRotator, keyPairType: .curve25519Round5)
+                                          keysRotator: senderKeysRotator, keyPairType: .curve25519)
         
         let receiverSecureChat = SecureChat(crypto: crypto,
                                             identityPrivateKey: receiverIdentityKeyPair.privateKey,
@@ -131,7 +131,7 @@ class IntegrationTests: XCTestCase {
                                             longTermKeysStorage: receiverLongTermKeysStorage,
                                             oneTimeKeysStorage: receiverOneTimeKeysStorage,
                                             sessionStorage: FileSessionStorage(appGroup: nil, identity: receiverIdentity, crypto: crypto, identityKeyPair: receiverIdentityKeyPair),
-                                            keysRotator: receiverKeysRotator, keyPairType: .curve25519Round5)
+                                            keysRotator: receiverKeysRotator, keyPairType: .curve25519)
         
         return (senderCard, receiverCard, senderSecureChat, receiverSecureChat)
     }

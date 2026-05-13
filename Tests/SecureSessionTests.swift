@@ -55,8 +55,8 @@ class SecureSessionTests: XCTestCase {
         let testConfig = TestConfig.readFromBundle()
         
         let crypto = try! VirgilCrypto()
-        let receiverIdentityKeyPair = try! crypto.generateKeyPair(ofType: .curve25519Round5Ed25519Falcon)
-        let senderIdentityKeyPair = try! crypto.generateKeyPair(ofType: .curve25519Round5Ed25519Falcon)
+        let receiverIdentityKeyPair = try! crypto.generateKeyPair(ofType: .curve25519Ed25519)
+        let senderIdentityKeyPair = try! crypto.generateKeyPair(ofType: .curve25519Ed25519)
         
         let senderIdentity = NSUUID().uuidString
         let receiverIdentity = NSUUID().uuidString
@@ -116,7 +116,7 @@ class SecureSessionTests: XCTestCase {
                                           longTermKeysStorage: RamLongTermKeysStorage(db: [:]),
                                           oneTimeKeysStorage: RamOneTimeKeysStorage(db: [:]),
                                           sessionStorage: RamSessionStorage(),
-                                          keysRotator: FakeKeysRotator(), keyPairType: .curve25519Round5)
+                                          keysRotator: FakeKeysRotator(), keyPairType: .curve25519)
         
         let receiverKeysRotator = KeysRotator(crypto: crypto, identityPrivateKey: receiverIdentityKeyPair.privateKey, identityCardId: receiverCard.identifier, orphanedOneTimeKeyTtl: 100, longTermKeyTtl: 100, outdatedLongTermKeyTtl: 100, desiredNumberOfOneTimeKeys: 10, longTermKeysStorage: receiverLongTermKeysStorage, oneTimeKeysStorage: receiverOneTimeKeysStorage, client: receiverFakeClient)
         
@@ -127,7 +127,7 @@ class SecureSessionTests: XCTestCase {
                                             longTermKeysStorage: receiverLongTermKeysStorage,
                                             oneTimeKeysStorage: receiverOneTimeKeysStorage,
                                             sessionStorage: RamSessionStorage(),
-                                            keysRotator: receiverKeysRotator, keyPairType: .curve25519Round5)
+                                            keysRotator: receiverKeysRotator, keyPairType: .curve25519)
     
         return (senderCard, receiverCard, senderSecureChat, receiverSecureChat)
     }
