@@ -44,15 +44,13 @@ public extension SecureChat {
     /// - Parameters:
     ///   - receiverCard: receiver identity cards
     ///   - name: Session name
-    ///   - enablePostQuantum: enablePostQuantum
     ///   - completion: completion handler
     ///   - session: created [SecureSession](x-source-tag://SecureSession)
     ///   - error: corresponding error
-    @objc func startNewSessionAsSender(receiverCard: Card, name: String? = nil, enablePostQuantum: Bool,
+    @objc func startNewSessionAsSender(receiverCard: Card, name: String? = nil,
                                        completion: @escaping (_ session: SecureSession?, _ error: Error?) -> Void) {
         self.startNewSessionAsSender(receiverCard: receiverCard,
-                                     name: name,
-                                     enablePostQuantum: enablePostQuantum)
+                                     name: name)
             .start(completion: completion)
     }
 
@@ -61,16 +59,14 @@ public extension SecureChat {
     /// - Parameters:
     ///   - receiverCards: receivers identity cards
     ///   - name: Session name
-    ///   - enablePostQuantum: enablePostQuantum
     ///   - completion: completion handler
     ///   - sessions: array with created [SecureSessions](x-source-tag://SecureSession)
     ///   - error: corresponding error
-    @objc func startMultipleNewSessionsAsSender(receiverCards: [Card], name: String? = nil, enablePostQuantum: Bool,
+    @objc func startMultipleNewSessionsAsSender(receiverCards: [Card], name: String? = nil,
                                                 completion: @escaping (_ sessions: [SecureSession]?,
                                                                        _ error: Error?) -> Void) {
         self.startMutipleNewSessionsAsSender(receiverCards: receiverCards,
-                                             name: name,
-                                             enablePostQuantum: enablePostQuantum)
+                                             name: name)
             .start(completion: completion)
     }
 

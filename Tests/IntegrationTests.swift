@@ -57,8 +57,8 @@ class IntegrationTests: XCTestCase {
         let testConfig = TestConfig.readFromBundle()
         
         let crypto = try! VirgilCrypto()
-        let receiverIdentityKeyPair = try! crypto.generateKeyPair(ofType: .curve25519Round5Ed25519Falcon)
-        let senderIdentityKeyPair = try! crypto.generateKeyPair(ofType: .curve25519Round5Ed25519Falcon)
+        let receiverIdentityKeyPair = try! crypto.generateKeyPair(ofType: .curve25519Ed25519)
+        let senderIdentityKeyPair = try! crypto.generateKeyPair(ofType: .curve25519Ed25519)
         
         let senderIdentity = NSUUID().uuidString
         let receiverIdentity = NSUUID().uuidString
@@ -111,9 +111,9 @@ class IntegrationTests: XCTestCase {
         let receiverClient = RatchetClient(accessTokenProvider: receiverTokenProvider, serviceUrl: URL(string: testConfig.ServiceURL)!)
         let senderClient = RatchetClient(accessTokenProvider: senderTokenProvider, serviceUrl: URL(string: testConfig.ServiceURL)!)
         
-        let receiverKeysRotator = KeysRotator(crypto: crypto, identityPrivateKey: receiverIdentityKeyPair.privateKey, identityCardId: receiverCard.identifier, orphanedOneTimeKeyTtl: 5, longTermKeyTtl: 10, outdatedLongTermKeyTtl: 5, desiredNumberOfOneTimeKeys: IntegrationTests.desiredNumberOfOtKeys, enablePostQuantum: true, longTermKeysStorage: receiverLongTermKeysStorage, oneTimeKeysStorage: receiverOneTimeKeysStorage, client: receiverClient)
+        let receiverKeysRotator = KeysRotator(crypto: crypto, identityPrivateKey: receiverIdentityKeyPair.privateKey, identityCardId: receiverCard.identifier, orphanedOneTimeKeyTtl: 5, longTermKeyTtl: 10, outdatedLongTermKeyTtl: 5, desiredNumberOfOneTimeKeys: IntegrationTests.desiredNumberOfOtKeys, longTermKeysStorage: receiverLongTermKeysStorage, oneTimeKeysStorage: receiverOneTimeKeysStorage, client: receiverClient)
         
-        let senderKeysRotator = KeysRotator(crypto: crypto, identityPrivateKey: senderIdentityKeyPair.privateKey, identityCardId: senderCard.identifier, orphanedOneTimeKeyTtl: 100, longTermKeyTtl: 100, outdatedLongTermKeyTtl: 100, desiredNumberOfOneTimeKeys: IntegrationTests.desiredNumberOfOtKeys, enablePostQuantum: true, longTermKeysStorage: senderLongTermKeysStorage, oneTimeKeysStorage: senderOneTimeKeysStorage, client: senderClient)
+        let senderKeysRotator = KeysRotator(crypto: crypto, identityPrivateKey: senderIdentityKeyPair.privateKey, identityCardId: senderCard.identifier, orphanedOneTimeKeyTtl: 100, longTermKeyTtl: 100, outdatedLongTermKeyTtl: 100, desiredNumberOfOneTimeKeys: IntegrationTests.desiredNumberOfOtKeys, longTermKeysStorage: senderLongTermKeysStorage, oneTimeKeysStorage: senderOneTimeKeysStorage, client: senderClient)
         
         let senderSecureChat = SecureChat(crypto: crypto,
                                           identityPrivateKey: senderIdentityKeyPair.privateKey,
@@ -122,7 +122,7 @@ class IntegrationTests: XCTestCase {
                                           longTermKeysStorage: senderLongTermKeysStorage,
                                           oneTimeKeysStorage: senderOneTimeKeysStorage,
                                           sessionStorage: FileSessionStorage(appGroup: nil, identity: senderIdentity, crypto: crypto, identityKeyPair: senderIdentityKeyPair),
-                                          keysRotator: senderKeysRotator, keyPairType: .curve25519Round5)
+                                          keysRotator: senderKeysRotator, keyPairType: .curve25519)
         
         let receiverSecureChat = SecureChat(crypto: crypto,
                                             identityPrivateKey: receiverIdentityKeyPair.privateKey,
@@ -131,24 +131,24 @@ class IntegrationTests: XCTestCase {
                                             longTermKeysStorage: receiverLongTermKeysStorage,
                                             oneTimeKeysStorage: receiverOneTimeKeysStorage,
                                             sessionStorage: FileSessionStorage(appGroup: nil, identity: receiverIdentity, crypto: crypto, identityKeyPair: receiverIdentityKeyPair),
-                                            keysRotator: receiverKeysRotator, keyPairType: .curve25519Round5)
+                                            keysRotator: receiverKeysRotator, keyPairType: .curve25519)
         
         return (senderCard, receiverCard, senderSecureChat, receiverSecureChat)
     }
     
     func test1__encrypt_decrypt__random_uuid_messages__should_decrypt() {
         do {
-            for i in 0..<2 {
+            for _ in 0..<2 {
                 let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = try self.initChat()
             
                 _ = try receiverSecureChat.rotateKeys().startSync().get()
                 
-                let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard, enablePostQuantum: i == 1).startSync().get()
+                let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().get()
                 
                 let plainText = UUID().uuidString
                 let cipherText = try senderSession.encrypt(string: plainText)
                 
-                let receiverSession = try receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, ratchetMessage: cipherText, enablePostQuantum: i == 1)
+                let receiverSession = try receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, ratchetMessage: cipherText)
                 
                 let decryptedMessage = try receiverSession.decryptString(from: cipherText)
                 
@@ -164,12 +164,12 @@ class IntegrationTests: XCTestCase {
     
     func test2__session_persistence__random_uuid_messages__should_decrypt() {
         do {
-            for i in 0..<2 {
+            for _ in 0..<2 {
                 let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = try self.initChat()
             
                 _ = try receiverSecureChat.rotateKeys().startSync().get()
                 
-                let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard, enablePostQuantum: i == 1).startSync().get()
+                let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().get()
                 
                 try senderSecureChat.storeSession(senderSession)
                 
@@ -180,7 +180,7 @@ class IntegrationTests: XCTestCase {
                 
                 try senderSecureChat.storeSession(senderSession)
                 
-                let receiverSession = try receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, ratchetMessage: cipherText, enablePostQuantum: i == 1)
+                let receiverSession = try receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, ratchetMessage: cipherText)
                 
                 try receiverSecureChat.storeSession(receiverSession)
                 
@@ -202,12 +202,12 @@ class IntegrationTests: XCTestCase {
     
     func test3__session_removal__one_session_per_participant__should_delete_session() {
         do {
-            for i in 0..<2 {
+            for _ in 0..<2 {
                 let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = try self.initChat()
             
                 _ = try receiverSecureChat.rotateKeys().startSync().get()
                 
-                let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard, enablePostQuantum: i == 1).startSync().get()
+                let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().get()
                 
                 XCTAssert(senderSecureChat.existingSession(withParticipantIdentity: receiverCard.identity) == nil)
                 
@@ -218,7 +218,7 @@ class IntegrationTests: XCTestCase {
                 let plainText = UUID().uuidString
                 let cipherText = try senderSession.encrypt(string: plainText)
                 
-                let receiverSession = try receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, ratchetMessage: cipherText, enablePostQuantum: i == 1)
+                let receiverSession = try receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, ratchetMessage: cipherText)
                 
                 XCTAssert(receiverSecureChat.existingSession(withParticipantIdentity: senderCard.identity) == nil)
                 
@@ -246,20 +246,20 @@ class IntegrationTests: XCTestCase {
     
     func test4__reset__one_session_per_participant__should_reset() {
         do {
-            for i in 0..<2 {
+            for _ in 0..<2 {
                 let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = try self.initChat()
             
                 _ = try receiverSecureChat.rotateKeys().startSync().get()
                 _ = try senderSecureChat.rotateKeys().startSync().get()
             
-                let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard, enablePostQuantum: i == 1).startSync().get()
+                let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().get()
                 
                 try senderSecureChat.storeSession(senderSession)
                 
                 let plainText = UUID().uuidString
                 let cipherText = try senderSession.encrypt(string: plainText)
                 
-                let receiverSession = try receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, ratchetMessage: cipherText, enablePostQuantum: i == 1)
+                let receiverSession = try receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, ratchetMessage: cipherText)
                 
                 try receiverSecureChat.storeSession(receiverSession)
                 
@@ -297,7 +297,7 @@ class IntegrationTests: XCTestCase {
     
     func test5__start_as_receiver__one_session__should_replenish_ot_key() {
         do {
-            for i in 0..<2 {
+            for _ in 0..<2 {
                 let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = try self.initChat()
             
                 _ = try receiverSecureChat.rotateKeys().startSync().get()
@@ -305,12 +305,12 @@ class IntegrationTests: XCTestCase {
                 
                 XCTAssert(try receiverSecureChat.oneTimeKeysStorage.retrieveAllKeys().count == IntegrationTests.desiredNumberOfOtKeys)
                 
-                let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard, enablePostQuantum: i == 1).startSync().get()
+                let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().get()
                 
                 let plainText = UUID().uuidString
                 let cipherText = try senderSession.encrypt(string: plainText)
                 
-                _ = try receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, ratchetMessage: cipherText, enablePostQuantum: i == 1)
+                _ = try receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, ratchetMessage: cipherText)
                 
                 XCTAssert(try receiverSecureChat.oneTimeKeysStorage.retrieveAllKeys().count == IntegrationTests.desiredNumberOfOtKeys - 1)
                 
@@ -338,14 +338,14 @@ class IntegrationTests: XCTestCase {
     
     func test7__rotate__one_session__should_replenish_ot_key() {
         do {
-            for i in 0..<2 {
+            for _ in 0..<2 {
                 let (senderCard, receiverCard, senderSecureChat, receiverSecureChat) = try self.initChat()
             
                 _ = try receiverSecureChat.rotateKeys().startSync().get()
                             
                 XCTAssert(try receiverSecureChat.oneTimeKeysStorage.retrieveAllKeys().count == IntegrationTests.desiredNumberOfOtKeys)
                 
-                let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard, enablePostQuantum: i == 1).startSync().get()
+                let senderSession = try senderSecureChat.startNewSessionAsSender(receiverCard: receiverCard).startSync().get()
                 
                 let plainText = UUID().uuidString
                 let cipherText = try senderSession.encrypt(string: plainText)
@@ -361,7 +361,7 @@ class IntegrationTests: XCTestCase {
                 XCTAssert(try receiverSecureChat.oneTimeKeysStorage.retrieveAllKeys().count == IntegrationTests.desiredNumberOfOtKeys)
                             
                 do {
-                    _ = try receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, ratchetMessage: cipherText, enablePostQuantum: i == 1)
+                    _ = try receiverSecureChat.startNewSessionAsReceiver(senderCard: senderCard, ratchetMessage: cipherText)
                     XCTAssert(false)
                 }
                 catch { }
@@ -399,7 +399,7 @@ class IntegrationTests: XCTestCase {
     
     func test9__start_multiple_chats__random_uuid_messages__should_decrypt() {
         do {
-            for i in 0..<2 {
+            for _ in 0..<2 {
                 let (card1, card2, chat1, chat2) = try self.initChat()
                 let (card3, card4, chat3, chat4) = try self.initChat()
                 
@@ -407,7 +407,7 @@ class IntegrationTests: XCTestCase {
                 _ = try chat3.rotateKeys().startSync().get()
                 _ = try chat4.rotateKeys().startSync().get()
                 
-                let sessions = try chat1.startMutipleNewSessionsAsSender(receiverCards: [card2, card3, card4], enablePostQuantum: i == 1).startSync().get()
+                let sessions = try chat1.startMutipleNewSessionsAsSender(receiverCards: [card2, card3, card4]).startSync().get()
                 
                 let plainText2 = UUID().uuidString
                 let plainText3 = UUID().uuidString
@@ -417,9 +417,9 @@ class IntegrationTests: XCTestCase {
                 let cipherText3 = try sessions[1].encrypt(string: plainText3)
                 let cipherText4 = try sessions[2].encrypt(string: plainText4)
                 
-                let receiverSession2 = try chat2.startNewSessionAsReceiver(senderCard: card1, ratchetMessage: cipherText2, enablePostQuantum: i == 1)
-                let receiverSession3 = try chat3.startNewSessionAsReceiver(senderCard: card1, ratchetMessage: cipherText3, enablePostQuantum: i == 1)
-                let receiverSession4 = try chat4.startNewSessionAsReceiver(senderCard: card1, ratchetMessage: cipherText4, enablePostQuantum: i == 1)
+                let receiverSession2 = try chat2.startNewSessionAsReceiver(senderCard: card1, ratchetMessage: cipherText2)
+                let receiverSession3 = try chat3.startNewSessionAsReceiver(senderCard: card1, ratchetMessage: cipherText3)
+                let receiverSession4 = try chat4.startNewSessionAsReceiver(senderCard: card1, ratchetMessage: cipherText4)
                 
                 let decryptedMessage2 = try receiverSession2.decryptString(from: cipherText2)
                 let decryptedMessage3 = try receiverSession3.decryptString(from: cipherText3)
