@@ -168,7 +168,7 @@ import VirgilCrypto
                   oneTimeKeysStorage: oneTimeKeysStorage,
                   sessionStorage: sessionStorage,
                   keysRotator: keysRotator,
-                  keyPairType: .curve25519Round5)
+                  keyPairType: .curve25519MlKem768)
     }
 
     /// Initializer
