@@ -120,7 +120,7 @@ class KeysRotatorTests: XCTestCase {
     
     func test1__rotate__empty_storage__should_create_keys() {
         do {
-            for i in 0..<2 {
+            for _ in 0..<2 {
                 let (cardManager, identity, privateKey, card) = try self.initialize()
                 
                 let numberOfOneTimeKeys = 5
@@ -129,7 +129,7 @@ class KeysRotatorTests: XCTestCase {
                 let fakeOneTimeKeysStorage = RamOneTimeKeysStorage(db: [:])
                 let fakeClient = RamClient(identity: identity, storage: RamClient.Storage(), cardManager: cardManager)
                 
-                let rotator = KeysRotator(crypto: crypto, identityPrivateKey: privateKey, identityCardId: card.identifier, orphanedOneTimeKeyTtl: 100, longTermKeyTtl: 100, outdatedLongTermKeyTtl: 100, desiredNumberOfOneTimeKeys: numberOfOneTimeKeys, enablePostQuantum: i == 1, longTermKeysStorage: fakeLongTermKeysStorage, oneTimeKeysStorage: fakeOneTimeKeysStorage, client: fakeClient)
+                let rotator = KeysRotator(crypto: crypto, identityPrivateKey: privateKey, identityCardId: card.identifier, orphanedOneTimeKeyTtl: 100, longTermKeyTtl: 100, outdatedLongTermKeyTtl: 100, desiredNumberOfOneTimeKeys: numberOfOneTimeKeys, longTermKeysStorage: fakeLongTermKeysStorage, oneTimeKeysStorage: fakeOneTimeKeysStorage, client: fakeClient)
                 
                 let log = try self.rotate(rotator: rotator)
                 
@@ -162,7 +162,7 @@ class KeysRotatorTests: XCTestCase {
     
     func test2__rotate__old_long_term_key__should_recreate_key() {
         do {
-            for i in 0..<2 {
+            for _ in 0..<2 {
                 let (cardManager, identity, privateKey, card) = try self.initialize()
                 
                 let numberOfOneTimeKeys = 5
@@ -171,7 +171,7 @@ class KeysRotatorTests: XCTestCase {
                 let fakeOneTimeKeysStorage = RamOneTimeKeysStorage(db: [:])
                 let fakeClient = RamClient(identity: identity, storage: RamClient.Storage(), cardManager: cardManager)
                 
-                let rotator = KeysRotator(crypto: crypto, identityPrivateKey: privateKey, identityCardId: card.identifier, orphanedOneTimeKeyTtl: 100, longTermKeyTtl: 5, outdatedLongTermKeyTtl: 2, desiredNumberOfOneTimeKeys: numberOfOneTimeKeys, enablePostQuantum: i == 1, longTermKeysStorage: fakeLongTermKeysStorage, oneTimeKeysStorage: fakeOneTimeKeysStorage, client: fakeClient)
+                let rotator = KeysRotator(crypto: crypto, identityPrivateKey: privateKey, identityCardId: card.identifier, orphanedOneTimeKeyTtl: 100, longTermKeyTtl: 5, outdatedLongTermKeyTtl: 2, desiredNumberOfOneTimeKeys: numberOfOneTimeKeys, longTermKeysStorage: fakeLongTermKeysStorage, oneTimeKeysStorage: fakeOneTimeKeysStorage, client: fakeClient)
                 
                 _ = try self.rotate(rotator: rotator)
                 
@@ -218,7 +218,7 @@ class KeysRotatorTests: XCTestCase {
     
     func test3__rotate__used_one_time_key___should_recreate_key() {
         do {
-            for i in 0..<2 {
+            for _ in 0..<2 {
                 let (cardManager, identity, privateKey, card) = try self.initialize()
                 
                 let numberOfOneTimeKeys = 5
@@ -227,7 +227,7 @@ class KeysRotatorTests: XCTestCase {
                 let fakeOneTimeKeysStorage = RamOneTimeKeysStorage(db: [:])
                 let fakeClient = RamClient(identity: identity, storage: RamClient.Storage(), cardManager: cardManager)
                 
-                let rotator = KeysRotator(crypto: crypto, identityPrivateKey: privateKey, identityCardId: card.identifier, orphanedOneTimeKeyTtl: 5, longTermKeyTtl: 100, outdatedLongTermKeyTtl: 100, desiredNumberOfOneTimeKeys: numberOfOneTimeKeys, enablePostQuantum: i == 1, longTermKeysStorage: fakeLongTermKeysStorage, oneTimeKeysStorage: fakeOneTimeKeysStorage, client: fakeClient)
+                let rotator = KeysRotator(crypto: crypto, identityPrivateKey: privateKey, identityCardId: card.identifier, orphanedOneTimeKeyTtl: 5, longTermKeyTtl: 100, outdatedLongTermKeyTtl: 100, desiredNumberOfOneTimeKeys: numberOfOneTimeKeys, longTermKeysStorage: fakeLongTermKeysStorage, oneTimeKeysStorage: fakeOneTimeKeysStorage, client: fakeClient)
                 
                 _ = try self.rotate(rotator: rotator)
                 

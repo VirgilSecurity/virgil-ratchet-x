@@ -89,7 +89,6 @@ import VirgilCrypto
                       longTermKeyTtl: TimeInterval,
                       outdatedLongTermKeyTtl: TimeInterval,
                       desiredNumberOfOneTimeKeys: Int,
-                      enablePostQuantum: Bool,
                       longTermKeysStorage: LongTermKeysStorage,
                       oneTimeKeysStorage: OneTimeKeysStorage,
                       client: RatchetClientProtocol) {
@@ -103,7 +102,7 @@ import VirgilCrypto
         self.longTermKeysStorage = longTermKeysStorage
         self.oneTimeKeysStorage = oneTimeKeysStorage
         self.client = client
-        self.keyPairType = enablePostQuantum ? .curve25519Round5 : .curve25519
+        self.keyPairType = .curve25519MlKem768
 
         super.init()
     }

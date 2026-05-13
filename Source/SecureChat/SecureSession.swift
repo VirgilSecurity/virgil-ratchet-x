@@ -77,8 +77,7 @@ import VirgilCryptoRatchet
                   receiverIdentityPrivateKey: VirgilPrivateKey,
                   receiverLongTermPrivateKey: LongTermKey,
                   receiverOneTimePrivateKey: OneTimeKey?,
-                  ratchetMessage: RatchetMessage,
-                  enablePostQuantum: Bool) throws {
+                  ratchetMessage: RatchetMessage) throws {
         self.crypto = crypto
         self.participantIdentity = participantIdentity
         self.name = name
@@ -95,15 +94,13 @@ import VirgilCryptoRatchet
                                        receiverIdentityPrivateKey: receiverIdentityPrivateKey.key,
                                        receiverLongTermPrivateKey: longTermKey.privateKey.key,
                                        receiverOneTimePrivateKey: key.privateKey.key,
-                                       message: ratchetMessage,
-                                       enablePostQuantum: enablePostQuantum)
+                                       message: ratchetMessage)
         }
         else {
             try ratchetSession.respondNoOneTimeKey(senderIdentityPublicKey: senderIdentityPublicKey.key,
                                                    receiverIdentityPrivateKey: receiverIdentityPrivateKey.key,
                                                    receiverLongTermPrivateKey: longTermKey.privateKey.key,
-                                                   message: ratchetMessage,
-                                                   enablePostQuantum: enablePostQuantum)
+                                                   message: ratchetMessage)
         }
 
         self.ratchetSession = ratchetSession
@@ -118,8 +115,7 @@ import VirgilCryptoRatchet
                   senderIdentityPrivateKey: VirgilPrivateKey,
                   receiverIdentityPublicKey: VirgilPublicKey,
                   receiverLongTermPublicKey: Data,
-                  receiverOneTimePublicKey: Data?,
-                  enablePostQuantum: Bool) throws {
+                  receiverOneTimePublicKey: Data?) throws {
         self.crypto = crypto
         self.participantIdentity = participantIdentity
         self.name = name
@@ -139,8 +135,7 @@ import VirgilCryptoRatchet
                                         receiverLongTermPublicKey: longTermKey.key,
                                         receiverLongTermKeyId: longTermKey.identifier,
                                         receiverOneTimePublicKey: key.key,
-                                        receiverOneTimeKeyId: key.identifier,
-                                        enablePostQuantum: enablePostQuantum)
+                                        receiverOneTimeKeyId: key.identifier)
         }
         else {
             try ratchetSession.initiateNoOneTimeKey(senderIdentityPrivateKey: senderIdentityPrivateKey.key,
@@ -148,8 +143,7 @@ import VirgilCryptoRatchet
                                                     receiverIdentityPublicKey: receiverIdentityPublicKey.key,
                                                     receiverIdentityKeyId: receiverIdentityPublicKey.identifier,
                                                     receiverLongTermPublicKey: longTermKey.key,
-                                                    receiverLongTermKeyId: longTermKey.identifier,
-                                                    enablePostQuantum: enablePostQuantum)
+                                                    receiverLongTermKeyId: longTermKey.identifier)
         }
 
         self.ratchetSession = ratchetSession

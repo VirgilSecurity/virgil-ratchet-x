@@ -156,12 +156,9 @@ import VirgilCrypto
                                       longTermKeyTtl: context.longTermKeyTtl,
                                       outdatedLongTermKeyTtl: context.outdatedLongTermKeyTtl,
                                       desiredNumberOfOneTimeKeys: context.desiredNumberOfOneTimeKeys,
-                                      enablePostQuantum: context.enablePostQuantum,
                                       longTermKeysStorage: longTermKeysStorage,
                                       oneTimeKeysStorage: oneTimeKeysStorage,
                                       client: client)
-
-        let keyPairType: KeyPairType = context.enablePostQuantum ? .curve25519Round5 : .curve25519
 
         self.init(crypto: crypto,
                   identityPrivateKey: context.identityPrivateKey,
@@ -171,7 +168,7 @@ import VirgilCrypto
                   oneTimeKeysStorage: oneTimeKeysStorage,
                   sessionStorage: sessionStorage,
                   keysRotator: keysRotator,
-                  keyPairType: keyPairType)
+                  keyPairType: .curve25519MlKem768)
     }
 
     /// Initializer
@@ -291,7 +288,6 @@ import VirgilCrypto
     /// - Parameters:
     ///   - receiverCard: receiver identity cards
     ///   - name: Session name
-    ///   - enablePostQuantum: enablePostQuantum
     /// - Returns: GenericOperation with [SecureSession](x-source-tag://SecureSession)
     /// - Throws:
     ///   - `SecureChatError.sessionAlreadyExists` if session already exists.
@@ -304,8 +300,7 @@ import VirgilCrypto
     ///   - Rethrows form [SecureSession](x-source-tag://SecureSession)
     ///   - Rethrows form `AccessTokenProvider`
     open func startNewSessionAsSender(receiverCard: Card,
-                                      name: String? = nil,
-                                      enablePostQuantum: Bool) -> GenericOperation<SecureSession> {
+                                      name: String? = nil) -> GenericOperation<SecureSession> {
         Log.debug("Starting new session with \(receiverCard.identity) queued")
 
         return CallbackOperation { _, completion in
@@ -325,8 +320,7 @@ import VirgilCrypto
                                                                identityPublicKey: identityPublicKey,
                                                                name: name,
                                                                longTermPublicKey: publicKeySet.longTermPublicKey,
-                                                               oneTimePublicKey: publicKeySet.oneTimePublicKey,
-                                                               enablePostQuantum: enablePostQuantum)
+                                                               oneTimePublicKey: publicKeySet.oneTimePublicKey)
 
                 completion(session, nil)
             }
@@ -354,8 +348,7 @@ import VirgilCrypto
     ///   - Rethrows form [SecureSession](x-source-tag://SecureSession)
     ///   - Rethrows form `AccessTokenProvider`
     open func startMutipleNewSessionsAsSender(receiverCards: [Card],
-                                              name: String? = nil,
-                                              enablePostQuantum: Bool) -> GenericOperation<[SecureSession]> {
+                                              name: String? = nil) -> GenericOperation<[SecureSession]> {
         Log.debug("Starting new session with \(receiverCards.map { $0.identity }) queued")
 
         return CallbackOperation { _, completion in
@@ -392,8 +385,7 @@ import VirgilCrypto
                                                  identityPublicKey: identityPublicKey,
                                                  name: name,
                                                  longTermPublicKey: publicKeySet.longTermPublicKey,
-                                                 oneTimePublicKey: publicKeySet.oneTimePublicKey,
-                                                 enablePostQuantum: enablePostQuantum)
+                                                 oneTimePublicKey: publicKeySet.oneTimePublicKey)
 
                     sessions.append(session)
                 }
@@ -410,8 +402,7 @@ import VirgilCrypto
                                          identityPublicKey: VirgilPublicKey,
                                          name: String? = nil,
                                          longTermPublicKey: SignedPublicKey,
-                                         oneTimePublicKey: Data?,
-                                         enablePostQuantum: Bool) throws -> SecureSession {
+                                         oneTimePublicKey: Data?) throws -> SecureSession {
         guard try self.crypto.verifySignature(longTermPublicKey.signature,
                                               of: longTermPublicKey.publicKey,
                                               with: identityPublicKey) else {
@@ -428,8 +419,7 @@ import VirgilCrypto
                                         senderIdentityPrivateKey: self.identityPrivateKey,
                                         receiverIdentityPublicKey: identityPublicKey,
                                         receiverLongTermPublicKey: longTermPublicKey.publicKey,
-                                        receiverOneTimePublicKey: oneTimePublicKey,
-                                        enablePostQuantum: enablePostQuantum)
+                                        receiverOneTimePublicKey: oneTimePublicKey)
 
         return session
     }
@@ -490,8 +480,7 @@ import VirgilCrypto
     ///   - Rethrows form `AccessTokenProvider`
     @objc public func startNewSessionAsReceiver(senderCard: Card,
                                                 name: String? = nil,
-                                                ratchetMessage: RatchetMessage,
-                                                enablePostQuantum: Bool) throws -> SecureSession {
+                                                ratchetMessage: RatchetMessage) throws -> SecureSession {
         Log.debug("Responding to session with \(senderCard.identity) queued")
 
         guard self.existingSession(withParticipantIdentity: senderCard.identity, name: name) == nil else {
@@ -533,8 +522,7 @@ import VirgilCrypto
                                         receiverIdentityPrivateKey: self.identityPrivateKey,
                                         receiverLongTermPrivateKey: receiverLongTermPrivateKey,
                                         receiverOneTimePrivateKey: receiverOneTimePrivateKey,
-                                        ratchetMessage: ratchetMessage,
-                                        enablePostQuantum: enablePostQuantum)
+                                        ratchetMessage: ratchetMessage)
 
         if !receiverOneTimeKeyId.isEmpty {
             try self.oneTimeKeysStorage.deleteKey(withId: receiverOneTimeKeyId)

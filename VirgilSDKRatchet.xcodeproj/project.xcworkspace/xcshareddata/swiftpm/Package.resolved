@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/VirgilSecurity/virgil-crypto-c.git",
       "state" : {
-        "revision" : "40ae5231264c8f2d79354922fac15d96021aa8b5",
-        "version" : "0.17.1"
+        "revision" : "e386be51ec32aed0391a26925e657b25b2bdbe50",
+        "version" : "0.19.0-rc.12"
       }
     },
     {
@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/VirgilSecurity/virgil-crypto-x.git",
       "state" : {
-        "revision" : "6334a21c49dafb305666aafc34819314960412de",
-        "version" : "7.0.1"
+        "revision" : "c7d4c29164f0cd73d6365b2527cbcbc21a2bdce9",
+        "version" : "7.2.0"
       }
     },
     {
@@ -23,8 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/VirgilSecurity/virgil-sdk-x",
       "state" : {
-        "revision" : "53e32c076211a7623f113df49e6f48c8974c9024",
-        "version" : "9.0.1"
+        "revision" : "30784129508afc537aac14dc934938b467937564",
+        "version" : "9.2.0"
       }
     }
   ],
