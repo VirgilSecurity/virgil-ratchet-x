@@ -69,6 +69,11 @@ import VirgilSDK
     /// Ratchet client
     @objc public var client: RatchetClient
 
+    /// Key pair type used for long-term and one-time ratchet keys.
+    /// Defaults to .curve25519MlKem768 but must be .curve25519 until the
+    /// PFS server is migrated to accept ML-KEM hybrid keys.
+    public var keyPairType: KeyPairType = .curve25519MlKem768
+
     /// Initializer
     ///
     /// - Parameters:
