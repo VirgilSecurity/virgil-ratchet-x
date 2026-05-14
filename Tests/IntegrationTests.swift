@@ -57,8 +57,8 @@ class IntegrationTests: XCTestCase {
         let testConfig = TestConfig.readFromBundle()
         
         let crypto = try! VirgilCrypto()
-        let receiverIdentityKeyPair = try! crypto.generateKeyPair(ofType: .curve25519Ed25519)
-        let senderIdentityKeyPair = try! crypto.generateKeyPair(ofType: .curve25519Ed25519)
+        let receiverIdentityKeyPair = try! crypto.generateKeyPair(ofType: .ed25519)
+        let senderIdentityKeyPair = try! crypto.generateKeyPair(ofType: .ed25519)
         
         let senderIdentity = NSUUID().uuidString
         let receiverIdentity = NSUUID().uuidString
