@@ -158,7 +158,8 @@ import VirgilCrypto
                                       desiredNumberOfOneTimeKeys: context.desiredNumberOfOneTimeKeys,
                                       longTermKeysStorage: longTermKeysStorage,
                                       oneTimeKeysStorage: oneTimeKeysStorage,
-                                      client: client)
+                                      client: client,
+                                      keyPairType: context.keyPairType)
 
         self.init(crypto: crypto,
                   identityPrivateKey: context.identityPrivateKey,
@@ -168,7 +169,7 @@ import VirgilCrypto
                   oneTimeKeysStorage: oneTimeKeysStorage,
                   sessionStorage: sessionStorage,
                   keysRotator: keysRotator,
-                  keyPairType: .curve25519MlKem768)
+                  keyPairType: context.keyPairType)
     }
 
     /// Initializer
