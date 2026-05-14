@@ -82,16 +82,17 @@ import VirgilCrypto
     ///   - longTermKeysStorage: long-term keys storage
     ///   - oneTimeKeysStorage: one-time keys storage
     ///   - client: [RatchetClient](x-source-tag://RatchetClient)
-    @objc public init(crypto: VirgilCrypto,
-                      identityPrivateKey: VirgilPrivateKey,
-                      identityCardId: String,
-                      orphanedOneTimeKeyTtl: TimeInterval,
-                      longTermKeyTtl: TimeInterval,
-                      outdatedLongTermKeyTtl: TimeInterval,
-                      desiredNumberOfOneTimeKeys: Int,
-                      longTermKeysStorage: LongTermKeysStorage,
-                      oneTimeKeysStorage: OneTimeKeysStorage,
-                      client: RatchetClientProtocol) {
+    public init(crypto: VirgilCrypto,
+                identityPrivateKey: VirgilPrivateKey,
+                identityCardId: String,
+                orphanedOneTimeKeyTtl: TimeInterval,
+                longTermKeyTtl: TimeInterval,
+                outdatedLongTermKeyTtl: TimeInterval,
+                desiredNumberOfOneTimeKeys: Int,
+                longTermKeysStorage: LongTermKeysStorage,
+                oneTimeKeysStorage: OneTimeKeysStorage,
+                client: RatchetClientProtocol,
+                keyPairType: KeyPairType = .curve25519MlKem768) {
         self.crypto = crypto
         self.identityPrivateKey = identityPrivateKey
         self.identityCardId = identityCardId
@@ -102,9 +103,32 @@ import VirgilCrypto
         self.longTermKeysStorage = longTermKeysStorage
         self.oneTimeKeysStorage = oneTimeKeysStorage
         self.client = client
-        self.keyPairType = .curve25519MlKem768
+        self.keyPairType = keyPairType
 
         super.init()
+    }
+
+    @objc public convenience init(crypto: VirgilCrypto,
+                                  identityPrivateKey: VirgilPrivateKey,
+                                  identityCardId: String,
+                                  orphanedOneTimeKeyTtl: TimeInterval,
+                                  longTermKeyTtl: TimeInterval,
+                                  outdatedLongTermKeyTtl: TimeInterval,
+                                  desiredNumberOfOneTimeKeys: Int,
+                                  longTermKeysStorage: LongTermKeysStorage,
+                                  oneTimeKeysStorage: OneTimeKeysStorage,
+                                  client: RatchetClientProtocol) {
+        self.init(crypto: crypto,
+                  identityPrivateKey: identityPrivateKey,
+                  identityCardId: identityCardId,
+                  orphanedOneTimeKeyTtl: orphanedOneTimeKeyTtl,
+                  longTermKeyTtl: longTermKeyTtl,
+                  outdatedLongTermKeyTtl: outdatedLongTermKeyTtl,
+                  desiredNumberOfOneTimeKeys: desiredNumberOfOneTimeKeys,
+                  longTermKeysStorage: longTermKeysStorage,
+                  oneTimeKeysStorage: oneTimeKeysStorage,
+                  client: client,
+                  keyPairType: .curve25519MlKem768)
     }
 
     /// Rotates keys
