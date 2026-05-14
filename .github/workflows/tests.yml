@@ -62,11 +62,12 @@ jobs:
         env:
             ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
             ENCRYPTION_IV: ${{ secrets.ENCRYPTION_IV }}
-      - name: SPM build
+      - name: SPM test
         run: |
             brew install coreutils
             swift --version
             timeout 15m bash -c 'until swift build; do rm -fr .build && sleep 10; done'
+            swift test
 
   Swiftlint:
     runs-on: macos-latest
