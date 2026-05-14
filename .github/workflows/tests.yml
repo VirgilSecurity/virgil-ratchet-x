@@ -12,24 +12,22 @@ on:
 
 jobs:
   Tests:
-    name: Tests
+    name: Tests (${{ matrix.platform }})
     runs-on: macos-latest
-    env:
-      PROJECT: VirgilSDKRatchet.xcodeproj
     strategy:
       matrix:
         include:
           - destination: "platform=iOS Simulator,name=iPhone 16,arch=arm64"
-            prefix: "iOS"
+            platform: "iOS"
             test: "1"
-          - destination: "arch=x86_64"
-            prefix: "macOS"
+          - destination: "platform=macOS,arch=x86_64"
+            platform: "macOS"
             test: "1"
           - destination: "platform=tvOS Simulator,name=Apple TV 4K (3rd generation),arch=arm64"
-            prefix: "tvOS"
+            platform: "tvOS"
             test: "1"
           - destination: "platform=watchOS Simulator,name=Apple Watch Series 10 (46mm),arch=arm64"
-            prefix: "watchOS"
+            platform: "watchOS"
             test: "0"
     steps:
       - uses: actions/checkout@v4
@@ -39,20 +37,19 @@ jobs:
           ENCRYPTION_IV: ${{ secrets.ENCRYPTION_IV }}
         run: ./CI/decrypt-config.sh
 
-      - name: Run ${{ matrix.prefix }} Tests
+      - name: Run ${{ matrix.platform }} Tests
         uses: nick-fields/retry@v2
         with:
           max_attempts: 20
           timeout_minutes: 30
           retry_on: error
           command: |
-            SCHEME="VirgilSDKRatchet ${{ matrix.prefix }}"
-
             if [ "${{ matrix.test }}" == "1" ]; then
-                xcodebuild -verbose -project "$PROJECT" -scheme "$SCHEME" -destination "${{ matrix.destination }}" -configuration Debug test | xcpretty;
+                xcodebuild -scheme VirgilSDKRatchet -destination "${{ matrix.destination }}" -configuration Debug test | xcpretty;
             else
-                xcodebuild -verbose -project "$PROJECT" -scheme "$SCHEME" -destination "${{ matrix.destination }}" -configuration Release clean build | xcpretty;
+                xcodebuild -scheme VirgilSDKRatchet -destination "${{ matrix.destination }}" -configuration Release clean build | xcpretty;
             fi
+
   SPM:
     runs-on: macos-latest
     steps:
